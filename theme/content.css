@@ -1,69 +1,58 @@
 @charset "UTF-8";
 @font-face {
-    font-family: 'Nunito';
-    src: url('fonts/Nunito-ExtraLightItalic.woff2') format('woff2'),
-        url('fonts/Nunito-ExtraLightItalic.woff') format('woff');
-    font-style: italic;
-    font-display: swap;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Inter"), url(fonts/Inter-Regular.woff2) format("woff2"), url(fonts/Inter-Regular.woff) format("woff");
 }
 
 @font-face {
-    font-family: 'Nunito';
-    src: url('fonts/Nunito-ExtraLight.woff2') format('woff2'),
-        url('fonts/Nunito-ExtraLight.woff') format('woff');
-    font-style: normal;
-    font-display: swap;
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 400;
+  src: local("Inter Italic"), url(fonts/Inter-Italic.woff2) format("woff2"), url(fonts/Inter-Italic.woff) format("woff");
 }
 
 @font-face {
-    font-family: 'Nunito';
-    src: url('fonts/Nunito-BoldItalic.woff2') format('woff2'),
-        url('fonts/Nunito-BoldItalic.woff') format('woff');
-    font-weight: bold;
-    font-style: italic;
-    font-display: swap;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Inter Bold"), url(fonts/Inter-Bold.woff2) format("woff2"), url(fonts/Inter-Bold.woff) format("woff");
 }
 
 @font-face {
-    font-family: 'Nunito';
-    src: url('fonts/Nunito-Bold.woff2') format('woff2'),
-        url('fonts/Nunito-Bold.woff') format('woff');
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 700;
+  src: local("Inter Bold Italic"), url(fonts/Inter-BoldItalic.woff2) format("woff2"), url(fonts/Inter-BoldItalic.woff) format("woff");
 }
 
-a{
-    text-decoration: none;
+body.exe-export, .exe-content{
+    font-family: "Inter";
+    font-weight: 400;
 }
 
 .page-title{
     font-weight: bold;
-    margin-top: 32px;
+    margin-top: 20px;
 }
 
-.page > header .package-title,
-.siteNav-off .page > header .package-title,
-.exe-single-page .package-header h1{
-    padding-left: 32px;
-    width: calc(100% - 470px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #002702;
-    margin: 0;
-}
-
-.exe-teacher-mode-toggler .page > header .package-title, .exe-teacher-mode-toggler.siteNav-off .page > header .package-title{
-    width: calc(100% - 550px);
-}
-
+.exe-scorm .page header .package-title,
 .exe-single-page .package-header h1{
     width: 100%;
 }
 
-.exe-scorm .page header .page-title, .exe-ims .page header .page-title, .exe-epub .page header .page-title{
+main header:not(#head) {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+}
+
+.exe-web-site main.page{
+    box-sizing: border-box;
     width: 100%;
+    padding-left: 300px;
+    padding-bottom: 40px;
 }
 
 .exe-scorm .page > header .package-title,
@@ -76,54 +65,57 @@ a{
     width: 100%;
 }
 
-main header:not(#head)  {
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: none !important;
-}
-
 .page > header{
     position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
+    top: 4px;
+    right: 4px;
+    left: 4px;
     z-index: 400;
-    height: 100px;
+    height: 82px;
     display: flex !important;
     align-items: center;
-    background-color: #fff;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.25);
+    background:#1C1C1C;
+    border-radius: 12px;
+}
+
+.page > header .package-title,
+.siteNav-off .page > header .package-title,
+.exe-single-page .package-header h1{
+    padding-left: 80px;
+    width: calc(100% - 470px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    margin: 0;
 }
 
 body.exe-export {
     padding: 1em 0;
 }
 
-body.exe-export.exe-scorm, body.exe-export.exe-ims, body.exe-export.exe-epub{
-    padding: 0;
-}
-
 body.exe-web-site{
     padding: 0;
 }
 
-body.exe-export, body.exe-web-site{
-  font-family: "Nunito", Arial, Verdana, Helvetica, sans-serif;
-  font-size: 120%;
-}
-
 .exe-content a{
-    color: #0d77d1;
+    color: #00758F;
 }
 .exe-content a:hover,
 .exe-content a:focus{
-    color: #0a60ab;
+    color: #005771;
     text-decoration: none;
 }
 
 .exe-download-package-link a{
-    background: #002702;
+    background: #00758F;
     color: #fff;
+}
+
+.exe-download-package-link a:hover{
+    background-color: #005771;
+    color: #fff;
+    text-decoration: none;
 }
 
 #node-content-container.exe-content #node-content{
@@ -134,14 +126,9 @@ body.exe-export, body.exe-web-site{
     display: block;
 }
 
-.exe-content{
+.exe-content, body{
     color: #333;
     background-color: #F4F4F4;
-    background: url(img/background.png);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
 }
 
 .js .exe-export .exe-content{
@@ -157,9 +144,10 @@ body.exe-export, body.exe-web-site{
 }
 
 .exe-content .package-title, .exe-single-page .package-header h1{
-    font-size: 1.7rem;
+    font-size: 1.5rem;
     text-align: left;
     font-weight: 700;
+    color: #FFF;
 }
 
 .exe-single-page .package-node{
@@ -168,7 +156,7 @@ body.exe-export, body.exe-web-site{
 
 .exe-content .box{
     margin: 35px 0;
-    border: 1px solid #D4E6EC;
+    border: none;
 }
 
 .exe-web-site .exe-content .box{
@@ -177,6 +165,15 @@ body.exe-export, body.exe-web-site{
 
 .exe-content .box-head {
     border-bottom: 0;
+    margin-bottom: 16px !important;
+}
+
+.exe-content .box-head + .box-content {
+    padding-top: 1em;
+}
+
+#node-content-container.exe-content .box{
+    border: 1px dotted #ddd;
 }
 #node-content-container.exe-content .box.hidden-idevices{
     border-style: solid;
@@ -188,8 +185,8 @@ body.exe-export, body.exe-web-site{
 }
 
 .exe-content .box-head .box-title{
-    color: #002702;
-    font-size: 1.65rem !important;
+    color: #1C1C1C;
+    font-size: 1.75rem !important;
     font-weight: 700;
 }
 
@@ -200,23 +197,12 @@ body.exe-export, body.exe-web-site{
 .exe-web-site .page-content,
 #exe-client-search,
 .exe-web-site main > header,
+.exe-web-site #siteFooterContent,
 .exe-export .exe-content
 {
     max-width: 1280px;
-    padding: 0 60px;
+    padding: 0 90px;
     margin: 0 auto;
-}
-
-.exe-single-page .exe-content{
-    max-width: 100% !important;
-}
-
-.exe-single-page .exe-content main, .exe-single-page .exe-content footer{
-    max-width: 1280px;
-    margin: 0 auto;
-}
-.exe-single-page .exe-content main{
-    padding-top: 4em;
 }
 
 .exe-web-site .exe-content{
@@ -224,47 +210,62 @@ body.exe-export, body.exe-web-site{
     padding: 0;
 }
 
-.exe-scorm .exe-export main, .exe-ims .exe-export main, .exe-epub .exe-export main{
-    padding-top: 5em;
-    padding-bottom: 1em;
-}
-
-body.exe-export.exe-scorm .exe-content, body.exe-export.exe-ims .exe-content, body.exe-export.exe-epub .exe-content{
-    padding: 0 40px;
-}
-.exe-content.cover-on .exe-interactive-video,
-.exe-content .exe-interactive-video{
-    width: 100%;
+body.exe-export.exe-scorm{
+    padding: 0;
 }
 
 .exe-export main{
     padding-top: 1.5em;
 }
+.exe-scorm .exe-export main{
+    padding-top: 5em;
+    padding-bottom: 1em;
+}
 .exe-web-site main{
-    padding-top: 4.5em;
+    padding-top: 6em;
+}
+.exe-content.cover-on .exe-interactive-video,
+.exe-content .exe-interactive-video{
+    width: 100%;
+}
+.exe-export main{
+    padding-top: 6em;
+}
+.exe-web-site main{
+    padding-top: 6em;
+}
+
+body.exe-export.exe-scorm .exe-content,
+body.exe-export.exe-ims .exe-content,
+body.exe-export.exe-epub .exe-content{
+    padding: 0 40px;
 }
 
 /* siteNav */
 #siteNav{
     float:left;
-    padding: 100px 16px 48px 16px;
-    background-color: #4CAF50;
-    height: calc(100vh - 100px);
-    border-radius: 0 40px 40px 0;
-    width: 330px;
+    width:300px;
+    padding-top: 20px;
+    padding-left: 8px;
+    padding-bottom: 20px;
+    background-color: #ffffff;
+    height: calc(100vh - 98px);
     z-index: 1;
-    position: fixed;
+    scrollbar-width: none;
     transition: left 0.3s ease;
-    left: 0;
-    top: 100px;
     overflow: visible;
+    margin-top: 94px;
+    margin-left: 4px;
+    margin-bottom: 4px;
+    border-radius: 12px;
 }
+
 #siteNav::-webkit-scrollbar {
   display: none;
 }
 
 #siteNav > ul{
-  max-height: calc(100vh - 230px);
+  max-height: 100%;
   overflow-y: auto;
   margin: 0;
   padding: 0;
@@ -284,30 +285,26 @@ body.exe-export.exe-scorm .exe-content, body.exe-export.exe-ims .exe-content, bo
 }
 #sidebar-nav.fixed, #sidebar-nav{
     position: fixed;
-
 }
 body.siteNav-off #siteNav{
-    left: -330px;
+    display: none;
+}
+
+.exe-web-site #siteFooter{
+    padding-left: 320px;
+    padding-right: 20px;
+    transition: padding 0.3s ease;
 }
 .exe-web-site main.page{
     box-sizing: border-box;
     width: 100%;
-    padding-left: 330px;
-    padding-bottom: 24px;
-    transition: padding 0.3s ease;
-}
-.exe-web-site #siteFooter{
-    padding-left: 390px;
-    padding-right: 60px;
-    padding-bottom: 2em;
-    transition: padding 0.3s ease;
-}
-.exe-scorm #siteFooter, .exe-ims #siteFooter, .exe-epub #siteFooter{
+    padding-left: 300px;
     padding-bottom: 40px;
+    transition: padding 0.3s ease;
 }
 body.siteNav-off main.page,
 body.siteNav-off #siteFooter{
-    padding-left: 20px;
+    padding-left: 0;
 }
 #siteNav ul, #siteNav li{
     margin: 0;
@@ -316,65 +313,71 @@ body.siteNav-off #siteFooter{
 }
 
 #siteNav li{
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 #siteNav a{
-    color: #002702;
+    color: #000;
     display: block;
     padding: 8px 15px;
     border-radius: 8px;
+    max-width: 280px;
     transition: background-color 0.5s ease;
-    font-weight: 700;
-    padding-right: 40px;
 }
 
 #siteNav a.active{
-    color: #002702;
-    background-color: #FFB74D;
+    color: #FFF;
+    background-color: #00758F;
     font-weight: bold;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
+
 #siteNav a.package-link{
-    color: #fff;
+    color: #000;
     margin-top: 10px;
-    background:#2E9132 url(img/book_white.svg) no-repeat 8px center;
+    background:#f1f1f1 url(img/book.svg) no-repeat 8px center;
     padding-left: 42px;
 }
 
 #siteNav a.package-link.active{
-    background: #FFB74D url(img/book_white.svg) no-repeat 8px center !important;
-    color: #002702;
+    background: #00758F url(img/book_color.svg) no-repeat 8px center !important;
+    color: #FFF;
 }
 
 #siteNav a.package-link:hover{
-    background: #1A7D1E url(img/book_white.svg) no-repeat 8px center !important;
-    color: #fff;
+    background: #005771 url(img/book_color.svg) no-repeat 8px center !important;
+    color: #FFF;
 }
 #siteNav a.package-link:focus{
-    background: #1A7D1E url(img/book_white.svg) no-repeat 8px center !important;
-    color: #fff;
+    background: #00758F url(img/book_color.svg) no-repeat 8px center !important;
+    color: #FFF;
+}
+
+#siteNav a.package-link{
+    margin-top: 10px;
+}
+
+#siteNav a.package-link:hover,
+#siteNav a.package-link:focus{
+    background: #005771;
 }
 
 #siteNav a:hover{
-    background: #E49929;
+    background: #005771;
     text-decoration: none;
-    color: #002702;
+    color: #FFF;
 }
 
 #siteNav ul ul a{
     padding-left: 35px;
     font-size: .95em;
-    background-color: #FFEBA1 ;
-    color: #002702;
-    transition: background-color 0.5s ease;
+    background-color: #F2F2F7;
 }
 
 .current-page-parent a{
-    background-color: #FFEBA1 ;
-    margin-bottom: 6px;
-    color: #002702 !important;
+    background-color: #F2F2F7;
+    margin-bottom: 4px;
 }
 
 #siteNav ul ul ul a{
@@ -387,26 +390,25 @@ body.siteNav-off #siteFooter{
 }
 
 .daddy{
-    background: url(img/arrow_down_color.svg) no-repeat right 16px center / 22px !important;
+    background: #fff url(img/arrow_down.svg) no-repeat right 16px center / 22px !important;
 }
 .active .active.daddy{
-    background: #FFB74D url(img/arrow_color.svg) no-repeat right 16px center / 22px !important;
+    background: #005771 url(img/arrow_up_white.svg) no-repeat right 16px center / 22px !important;
 }
 .active .daddy{
-    background: #FFEBA1 url(img/arrow_down_color.svg) no-repeat right 16px center / 22px !important;
-}
-#siteNav .current-page-parent > .daddy{
-    background: #FFEBA1 url(img/arrow_color.svg) no-repeat right 16px center / 22px !important;
-    margin-bottom: 6px;
+    background: #F2F2F7 url(img/arrow_down.svg) no-repeat right 16px center / 22px !important;
 }
 .current-page-parent .daddy{
-        background: #FFEBA1 url(img/arrow_down_color.svg) no-repeat right 16px center / 22px !important;
+    background: #F2F2F7 url(img/arrow_down.svg) no-repeat right 16px center / 22px !important;
 }
 .daddy:hover{
-        background: #E49929 url(img/arrow_down_color.svg) no-repeat right 16px center / 22px !important;
+    background: #005771 url(img/arrow_down_white.svg) no-repeat right 16px center / 22px !important;
+}
+.current-page-parent .daddy:hover{
+    background: #005771 url(img/arrow_down_white.svg) no-repeat right 16px center / 22px !important;
 }
 .active.daddy:hover{
-    background: #E49929 url(img/arrow_color.svg) no-repeat right 16px center / 22px !important;
+    background: #005771 url(img/arrow_up_white.svg) no-repeat right 16px center / 22px !important;
 }
 
 
@@ -414,21 +416,21 @@ body.siteNav-off #siteFooter{
 .nav-buttons .nav-button,
 button.toggler {
     position: fixed;
-    top: 18px;
+    top: 15px;
     right: 65px;
     display: inline-block;
     width: auto;
     height: auto;
-    background-image: url(img/back_arrow.svg);
-    background-size: 20px;
-    background-color: #FFB74D;
+    background-image: url(img/arrow_back.svg);
+    background-size: 24px;
+    background-color: #00758F;
     background-repeat: no-repeat;
     border-radius: 8px;
     z-index: 999;
     border: 0;
     transition: background-color 0.5s ease;
     padding: 18px;
-    color: #002702;
+    color: #fff;
     font-weight: 600;
 }
 
@@ -440,68 +442,71 @@ button.toggler {
 .nav-buttons .nav-button-left{
     background-position: left 14px center;
     padding-left: 48px;
-    right: 180px;
+    right: 166px;
 }
 .nav-buttons .nav-button-right{
     background-position: right 14px center;
     padding-right: 48px;
-    background-image: url(img/forward_arrow.svg);
+    background-image: url(img/arrow_forward.svg);
     right: 20px;
 }
 
-.nav-buttons a:hover,
-.nav-buttons a:focus,
-button.toggler:hover,
-button.toggler:focus {
-    background-color: #E49929;
-    border-color: #E49929;
-    text-decoration: none;
-    color: #002702;
-}
 button#siteNavToggler{
-    left: 10px;
-    top: 130px;
-    background: url(img/menu_open.svg) no-repeat 12px / 32px;
+    left: 14px;
+    top: 17px;
+    background: #fff url(img/menu_open.svg) no-repeat center center / 32px;
     width: 40px;
     height: 40px;
     border-radius: 8px;
     box-sizing: content-box;
     padding: 8px;
 }
-
 #siteNavToggler:hover{
-    background-color: #2E9132;
+    background-color: #F4F4F4;
 }
-body.siteNav-off button#siteNavToggler{
-    left:0;
-    top: 130px;
-    padding: 8px 8px 8px 17px;
-    border-radius: 0 8px 8px 0;
-    background: #FFB74D url(img/menu_closed.svg) no-repeat 16px / 32px;
-}
-body.siteNav-off button#siteNavToggler:hover{
-    background-color: #E49929;
-}
-
-#siteNavToggler .sr-av{
+button#siteNavToggler span, .siteNav-off button#siteNavToggler span{
     display: none;
 }
 
-body.siteNav-off button#siteNavToggler .sr-av{
-    color: #002702;
+body.siteNav-off button#siteNavToggler{
+    left: 14px;
+    top: 17px;
+    background: url(img/menu_closed.svg) no-repeat center center / 32px;
+}
+
+body.siteNav-off button#siteNavToggler:hover{
+    background-color: #363636;
+}
+
+#siteNavToggler .sr-av{
+    visibility: visible;
+    position: static;
+    padding-left: 24px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.nav-buttons a:hover,
+.nav-buttons a:focus,
+button.toggler:hover,
+button.toggler:focus {
+    background-color: #005771;
+    border-color: #005771;
+    color: #fff;
+    text-decoration: none;
 }
 
 #exe-client-search-reset span,
 #packageLicense .license-label {
     position: absolute;
-    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+    clip: rect(1px 1px 1px 1px);
     clip: rect(1px, 1px, 1px, 1px);
 }
 
 .box-toggle span{
     display: none;
 }
-
 /* Box toggler */
 .box{
   background-color: #ffffff;
@@ -518,22 +523,23 @@ body.siteNav-off button#siteNavToggler .sr-av{
     width: 40px;
     height: 40px;
     background: url(img/arrow.svg);
-    background-size: auto 20px;
-    background-repeat: no-repeat;
-    background-position: center;
+    background-size: auto 40px;
     border-radius: 50%;
     border: 0;
     position: absolute;
     top: 20px;
     right: 20px;
+
     transition: transform 0.2s ease-in-out;
 }
-
+.exe-export .box-head:hover .box-toggle,
+.exe-export .box-toggle:focus{
+    opacity: 1
+}
 
 .exe-export .minimized .box-toggle{
     transform: rotate(180deg);
 }
-
 
 #node-content-container.exe-content .box-head .exe-icon {
     width: 60px;
@@ -573,27 +579,6 @@ body.siteNav-off button#siteNavToggler .sr-av{
     border: none;
     padding: 20px 0;
 }
-.exe-export #siteFooterContent{
-    background-color: white;
-    padding: 14px;
-    border-radius: 6px;
-    width: 100%;
-    max-width: 1160px;
-    margin: 0 auto;
-}
-#siteFooterContent #packageLicense{
-    margin: 0;
-}
-
-/* Table */
-
-table{
-    display: table;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    max-width: 100% !important;
-    margin: 2em 0 !important;
-}
 
 /* Licenses */
 #packageLicense{text-align:left;font-size:.9em;color:#555;line-height:1em;margin:2.5em 0 2em 0;border:1px solid transparent;border-radius:2px}
@@ -613,20 +598,18 @@ table{
 
 /* iDevice buttons */
 .exe-content .iDevice_buttons input{
-    background: #fff;
-    color: #555;
-    border: 1px solid #ccc;
+    background: #1A8FA9;
+    color: #fff;
+    border: 1px solid #1A8FA9;
     padding: 4px 10px;
     border-radius: 4px;
     transition: 0.5s ease;
 }
 .exe-content .iDevice_buttons input:hover,
 .exe-content .iDevice_buttons input:focus{
-    box-shadow: 2px 2px 4px #dbdbdb;
-    color: #000;
-    border-color: #bbb
+    background: #005771;
+    border-color: #005771
 }
-
 
 /* Icons */
 
@@ -658,38 +641,36 @@ table{
     background-image: url(img/exequexttime.svg) !important;
 }
 
+
 /* Page counter */
 .page-counter {
     text-align: right;
     margin: 0 0 .5em 0;
     font-size: .9em;
-    color: #777;
+    color: #fff;
     font-weight: 300;
-    background: #fff
 }
 
 .exe-web-site .page-counter {
     position: fixed;
-    top: 38px;
-    right: 366px;
+
+    right: 346px;
     margin: 0;
     padding: 0;
     font-size: .9em;
-    color: #777;
+    color: #fff;
     text-align: right;
 }
-
 .exe-teacher-mode-toggler.exe-web-site .page-counter {
-    right: 450px;
+    right: 400px;
 }
-
 
 /* Search bar */
  body.siteNav-off.exe-search-on button#searchBarTogger, body.exe-search-on button#searchBarTogger{
     display: inline-block;
 }
 #exe-client-search-form p{
-    margin-top: 4em;
+    margin-top: 2em;
 }
 #exe-client-search-form p{
     display: flex;
@@ -698,18 +679,18 @@ table{
     flex-wrap: nowrap;
     gap: 6px;
 }
-
 button#searchBarTogger{
     right: auto;
-    left: 260px;
+    left: 304px;
     top: 136px;
-    background: #FFB74D url(img/search.svg) no-repeat center / 28px;
+    background: #00758F url(img/search.svg) no-repeat center / 32px;
     width: 48px;
     height: 48px;
     display: none;
+    border-radius: 0 8px 8px 0;
 }
 body.siteNav-off button#searchBarTogger{
-    top: 220px;
+    top: 136px;
     left: 0px;
     padding-left: 50px;
     border-radius: 0 8px 8px 0;
@@ -723,24 +704,25 @@ body.siteNav-off button#searchBarTogger{
     flex: 1 1 auto;
     min-width: 0;
     display: inline;
-    height: 48px;
 }
 #exe-client-search-submit {
     text-indent: -999em;
-    background: #FFB74D url(img/search.svg) no-repeat center / 28px;
+    background: #00758F url(default_sprite.png) no-repeat -41px -1px;
+    background-size: auto 40px;
+    width: 38px;
+    height: 38px;
     border: none;
-    border-radius: 4px;
-    background-position: center;
-}
-#exe-client-search-reset.visible {
-    background:#c0c0c0 url(img/menu_open.svg) no-repeat center / 28px;
-    display: inline-block;
-    vertical-align: middle;
     border-radius: 4px
 }
-#exe-client-search-submit,#exe-client-search-reset.visible{
-height: 48px;
-flex: 0 0 48px;
+#exe-client-search-reset.visible {
+    background: url(default_sprite.png) no-repeat -242px -1px;
+    background-size: auto 40px;
+    width: 38px;
+    height: 38px;
+    display: inline-block;
+    vertical-align: middle;
+    opacity: .6;
+    border-radius: 4px
 }
 #exe-client-search-reset:hover,
 #exe-client-search-reset:focus{
@@ -748,7 +730,7 @@ flex: 0 0 48px;
 }
 #exe-client-search-submit:hover,
 #exe-client-search-submit:focus{
-    background-color: #FFB74D;
+    background-color: #00758F;
 }
 #exe-client-search-results-list ul,
 #exe-client-search-results-list li{
@@ -763,19 +745,12 @@ flex: 0 0 48px;
     margin-top: 2em;
 }
 
-#exe-client-search-results-list ul, #exe-client-search-results-list p{
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 2.25rem;
-}
-
 /* Modo docente */
 
 .exe-export .form-check{
     float: none;
     position: absolute;
-    top: 18px;
-    right: 335px;
+    right: 300px;
     display: flex;
     align-items: center;
     padding: 4px 36px 4px 4px;
@@ -785,7 +760,6 @@ flex: 0 0 48px;
     background-repeat: no-repeat;
     background-position: right center;
     background-size: 28px;
-
 }
 .exe-export .form-check-label{
     display: none;
@@ -826,15 +800,11 @@ flex: 0 0 48px;
     position: static !important;
 }
 
-/* Responsive design */
 
 @media (max-width: 1440px){
-.siteNav-off #siteNavToggler .sr-av{
-    display: none;
-}
-.siteNav-off #siteNavToggler{
-    width: 50px;
-}
+    .siteNav-off button#siteNavToggler span{
+        display: none;
+    }
 }
 
 @media (max-width: 1200px){
@@ -872,7 +842,7 @@ flex: 0 0 48px;
     }
 
     .page > header .package-title, .siteNav-off .page > header .package-title{
-    width: calc(100% - 170px);
+        width: calc(100% - 240px);
     }
     .exe-web-site .page-counter{
         left: auto;
@@ -901,83 +871,90 @@ flex: 0 0 48px;
     .exe-teacher-mode-toggler .page > header .package-title, .exe-teacher-mode-toggler.siteNav-off .page > header .package-title{
     width: calc(100% - 330px);
     }
-
 }
 
+/* Responsive design */
 @media (max-width: 750px) {
-    .exe-web-site .page-content, #exe-client-search{
+        .exe-web-site .page-content{
         padding: 0 20px;
     }
 
-    .siteNav-off #sidebar-nav{
-        background-color: transparent;
-    }
     #sidebar-nav {
         position: static !important;
         width: 100%;
-        padding: 200px 0 0 0;
-        background-color: #4CAF50;
+        padding: 190px 0 0 0;
     }
 
     #siteNav{
         float: none;
-        border-right: 0;
         width: 100%;
+        margin: 0;
+        background-color: #ffffff;
         height: auto;
         padding: 16px 16px 8px 16px;
         border-radius: 0;
-        position: static;
     }
-    body.siteNav-off #siteNav{
-        display: none;
-    }
-
     #siteNav a{
         width: 100%;
         max-width: none;
     }
 
     button#siteNavToggler{
-        background: #fff url(img/menu_open_black.svg) no-repeat 12px center / 32px;
-
-    }
-    body.siteNav-off button#siteNavToggler{
-        background: #fff url(img/menu_closed.svg) no-repeat 12px center / 32px;
-
-    }
-    body.siteNav-off button#siteNavToggler,
-    button#siteNavToggler{
-        position: absolute;
-        z-index: 0;
-        font-weight: 700;
-        background-color: #FFB74D;
         right: 16px;
         left: 16px;
         top: 120px;
         border-radius: 0.75rem;
         width: auto;
-        height: 26px;
-        padding: 16px 16px 16px 58px;
-        text-align: left;
+        padding: 16px;
+        height: 20px;
+        border: 1px solid #EBE9E9;
+        background: #fff url(img/menu_open.svg) no-repeat 12px center / 32px;
+        font-weight: 700;
+        position: absolute;
+        z-index: 0;
     }
 
-    button#siteNavToggler:hover,
-    body.siteNav-off button#siteNavToggler:hover{
-        background-color: #E49929;
+    button#siteNavToggler span {
+        display:block;
+        color: #000000;
+        overflow: visible;
+        width: auto;
+        height: auto;
+        text-align: left;
+        padding-left: 40px;
     }
+
     .exe-web-site main.page{
         padding-left: 0;
         padding-top: 0;
     }
-    body.siteNav-off button#siteNavToggler .sr-av,
-    button#siteNavToggler .sr-av,
-    button#siteNavToggler span{
-        color: #000 !important;
-        display: contents;
+
+    body.siteNav-off button#siteNavToggler{
+        right: 16px;
+        left: 16px;
+        top: 120px;
+        border-radius: 0.75rem;
+        width: auto;
+        padding: 16px;
+        height: 20px;
+        background: #00758F url(img/menu_closed.svg) no-repeat 12px / 32px;
+        font-weight: 700;
     }
 
-    body.siteNav-off main.page,
-    body.siteNav-off #siteFooter{
+    body.siteNav-off button#siteNavToggler span{
+        color: #fff;
+        text-align: left;
+        padding-left: 40px;
+        width: auto;
+        height: auto;
+        display:block;
+    }
+
+    body.siteNav-off button#siteNavToggler:hover{
+        background-color: #005771;
+    }
+
+    body.siteNav-off main.page, body.siteNav-off #siteFooter{
         padding: 0;
     }
 
@@ -985,66 +962,71 @@ flex: 0 0 48px;
         margin-top: 20px;
     }
 
-    .page > header .package-title,
-    .siteNav-off .page > header .package-title,
-    .exe-single-page .package-header h1 {
-        padding-left: 32px;
+    .page > header, .siteNav-off .page > header{
+        background: #1C1C1C;
     }
 
-    .siteNav-off #siteNavToggler .sr-av{
-        display: inline-block;
-        width: 100% !important;
+    .page > header .package-title, .siteNav-off .page > header .package-title{
+        width: calc(100% - 180px);
+    }
+    #siteNavToggler .sr-av{
+        color: #000;
+        padding-left: 40px;
     }
     .exe-search-on.siteNav-off button#siteNavToggler, .exe-search-on button#siteNavToggler{
         right: 100px;
-        height: 30px;
     }
     body.siteNav-off button#searchBarTogger, body button#searchBarTogger{
         left: auto;
         right: 20px;
         top: 120px;
-        height: 64px;
+        height: 54px;
         border-radius: 0.75em;
         width: 68px;
         position: absolute;
         z-index: 0;
-    }
-    #exe-client-search-text{
-        height: 54px;
     }
     #exe-client-search-form p{
         height: 54px;
         margin-top: 1em;
     }
     #exe-client-search-submit{
-        background: #FFB74D no-repeat url(img/search.svg) center / 26px;
+        background: #00758F no-repeat url(img/search.svg) center / 24px;
     }
     #exe-client-search-reset.visible{
-        background: #002702 url(img/menu_open.svg) no-repeat center / 26px;
+        background: #ffffff url(img/menu_open.svg) no-repeat 12px center / 24px;
     }
     #exe-client-search-submit, #exe-client-search-reset.visible{
         height: 54px;
         flex: 0 0 54px;
     }
-    .exe-client-search-results{
-        padding-bottom: 24px !important;
-    }
     .exe-web-site #siteFooter #siteFooterContent{
-        margin: 0 auto;
+        padding: 0;
     }
     .exe-web-site #siteFooter{
-        padding: 0 20px 2em 20px !important;
+        padding: 0 20px !important;
     }
     #packageLicense{
-        margin: 0 0 1em 0;
+        margin: 0 0 3em 0;
+    }
+    .page > header .package-title,
+    .siteNav-off .page > header .package-title,
+    .exe-single-page .package-header h1 {
+        padding-left: 32px;
     }
 }
+
 @media (max-width: 650px) {
     html{
-        font-size: 0.75rem !important;
+        font-size: 0.85rem !important;
+    }
+
+    .page > header,
+    .siteNav-off .page > header{
+        background: #1C1C1C;
     }
     .page > header .package-title, .siteNav-off .page > header .package-title {
-        padding-left: 32px;
+        padding-left: 20px;
         width: calc(100% - 124px);
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1059,7 +1041,7 @@ flex: 0 0 48px;
         height: 40px;
         width: 40px;
         padding: 0;
-        top: 20px !important;
+        top: 30px;
     }
     .nav-buttons .nav-button-left{
         right: 70px;
@@ -1067,41 +1049,33 @@ flex: 0 0 48px;
 
     button#siteNavToggler{
         background: #fff url(img/menu_open.svg) no-repeat 12px center / 24px;
-        padding: 16px 16px 16px 40px;
+    }
+    button#siteNavToggler span, button#siteNavToggler .sr-av, body.siteNav-off button#siteNavToggler span{
+        padding-left: 24px;
     }
     body.siteNav-off button#siteNavToggler{
-        background: #fff url(img/menu_closed.svg) no-repeat 12px / 24px;
-        padding: 16px 16px 16px 40px;
+        background: #00758F  url(img/menu_closed.svg) no-repeat 12px / 24px;
     }
     .box-title{
         width: calc(100% - 32px);
     }
     .exe-export .box-toggle{
         background-position: center;
-        background-size: auto 18px;
+        background-size: auto 32px;
         width: 32px;
         height: 32px;
     }
-    body.siteNav-off button#searchBarTogger, body button#searchBarTogger{
-        height: 60px;
-    }
-
-    .exe-search-on.siteNav-off button#siteNavToggler, .exe-search-on button#siteNavToggler{
-        height: 26px;
-    }
     .exe-single-page .package-header h1{
-        padding-left: 60px;
+        padding-left: 32px;
         overflow: hidden;
         text-overflow: ellipsis;
         word-wrap: break-word;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
-        white-space: normal;
+        width: 95%;
         height: auto;
-    }
-    .exe-scorm .exe-export main, .exe-ims .exe-export main, .exe-pub .exe-export main{
-        padding-top: 7em;
+        white-space: normal;
     }
 
     /* Teacher mode*/
@@ -1126,6 +1100,16 @@ flex: 0 0 48px;
     }
 }
 
+/* Table */
+
+table{
+    display: table;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100% !important;
+    margin: 2em 0 !important;
+}
+
 @media print {
     html body{background:#fff}
     .exe-content{color:#000;padding:0}
@@ -1140,5 +1124,5 @@ flex: 0 0 48px;
     .exe-web-site button.toggler{display:none}
     .exe-web-site #siteFooter,
     .exe-web-site main.page{padding-left: 0;padding-right: 0}
-    .exe-web-site main.page{padding-top:1em;}
+    .exe-web-site main.page{padding-top:1em}
 }
