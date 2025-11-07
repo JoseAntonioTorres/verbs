@@ -6,186 +6,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="license" type="text/html" href="https://creativecommons.org/licenses/by-nc-sa/3.0/">
 <title>Create | Mastering Irregular Verbs: Aprende y aplica los verbos irregulares en inglés</title>
-<script>document.querySelector("html").classList.add("js");</script>
-<script src="../libs/jquery/jquery.min.js"> </script><script src="../libs/common_i18n.js"> </script><script src="../libs/common.js"> </script><script src="../libs/exe_export.js"> </script><script src="../libs/bootstrap/bootstrap.bundle.min.js"> </script>
-<link rel="stylesheet" href="../libs/bootstrap/bootstrap.min.css">
+<script>document.querySelector("html").classList.add("js");</script><script src="../libs/jquery/jquery.min.js"> </script><script src="../libs/common_i18n.js"> </script><script src="../libs/common.js"> </script><script src="../libs/exe_export.js"> </script><script src="../libs/bootstrap/bootstrap.bundle.min.js"> </script><link rel="stylesheet" href="../libs/bootstrap/bootstrap.min.css">
+<script src="../idevices/external-website/external-website.js"> </script><link rel="stylesheet" href="../idevices/external-website/external-website.css">
 <link rel="stylesheet" href="../content/css/base.css">
 <script src="../theme/default.js"> </script><link rel="stylesheet" href="../theme/content.css">
-<style>
-/* Small styles for the submission form */
-.create-form { max-width:900px; margin:20px auto; padding:18px; border:1px solid #ddd; border-radius:8px; background:#fff; }
-.create-form h3 { margin-top:0; }
-.form-row { margin-bottom:12px; }
-label { font-weight:600; display:block; margin-bottom:6px; }
-textarea { width:100%; min-height:160px; padding:8px; font-size:15px; }
-input[type="file"] { display:block; }
-.btn-primary { background:#007bff; border-color:#007bff; }
-.feedback { margin-top:12px; padding:10px; border-radius:6px; display:none; }
-.feedback.success { background:#e6ffea; border:1px solid #b6f0c4; color:#0a6b2f; }
-.feedback.error { background:#ffecec; border:1px solid #f5c2c2; color:#8b1a1a; }
-.help { font-size:0.9em; color:#555; margin-top:6px; }
-</style>
 </head>
 <body class="exe-export exe-web-site" lang="en">
-<script>document.body.className+=" js"</script>
-<div class="exe-content exe-export pre-js siteNav-hidden">
-  <nav id="siteNav">
-    <ul>
-      <li> <a href="../index.html" class="main-node no-ch">Introduction</a></li>
-      <li> <a href="../html/study.html" class="no-ch">Study</a></li>
-      <li> <a href="../html/game.html" class="no-ch">Game</a></li>
-      <li> <a href="../html/practice.html" class="no-ch">Practice</a></li>
-      <li> <a href="../html/assessment.html" class="no-ch">Assessment</a></li>
-      <li class="active"> <a href="../html/create.html" class="active no-ch">Create</a></li>
-      <li> <a href="../html/conclusion.html" class="no-ch">Conclusion</a></li>
-    </ul>
-  </nav>
-
-  <main id="20251107140323406ISJ" class="page">
-    <header id="header-20251107140323406ISJ" class="page-header">
-      <h1 class="package-title">Mastering Irregular Verbs: Aprende y aplica los verbos irregulares en inglés</h1>
-      <h2 class="page-title">Create — Produce and Submit</h2>
-    </header>
-
-    <div id="page-content-20251107140323406ISJ" class="page-content">
-      <section class="create-form" aria-labelledby="create-heading">
-        <h3 id="create-heading">Produce a short text (mini-story) and upload your audio</h3>
-
-        <p>Write a short paragraph (5–8 sentences) in the past tense using **at least 8 irregular verbs** (past simple and/or past participle). Then record yourself reading the paragraph and upload the audio file (MP3 or WAV).</p>
-
-        <form id="productionForm" action="upload_handler.php" method="post" enctype="multipart/form-data" novalidate>
-          <div class="form-row">
-            <label for="studentName">Your name</label>
-            <input id="studentName" name="studentName" type="text" required placeholder="Full name" style="width:100%; padding:8px;">
-          </div>
-
-          <div class="form-row">
-            <label for="studentEmail">Your email (optional)</label>
-            <input id="studentEmail" name="studentEmail" type="email" placeholder="student@example.com" style="width:100%; padding:8px;">
-            <div class="help">If you provide your email, I will reply with feedback.</div>
-          </div>
-
-          <div class="form-row">
-            <label for="studentText">Your mini-story (5–8 sentences, at least 8 irregular verbs)</label>
-            <textarea id="studentText" name="studentText" required placeholder="Write your paragraph here..."></textarea>
-            <div class="help">Tip: include verbs like "went", "saw", "wrote", "took", "came", "drank", "drove", "found", etc.</div>
-          </div>
-
-          <div class="form-row">
-            <label for="audioFile">Upload audio reading (mp3 / wav) — max 8 MB</label>
-            <input id="audioFile" name="audioFile" type="file" accept="audio/*" required>
-            <div class="help">If students cannot record, they may upload a link to a cloud file inside the text area (paste URL).</div>
-          </div>
-
-          <!-- Hidden fields for recipient and subject -->
-          <input type="hidden" name="recipient" value="the.j.a.torres@gmail.com">
-          <input type="hidden" name="subject" value="OVA Submission: Irregular Verbs - Create module">
-
-          <div style="display:flex; gap:8px; align-items:center;">
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button type="button" id="validateBtn" class="btn btn-secondary">Check text (auto)</button>
-            <div id="spinner" style="display:none; margin-left:8px;">Sending…</div>
-          </div>
-
-          <div id="formFeedback" class="feedback" role="status" aria-live="polite"></div>
-        </form>
-
-        <hr>
-
-        <h4>Instructor note</h4>
-        <p>All submissions will be sent to the instructor's email. Files are kept only for grading and feedback. If you have privacy concerns, contact the instructor first.</p>
-
-      </section>
-    </div>
-
-  </main>
-
-  <div class="nav-buttons"> <a href="../html/assessment.html" title="Previous" class="nav-button nav-button-left"> <span>Previous</span></a><a href="../html/conclusion.html" title="Next" class="nav-button nav-button-right"> <span>Next</span></a>
-  </div>
-
-  <footer id="siteFooter"><div id="siteFooterContent"> <div id="packageLicense" class="cc cc-by-nc-sa"> <p> <span class="license-label">Licencia: </span><a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" class="license">creative commons: attribution - non commercial - share alike 3.0</a></p>
-  </div>
-  </div></footer>
-
+<script>document.body.className+=" js"</script><div class="exe-content exe-export pre-js siteNav-hidden"> <nav id="siteNav"> <ul> <li> <a href="../index.html" class="main-node no-ch">Introduction</a>
+</li>
+<li> <a href="../html/study.html" class="no-ch">Study</a>
+</li>
+<li> <a href="../html/game.html" class="no-ch">Game</a>
+</li>
+<li> <a href="../html/practice.html" class="no-ch">Practice</a>
+</li>
+<li> <a href="../html/assessment.html" class="no-ch">Assessment</a>
+</li>
+<li class="active"> <a href="../html/create.html" class="active no-ch">Create</a>
+</li>
+<li> <a href="../html/conclusion.html" class="no-ch">Conclusion</a>
+</li>
+</ul></nav><main id="20251107140323406ISJ" class="page"> <header id="header-20251107140323406ISJ" class="page-header"> <h1 class="package-title">Mastering Irregular Verbs: Aprende y aplica los verbos irregulares en inglés</h1>
+<h2 class="page-title">Create</h2></header><div id="page-content-20251107140323406ISJ" class="page-content"> <article id="202511071518523229GG" class="box"> <header class="box-head"> <div class="box-icon exe-icon"> <img src="../theme/icons/draw.png" alt="">
 </div>
-
-<script>
-/* Small client-side validation and UX */
-(function(){
-  const form = document.getElementById('productionForm');
-  const feedback = document.getElementById('formFeedback');
-  const spinner = document.getElementById('spinner');
-  const validateBtn = document.getElementById('validateBtn');
-
-  // quick auto-check: count irregular verbs (simple heuristic: check for common past forms)
-  const commonPastForms = ["went","ate","saw","wrote","took","came","drank","drove","found","gave","ran","bought","made","broke","knew","read","spoke","stood","told","thought","did","was","were","had","got","gotten","put","left","lost","felt","kept","held","taught","learnt","learned"];
-
-  validateBtn.addEventListener('click', function(){
-    const text = document.getElementById('studentText').value.toLowerCase();
-    let count = 0;
-    commonPastForms.forEach(p => { if (text.includes(" " + p + " ") || text.includes(p + ".") || text.includes(p + ",")) count++; });
-    feedback.style.display = 'block';
-    if (count >= 8) {
-      feedback.className = 'feedback success';
-      feedback.textContent = 'Auto-check: OK — the paragraph includes about ' + count + ' irregular past forms. Good job!';
-    } else {
-      feedback.className = 'feedback error';
-      feedback.textContent = 'Auto-check: The paragraph includes only about ' + count + ' irregular past forms. Try adding a few more (goal: ≥8).';
-    }
-  });
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-
-    // Basic client validation
-    const name = document.getElementById('studentName').value.trim();
-    const text = document.getElementById('studentText').value.trim();
-    const audio = document.getElementById('audioFile').files[0];
-
-    if (!name || !text || !audio) {
-      feedback.style.display = 'block';
-      feedback.className = 'feedback error';
-      feedback.textContent = 'Please provide your name, the paragraph and the audio file before submitting.';
-      return;
-    }
-    if (audio.size > 8 * 1024 * 1024) {
-      feedback.style.display = 'block';
-      feedback.className = 'feedback error';
-      feedback.textContent = 'Audio file too large. Max allowed is 8 MB.';
-      return;
-    }
-
-    // Prepare form data and submit via XHR to PHP handler
-    const fd = new FormData(form);
-    spinner.style.display = 'inline-block';
-    feedback.style.display = 'none';
-
-    fetch(form.action, {
-      method: 'POST',
-      body: fd
-    }).then(resp => resp.json())
-      .then(data => {
-        spinner.style.display = 'none';
-        feedback.style.display = 'block';
-        if (data.success) {
-          feedback.className = 'feedback success';
-          feedback.textContent = 'Submission sent successfully. Thank you! A copy was emailed to the instructor.';
-          form.reset();
-        } else {
-          feedback.className = 'feedback error';
-          feedback.textContent = 'Error sending submission: ' + (data.error || 'Unknown error. Check server configuration.');
-        }
-      })
-      .catch(err => {
-        spinner.style.display = 'none';
-        feedback.style.display = 'block';
-        feedback.className = 'feedback error';
-        feedback.textContent = 'Network/server error: ' + err.message;
-      });
-  });
-
-})();
-</script>
-
+<h1 class="box-title">External website</h1>
+<button class="box-toggle box-toggle-on" title="Toggle content"> <span>Toggle content</span></button></header><div class="box-content"> <div id="2025110715185232022D" class="idevice_node external-website" data-idevice-path="../idevices/external-website/" data-idevice-type="external-website">      <div id="iframeWebsiteIdevice">       <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfGyU05mlEHwXPRdrMQ87tmeRcE6S8mSeeKy-PCuHPBcphsnQ/viewform?usp=header" size="2" width="600" height="300" style="width:100%;">      </iframe>      <div class="iframe-error-message" style="display:none;">Unable to display an iframe loaded over HTTP on a website that uses HTTPS.</div>       </div>      </div>
+</div></article>
+</div></main><div class="nav-buttons"> <a href="../html/assessment.html" title="Previous" class="nav-button nav-button-left"> <span>Previous</span></a><a href="../html/conclusion.html" title="Next" class="nav-button nav-button-right"> <span>Next</span></a>
+</div>
+<footer id="siteFooter"><div id="siteFooterContent"> <div id="packageLicense" class="cc cc-by-nc-sa"> <p> <span class="license-label">Licencia: </span><a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" class="license">creative commons: attribution - non commercial - share alike 3.0</a></p>
+</div>
+</div></footer>
+</div>
 </body>
 </html>
