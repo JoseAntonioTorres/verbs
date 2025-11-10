@@ -140,7 +140,7 @@ let voice = null;
 
 function selectVoice() {
   const voices = speechSynthesis.getVoices();
-  voice = voices.find(v => v.lang === "en-US" && /female/i.test(v.name)) || voices.find(v => v.lang === "en-US");
+  voice = voices.find(v => v.lang === "en-US" && /male/i.test(v.name)) || voices.find(v => v.lang === "en-US");
 }
 speechSynthesis.onvoiceschanged = selectVoice;
 
