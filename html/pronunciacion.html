@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Práctica de Pronunciación: Verbos Irregulares</title>
+<style>
+body { font-family: Arial, sans-serif; max-width: 700px; margin: 25px auto; line-height: 1.6; }
+h1 { text-align:center; }
+button { padding:10px 16px; margin:6px; font-size:16px; cursor:pointer; border-radius:6px; }
+#verb { font-size:32px; text-align:center; margin:20px 0; }
+#result { font-size:22px; text-align:center; margin-top:12px; }
+.correct { color:green; font-weight:bold; }
+.incorrect { color:red; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<h1>Práctica de Pronunciación</h1>
+<p>Presiona <strong>“Escuchar”</strong> para oír el verbo. Luego presiona <strong>“Hablar”</strong> y repítelo en voz alta. El sistema comparará tu pronunciación.</p>
+
+<div id="verb">click en "Siguiente"</div>
+
+<div style="text-align:center;">
+  <button onclick="play()">🔊 Escuchar</button>
+  <button onclick="record()">🎤 Hablar</button>
+  <button onclick="nextVerb()">➡️ Siguiente</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+const verbs = ["go","went","gone","eat","ate","eaten","run","ran","run","write","wrote","written","see","saw","seen"];
+let current = null;
+
+function nextVerb(){
+  current = verbs[Math.floor(Math.random()*verbs.length)];
+  document.getElementById("verb").textContent = current;
+  document.getElementById("result").textContent = "";
+}
+
+function play(){
+  const ut = new SpeechSynthesisUtterance(current);
+  ut.lang = "en-US";
+  speechSynthesis.speak(ut);
+}
+
+function record(){
+  if(!('webkitSpeechRecognition' in window)){ alert("Tu navegador no soporta reconocimiento de voz."); return;}
+  const rec = new webkitSpeechRecognition();
+  rec.lang = "en-US";
+  rec.onresult = e => {
+    const spoken = e.results[0][0].transcript.toLowerCase().trim();
+    const result = document.getElementById("result");
+    if (spoken === current) {
+      result.innerHTML = `<span class="correct">✔ Muy bien: "${spoken}"</span>`;
+    } else {
+      result.innerHTML = `<span class="incorrect">✘ Dijiste "${spoken}". Intenta de nuevo.</span>`;
+    }
+  };
+  rec.start();
+}
+
+nextVerb();
+</script>
+
+</body>
+</html>

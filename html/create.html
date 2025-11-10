@@ -27,9 +27,153 @@
 <li> <a href="../html/conclusion.html" class="no-ch">Conclusion</a>
 </li>
 </ul></nav><main id="20251107140323406ISJ" class="page"> <header id="header-20251107140323406ISJ" class="page-header"> <h1 class="package-title">Mastering Irregular Verbs: Aprende y aplica los verbos irregulares en inglés</h1>
-<h2 class="page-title">Create</h2></header><div id="page-content-20251107140323406ISJ" class="page-content"> <article id="202511071536307238S5" class="box"> <header class="box-head"> <div class="box-icon exe-icon"> <img src="../theme/icons/edit_note.svg" alt="">
+<h2 class="page-title">Create</h2></header><div id="page-content-20251107140323406ISJ" class="page-content"> <article id="202511101221591046E2" class="box"> <header class="box-head"> <div class="box-icon exe-icon"> <img src="../theme/icons/local_library.svg" alt="">
 </div>
-<h1 class="box-title">Text</h1>
+<h1 class="box-title">Short story</h1>
+<button class="box-toggle box-toggle-on" title="Toggle content"> <span>Toggle content</span></button></header><div class="box-content"> <div id="20251110122159102YFG" class="idevice_node text" data-idevice-path="../idevices/text/" data-idevice-type="text" data-idevice-component-type="json"><div class="exe-text-template"><div class="textIdeviceContent">
+            <div class="exe-text-activity">
+                <div><p><br></p>
+<style>
+body { font-family: Georgia, serif; margin: 30px auto; line-height: 1.7; color:#222; }
+h1 { text-align:center; }
+button { padding: 10px 16px; margin: 6px; font-size: 16px; cursor:pointer; border-radius:6px; border: 1px solid #444;}
+button:hover { background:#ddd; }
+#sceneText { margin: 18px 0; font-size: 20px; }
+.choice-container { margin-top:18px; }
+#speakBtn { background:#444; color:white; }
+</style>
+<h1>🔍 The Case of the Missing Key</h1>
+<p><em>Lee la historia y elige lo que sucede a continuación. Cada escena será narrada en inglés con voz.</em></p>
+<div id="sceneText"></div>
+<div style="text-align: center;"><button id="speakBtn" onclick="speakScene()">🔊 Repetir narración</button></div>
+<div id="choices" class="choice-container"></div>
+<div id="end" style="display: none; margin-top: 30px; padding: 16px; border-top: 2px solid #333;">
+<h2>Ahora es tu turno ✍️</h2>
+<p>Escribe tu propia versión del final o crea una historia alternativa (5-8 oraciones) usando <strong>al menos 6 verbos irregulares</strong> en pasado.</p>
+<p>Cuando termines, súbelo en la sección de entrega de la actividad.</p>
+</div>
+<script>
+// ---------- STORY DATA ----------
+const scenes = {
+ start: {
+   text: "Last night, you walked down a dark street. Suddenly, you found an old key on the ground. You picked it up and looked around. Nobody was there. What did you do next?",
+   choices: [
+     { label: "I went to an abandoned house I remembered.", goto: "house" },
+     { label: "I kept the key and went back home.", goto: "home" }
+   ]
+ },
+ house: {
+   text: "You went to the abandoned house. The door was locked. You tried the key... it fit. When you opened the door, you heard something moving inside.",
+   choices: [
+     { label: "I entered slowly.", goto: "inside" },
+     { label: "I ran away.", goto: "runaway" }
+   ]
+ },
+ home: {
+   text: "You kept the key and went home. But while you slept, you heard a metallic sound. You woke up and saw the key on the floor again.",
+   choices: [
+     { label: "I took it and called a friend.", goto: "friend" },
+     { label: "I ignored it and went back to sleep.", goto: "end_badvibes" }
+   ]
+ },
+ inside: {
+   text: "You entered slowly. The house was silent. On a table, there was an old book. You opened it and saw your name written inside.",
+   choices: [
+     { label: "I took the book.", goto: "book" },
+     { label: "I left it and looked in another room.", goto: "hallway" }
+   ]
+ },
+ runaway: {
+   text: "You ran as fast as you could. But you heard footsteps behind you...",
+   choices: [
+     { label: "I hid behind a car.", goto: "hide" },
+     { label: "I shouted for help.", goto: "shout" }
+   ]
+ },
+ friend: {
+   text: "You called your friend. He came, looked at the key and said: 'I have seen this before... It belonged to someone who disappeared years ago.'",
+   choices: [
+     { label: "We went to investigate.", goto: "house" },
+     { label: "I decided to stop.", goto: "end_safe" }
+   ]
+ },
+ end_badvibes: {
+   text: "You ignored the key. But when you woke up, it was in your hand. You never discovered its origin.",
+   end: true
+ },
+ book: {
+   text: "You took the book. The house began to fill with noise. The key glowed in your pocket.",
+   choices: [
+     { label: "I ran outside.", goto: "end_run" },
+     { label: "I stayed to investigate.", goto: "end_courage" }
+   ]
+ },
+ hallway: {
+   text: "You walked through the hallway. A shadow crossed in front of you. It watched you... and disappeared.",
+   choices: [
+     { label: "I followed it.", goto: "end_courage" },
+     { label: "I ran outside.", goto: "end_run" }
+   ]
+ },
+ hide: {
+   text: "You hid behind a car. The footsteps stopped behind you... then faded away.",
+   choices: [
+     { label: "I returned to the house.", goto: "house" },
+     { label: "I went home.", goto: "home" }
+   ]
+ },
+ shout: {
+   text: "You shouted. But nobody answered.",
+   choices: [
+     { label: "I returned to the house.", goto: "house" },
+     { label: "I went home.", goto: "home" }
+   ]
+ },
+ end_run: { text: "You escaped. But the mystery remained unsolved.", end: true },
+ end_courage: { text: "You stayed. The shadow returned. You were not afraid. The key was not the beginning... but an invitation.", end: true },
+ end_safe: { text: "You chose safety. Some stories are better left closed.", end: true }
+};
+
+// ---------- RENDER + NARRATION ----------
+let current = "start";
+let voice = null;
+
+function selectVoice() {
+  const voices = speechSynthesis.getVoices();
+  voice = voices.find(v => v.lang === "en-US" && /female/i.test(v.name)) || voices.find(v => v.lang === "en-US");
+}
+speechSynthesis.onvoiceschanged = selectVoice;
+
+function speakScene() {
+  if (!voice) selectVoice();
+  let msg = new SpeechSynthesisUtterance(scenes[current].text);
+  msg.voice = voice;
+  msg.rate = 0.97;
+  speechSynthesis.speak(msg);
+}
+
+function render() {
+  let s = scenes[current];
+  document.getElementById("sceneText").innerHTML = s.text;
+
+  if(s.end){
+    document.getElementById("choices").innerHTML = "";
+    document.getElementById("end").style.display = "block";
+  } else {
+    document.getElementById("choices").innerHTML =
+      s.choices.map(c => `<button onclick="go('${c.goto}')">${c.label}</button>`).join("");
+  }
+
+  speakScene();
+}
+
+function go(next){ speechSynthesis.cancel(); current=next; render(); }
+render();
+</script><p class="clearfix"></p></div>
+            </div></div></div></div>
+</div></article><article id="202511071536307238S5" class="box"> <header class="box-head"> <div class="box-icon exe-icon"> <img src="../theme/icons/edit_note.svg" alt="">
+</div>
+<h1 class="box-title">Write your own</h1>
 <button class="box-toggle box-toggle-on" title="Toggle content"> <span>Toggle content</span></button></header><div class="box-content"> <div id="20251107153630722O6K" class="idevice_node text" data-idevice-path="../idevices/text/" data-idevice-type="text" data-idevice-component-type="json"><div class="exe-text-template"><div class="textIdeviceContent">
             <div class="exe-text-activity">
                 <div><style>

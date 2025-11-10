@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Historia Interactiva - The Case of the Missing Key</title>
+<style>
+body { font-family: Georgia, serif; max-width: 780px; margin: 30px auto; line-height: 1.7; color:#222; }
+h1 { text-align:center; }
+button { padding: 10px 16px; margin: 6px; font-size: 16px; cursor:pointer; border-radius:6px; border: 1px solid #444;}
+button:hover { background:#ddd; }
+#sceneText { margin: 18px 0; font-size: 20px; }
+.choice-container { margin-top:18px; }
+.note { font-size:14px; color:#666; margin-top:18px; border-top:1px solid #ccc; padding-top:8px; }
+</style>
+</head>
+<body>
+
+<h1>🔍 The Case of the Missing Key</h1>
+
+<p><em>Lee la historia y elige lo que sucede a continuación. Tu objetivo es observar y usar <strong>verbos irregulares en pasado</strong>.</em></p>
+
+<div id="sceneText"></div>
+<div id="choices" class="choice-container"></div>
+
+<div id="end" style="display:none; margin-top:30px; padding:16px; border-top:2px solid #333;">
+  <h2>Ahora es tu turno ✍️</h2>
+  <p>Escribe tu propia versión del final o crea una historia alternativa (5-8 oraciones) usando <strong>al menos 6 verbos irregulares</strong> en pasado.</p>
+  <p>Puedes usar algunos como guía: <strong>went, saw, found, took, met, told, made, ran, thought, knew, felt, hid, gave</strong>.</p>
+  <p>Cuando termines, súbelo en la sección de entrega de la actividad.</p>
+</div>
+
+<script>
+const scenes = {
+ start: {
+   text: "Ayer por la noche, caminaste por una calle oscura. De repente, encontraste una llave vieja en el suelo. La levantaste y miraste alrededor. No había nadie. ¿Qué hiciste después?",
+   choices: [
+     { label: "Fui a una casa abandonada que recordé.", goto: "house" },
+     { label: "Guardé la llave y regresé a casa.", goto: "home" }
+   ]
+ },
+
+ house: {
+   text: "Fuiste a la casa abandonada. La puerta estaba cerrada con un candado antiguo. Probaste la llave... y <strong>encajó</strong>. Cuando abriste la puerta, escuchaste algo moverse adentro.",
+   choices: [
+     { label: "Entré lentamente.", goto: "inside" },
+     { label: "Me fui corriendo.", goto: "runaway" }
+   ]
+ },
+
+ home: {
+   text: "Guardaste la llave y regresaste a casa. Pero mientras dormías, escuchaste un sonido metálico. Te levantaste, fuiste a la sala... y viste la misma llave en el suelo otra vez.",
+   choices: [
+     { label: "La tomé y llamé a un amigo.", goto: "friend" },
+     { label: "La ignoré y volví a dormir.", goto: "end_badvibes" }
+   ]
+ },
+
+ inside: {
+   text: "Entraste lentamente. La casa estaba fría y silenciosa. En la mesa había un libro viejo. Lo abriste y <strong>viste tu nombre escrito adentro</strong>.",
+   choices: [
+     { label: "Tomé el libro.", goto: "book" },
+     { label: "Lo dejé y busqué otra habitación.", goto: "hallway" }
+   ]
+ },
+
+ runaway: {
+   text: "Corriste tan rápido como pudiste. Pero mientras corrías, escuchaste pasos siguiéndote...",
+   choices: [
+     { label: "Me escondí detrás de un auto.", goto: "hide" },
+     { label: "Grité pidiendo ayuda.", goto: "shout" }
+   ]
+ },
+
+ friend: {
+   text: "Llamaste a tu amigo. Él vino, miró la llave y dijo: “La he visto antes... perteneció a alguien que desapareció hace años”.",
+   choices: [
+     { label: "Fui con él a investigar.", goto: "house" },
+     { label: "Decidí no continuar.", goto: "end_safe" }
+   ]
+ },
+
+ end_badvibes: {
+   text: "Ignoraste la llave. Pero cuando despertaste, estaba en tu mano. Nunca descubriste su origen.",
+   choices: [],
+   end: true
+ },
+
+ book: {
+   text: "Tomaste el libro. Al hacerlo, la casa comenzó a llenarse de ruido. Sentiste que la llave brillaba en tu bolsillo.",
+   choices: [
+     { label: "Salí de la casa inmediatamente.", goto: "end_run" },
+     { label: "Me quedé para investigar.", goto: "end_courage" }
+   ]
+ },
+
+ hallway: {
+   text: "Caminaste por el pasillo. Una sombra cruzó frente a ti. Te observó... y desapareció.",
+   choices: [
+     { label: "La seguí.", goto: "end_courage" },
+     { label: "Salí corriendo.", goto: "end_run" }
+   ]
+ },
+
+ hide: {
+   text: "Te escondiste. Contuviste la respiración. Los pasos se detuvieron justo detrás de ti... y luego se alejaron.",
+   choices: [
+     { label: "Regresé a la casa para investigar.", goto: "house" },
+     { label: "Corrí a casa.", goto: "home" }
+   ]
+ },
+
+ shout: {
+   text: "Gritaste. Pero nadie respondió. El silencio volvió.",
+   choices: [
+     { label: "Regresé a la casa.", goto: "house" },
+     { label: "Volví a casa.", goto: "home" }
+   ]
+ },
+
+ end_run: {
+   text: "Corriste hacia afuera. La llave dejó de brillar. Nunca supiste qué había dentro de la casa.",
+   choices: [],
+   end: true
+ },
+
+ end_courage: {
+   text: "Te quedaste. La sombra regresó. Te miró. No sentiste miedo. En ese momento <strong>entendiste</strong> que la llave no era el principio... sino una invitación.",
+   choices: [],
+   end: true
+ },
+
+ end_safe: {
+   text: "Decidiste no continuar. A veces, la mejor historia es la que elegimos no abrir.",
+   choices: [],
+   end: true
+ }
+};
+
+let current = "start";
+function render(){
+  let s = scenes[current];
+  document.getElementById("sceneText").innerHTML = s.text;
+  if (s.end) {
+    document.getElementById("choices").innerHTML = "";
+    document.getElementById("end").style.display = "block";
+  } else {
+    document.getElementById("choices").innerHTML = s.choices.map(c =>
+      `<button onclick="go('${c.goto}')">${c.label}</button>`
+    ).join("");
+  }
+}
+function go(next){ current = next; render(); }
+render();
+</script>
+
+</body>
+</html>
