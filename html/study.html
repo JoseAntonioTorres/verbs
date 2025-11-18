@@ -32,8 +32,120 @@
 <h1 class="box-title">Lista básica: 50 verbos irregulares frecuentes</h1>
 <button class="box-toggle box-toggle-on" title="Toggle content"> <span>Toggle content</span></button></header><div class="box-content"> <div id="20251106150429845HF9" class="idevice_node text" data-idevice-path="../idevices/text/" data-idevice-type="text" data-idevice-component-type="json"><div class="exe-text-template"><div class="textIdeviceContent">
             <div class="exe-text-activity">
-                <div><table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width: 100%; text-align: center;">
-<thead style="background-color: #f2f2f2;">
+                <div><p><br></p>
+<style>
+        /* 1. Estilos base para pantallas grandes (Desktop) */
+        .responsive-table {
+            border-collapse: collapse;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+
+        .responsive-table th, 
+        .responsive-table td {
+            padding: 6px; /* Reducido para mayor compacidad */
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .responsive-table thead th {
+            background-color: #f2f2f2;
+        }
+
+        /* 2. Estilo para el control de audio compacto (Ícono) */
+        .audio-button {
+            background: none;
+            border: none;
+            color: #007bff; /* Color azul para destacar */
+            cursor: pointer;
+            font-size: 1.5em; /* Tamaño del ícono */
+            line-height: 1;
+            padding: 0;
+            margin: 0;
+            display: inline-block;
+            transition: color 0.15s;
+        }
+
+        .audio-button:hover {
+            color: #0056b3;
+        }
+
+        /* 3. Media Query para Móviles (ej: hasta 600px de ancho) */
+        @media screen and (max-width: 600px) {
+            
+            /* Reestructuración de la tabla a bloques */
+            .responsive-table {
+                border: 0;
+            }
+
+            .responsive-table thead {
+                border: none;
+                clip: rect(0 0 0 0);
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+                padding: 0;
+                position: absolute;
+                width: 1px;
+            }
+
+            .responsive-table tr {
+                border: 1px solid #ddd;
+                border-bottom: 3px solid #ccc;
+                display: block;
+                margin-bottom: .625em;
+                background-color: #fff;
+            }
+            
+            .responsive-table td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                display: flex; /* Usamos flex para poner etiqueta y valor en línea */
+                justify-content: space-between; /* Etiqueta a la izquierda, valor a la derecha */
+                align-items: center;
+                text-align: left; /* Alineamos el texto dentro del TD a la izquierda */
+                font-size: 1em;
+                padding: 8px 12px; /* Padding ajustado para limpiar el espacio */
+                position: relative;
+            }
+            
+            /* Insertar la etiqueta de la cabecera (data-label) */
+            .responsive-table td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                text-transform: uppercase;
+                /* El valor del width lo gestiona el flex-box, ya no es necesario float */
+                flex-basis: 50%; 
+                padding-right: 10px;
+                box-sizing: border-box;
+                text-align: left;
+            }
+
+            /* Ocultar el valor del verbo en la parte izquierda de la celda */
+            .responsive-table td:not(:first-child) {
+                /* El valor del verbo (el texto en sí) se alinea a la derecha del TD */
+                text-align: right;
+            }
+            
+            /* Estilo especial para la columna de Audio */
+            .responsive-table tr td:first-child {
+                text-align: center;
+                background-color: #f9f9f9; 
+                padding-top: 10px;
+                padding-bottom: 10px;
+                display: block; /* Vuelve a ser un bloque completo */
+            }
+            
+            /* Oculta la etiqueta "Audio" */
+            .responsive-table tr td:first-child::before {
+                display: none; 
+            }
+        }
+    </style>
+<table class="responsive-table">
+<thead>
 <tr>
 <th>Audio</th>
 <th>Infinitivo</th>
@@ -44,371 +156,394 @@
 </thead>
 <tbody>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/be.mp3" type="audio/mpeg">Tu navegador no soporta audio.</audio></td>
-<td>be</td>
-<td>was / were</td>
-<td>been</td>
-<td>ser / estar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/be.m4a')">🔊</button></td>
+<td data-label="Infinitivo">be</td>
+<td data-label="Pasado">was / were</td>
+<td data-label="Participio">been</td>
+<td data-label="Traducción">ser / estar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/begin.mp3" type="audio/mpeg"></audio></td>
-<td>begin</td>
-<td>began</td>
-<td>begun</td>
-<td>comenzar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/begin.m4a')">🔊</button></td>
+<td data-label="Infinitivo">begin</td>
+<td data-label="Pasado">began</td>
+<td data-label="Participio">begun</td>
+<td data-label="Traducción">comenzar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/break.mp3" type="audio/mpeg"></audio></td>
-<td>break</td>
-<td>broke</td>
-<td>broken</td>
-<td>romper</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/break.m4a')">🔊</button></td>
+<td data-label="Infinitivo">break</td>
+<td data-label="Pasado">broke</td>
+<td data-label="Participio">broken</td>
+<td data-label="Traducción">romper</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/bring.mp3" type="audio/mpeg"></audio></td>
-<td>bring</td>
-<td>brought</td>
-<td>brought</td>
-<td>traer</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/bring.m4a')">🔊</button></td>
+<td data-label="Infinitivo">bring</td>
+<td data-label="Pasado">brought</td>
+<td data-label="Participio">brought</td>
+<td data-label="Traducción">traer</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/build.mp3" type="audio/mpeg"></audio></td>
-<td>build</td>
-<td>built</td>
-<td>built</td>
-<td>construir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/build.m4a')">🔊</button></td>
+<td data-label="Infinitivo">build</td>
+<td data-label="Pasado">built</td>
+<td data-label="Participio">built</td>
+<td data-label="Traducción">construir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/buy.mp3" type="audio/mpeg"></audio></td>
-<td>buy</td>
-<td>bought</td>
-<td>bought</td>
-<td>comprar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/buy.m4a')">🔊</button></td>
+<td data-label="Infinitivo">buy</td>
+<td data-label="Pasado">bought</td>
+<td data-label="Participio">bought</td>
+<td data-label="Traducción">comprar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/catch.mp3" type="audio/mpeg"></audio></td>
-<td>catch</td>
-<td>caught</td>
-<td>caught</td>
-<td>atrapar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/catch.m4a')">🔊</button></td>
+<td data-label="Infinitivo">catch</td>
+<td data-label="Pasado">caught</td>
+<td data-label="Participio">caught</td>
+<td data-label="Traducción">atrapar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/choose.mp3" type="audio/mpeg"></audio></td>
-<td>choose</td>
-<td>chose</td>
-<td>chosen</td>
-<td>elegir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/choose.m4a')">🔊</button></td>
+<td data-label="Infinitivo">choose</td>
+<td data-label="Pasado">chose</td>
+<td data-label="Participio">chosen</td>
+<td data-label="Traducción">elegir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/come.mp3" type="audio/mpeg"></audio></td>
-<td>come</td>
-<td>came</td>
-<td>come</td>
-<td>venir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/come.m4a')">🔊</button></td>
+<td data-label="Infinitivo">come</td>
+<td data-label="Pasado">came</td>
+<td data-label="Participio">come</td>
+<td data-label="Traducción">venir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/cost.mp3" type="audio/mpeg"></audio></td>
-<td>cost</td>
-<td>cost</td>
-<td>cost</td>
-<td>costar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/cost.m4a')">🔊</button></td>
+<td data-label="Infinitivo">cost</td>
+<td data-label="Pasado">cost</td>
+<td data-label="Participio">cost</td>
+<td data-label="Traducción">costar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/cut.mp3" type="audio/mpeg"></audio></td>
-<td>cut</td>
-<td>cut</td>
-<td>cut</td>
-<td>cortar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/cut.m4a')">🔊</button></td>
+<td data-label="Infinitivo">cut</td>
+<td data-label="Pasado">cut</td>
+<td data-label="Participio">cut</td>
+<td data-label="Traducción">cortar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/do.mp3" type="audio/mpeg"></audio></td>
-<td>do</td>
-<td>did</td>
-<td>done</td>
-<td>hacer</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/do.m4a')">🔊</button></td>
+<td data-label="Infinitivo">do</td>
+<td data-label="Pasado">did</td>
+<td data-label="Participio">done</td>
+<td data-label="Traducción">hacer</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/draw.mp3" type="audio/mpeg"></audio></td>
-<td>draw</td>
-<td>drew</td>
-<td>drawn</td>
-<td>dibujar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/draw.m4a')">🔊</button></td>
+<td data-label="Infinitivo">draw</td>
+<td data-label="Pasado">drew</td>
+<td data-label="Participio">drawn</td>
+<td data-label="Traducción">dibujar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/drink.mp3" type="audio/mpeg"></audio></td>
-<td>drink</td>
-<td>drank</td>
-<td>drunk</td>
-<td>beber</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/drink.m4a')">🔊</button></td>
+<td data-label="Infinitivo">drink</td>
+<td data-label="Pasado">drank</td>
+<td data-label="Participio">drunk</td>
+<td data-label="Traducción">beber</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/drive.mp3" type="audio/mpeg"></audio></td>
-<td>drive</td>
-<td>drove</td>
-<td>driven</td>
-<td>conducir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/drive.m4a')">🔊</button></td>
+<td data-label="Infinitivo">drive</td>
+<td data-label="Pasado">drove</td>
+<td data-label="Participio">driven</td>
+<td data-label="Traducción">conducir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/eat.mp3" type="audio/mpeg"></audio></td>
-<td>eat</td>
-<td>ate</td>
-<td>eaten</td>
-<td>comer</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/eat.m4a')">🔊</button></td>
+<td data-label="Infinitivo">eat</td>
+<td data-label="Pasado">ate</td>
+<td data-label="Participio">eaten</td>
+<td data-label="Traducción">comer</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/fall.mp3" type="audio/mpeg"></audio></td>
-<td>fall</td>
-<td>fell</td>
-<td>fallen</td>
-<td>caer</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/fall.m4a')">🔊</button></td>
+<td data-label="Infinitivo">fall</td>
+<td data-label="Pasado">fell</td>
+<td data-label="Participio">fallen</td>
+<td data-label="Traducción">caer</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/feel.mp3" type="audio/mpeg"></audio></td>
-<td>feel</td>
-<td>felt</td>
-<td>felt</td>
-<td>sentir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/feel.m4a')">🔊</button></td>
+<td data-label="Infinitivo">feel</td>
+<td data-label="Pasado">felt</td>
+<td data-label="Participio">felt</td>
+<td data-label="Traducción">sentir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/find.mp3" type="audio/mpeg"></audio></td>
-<td>find</td>
-<td>found</td>
-<td>found</td>
-<td>encontrar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/find.m4a')">🔊</button></td>
+<td data-label="Infinitivo">find</td>
+<td data-label="Pasado">found</td>
+<td data-label="Participio">found</td>
+<td data-label="Traducción">encontrar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/fly.mp3" type="audio/mpeg"></audio></td>
-<td>fly</td>
-<td>flew</td>
-<td>flown</td>
-<td>volar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/fly.m4a')">🔊</button></td>
+<td data-label="Infinitivo">fly</td>
+<td data-label="Pasado">flew</td>
+<td data-label="Participio">flown</td>
+<td data-label="Traducción">volar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/forget.mp3" type="audio/mpeg"></audio></td>
-<td>forget</td>
-<td>forgot</td>
-<td>forgotten</td>
-<td>olvidar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/forget.m4a')">🔊</button></td>
+<td data-label="Infinitivo">forget</td>
+<td data-label="Pasado">forgot</td>
+<td data-label="Participio">forgotten</td>
+<td data-label="Traducción">olvidar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/get.mp3" type="audio/mpeg"></audio></td>
-<td>get</td>
-<td>got</td>
-<td>got / gotten</td>
-<td>obtener</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/get.m4a')">🔊</button></td>
+<td data-label="Infinitivo">get</td>
+<td data-label="Pasado">got</td>
+<td data-label="Participio">got / gotten</td>
+<td data-label="Traducción">obtener</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/give.mp3" type="audio/mpeg"></audio></td>
-<td>give</td>
-<td>gave</td>
-<td>given</td>
-<td>dar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/give.m4a')">🔊</button></td>
+<td data-label="Infinitivo">give</td>
+<td data-label="Pasado">gave</td>
+<td data-label="Participio">given</td>
+<td data-label="Traducción">dar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/go.mp3" type="audio/mpeg"></audio></td>
-<td>go</td>
-<td>went</td>
-<td>gone</td>
-<td>ir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/go.m4a')">🔊</button></td>
+<td data-label="Infinitivo">go</td>
+<td data-label="Pasado">went</td>
+<td data-label="Participio">gone</td>
+<td data-label="Traducción">ir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/grow.mp3" type="audio/mpeg"></audio></td>
-<td>grow</td>
-<td>grew</td>
-<td>grown</td>
-<td>crecer</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/grow.m4a')">🔊</button></td>
+<td data-label="Infinitivo">grow</td>
+<td data-label="Pasado">grew</td>
+<td data-label="Participio">grown</td>
+<td data-label="Traducción">crecer</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/have.mp3" type="audio/mpeg"></audio></td>
-<td>have</td>
-<td>had</td>
-<td>had</td>
-<td>tener</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/have.m4a')">🔊</button></td>
+<td data-label="Infinitivo">have</td>
+<td data-label="Pasado">had</td>
+<td data-label="Participio">had</td>
+<td data-label="Traducción">tener</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/hear.mp3" type="audio/mpeg"></audio></td>
-<td>hear</td>
-<td>heard</td>
-<td>heard</td>
-<td>escuchar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/hear.m4a')">🔊</button></td>
+<td data-label="Infinitivo">hear</td>
+<td data-label="Pasado">heard</td>
+<td data-label="Participio">heard</td>
+<td data-label="Traducción">escuchar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/hold.mp3" type="audio/mpeg"></audio></td>
-<td>hold</td>
-<td>held</td>
-<td>held</td>
-<td>sostener</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/hold.m4a')">🔊</button></td>
+<td data-label="Infinitivo">hold</td>
+<td data-label="Pasado">held</td>
+<td data-label="Participio">held</td>
+<td data-label="Traducción">sostener</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/keep.mp3" type="audio/mpeg"></audio></td>
-<td>keep</td>
-<td>kept</td>
-<td>kept</td>
-<td>mantener</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/keep.m4a')">🔊</button></td>
+<td data-label="Infinitivo">keep</td>
+<td data-label="Pasado">kept</td>
+<td data-label="Participio">kept</td>
+<td data-label="Traducción">mantener</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/know.mp3" type="audio/mpeg"></audio></td>
-<td>know</td>
-<td>knew</td>
-<td>known</td>
-<td>saber / conocer</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/know.m4a')">🔊</button></td>
+<td data-label="Infinitivo">know</td>
+<td data-label="Pasado">knew</td>
+<td data-label="Participio">known</td>
+<td data-label="Traducción">saber / conocer</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/leave.mp3" type="audio/mpeg"></audio></td>
-<td>leave</td>
-<td>left</td>
-<td>left</td>
-<td>dejar / salir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/leave.m4a')">🔊</button></td>
+<td data-label="Infinitivo">leave</td>
+<td data-label="Pasado">left</td>
+<td data-label="Participio">left</td>
+<td data-label="Traducción">dejar / salir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/lose.mp3" type="audio/mpeg"></audio></td>
-<td>lose</td>
-<td>lost</td>
-<td>lost</td>
-<td>perder</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/lose.m4a')">🔊</button></td>
+<td data-label="Infinitivo">lose</td>
+<td data-label="Pasado">lost</td>
+<td data-label="Participio">lost</td>
+<td data-label="Traducción">perder</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/make.mp3" type="audio/mpeg"></audio></td>
-<td>make</td>
-<td>made</td>
-<td>made</td>
-<td>hacer / fabricar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/make.m4a')">🔊</button></td>
+<td data-label="Infinitivo">make</td>
+<td data-label="Pasado">made</td>
+<td data-label="Participio">made</td>
+<td data-label="Traducción">hacer / fabricar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/meet.mp3" type="audio/mpeg"></audio></td>
-<td>meet</td>
-<td>met</td>
-<td>met</td>
-<td>conocer personas</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/meet.m4a')">🔊</button></td>
+<td data-label="Infinitivo">meet</td>
+<td data-label="Pasado">met</td>
+<td data-label="Participio">met</td>
+<td data-label="Traducción">conocer personas</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/pay.mp3" type="audio/mpeg"></audio></td>
-<td>pay</td>
-<td>paid</td>
-<td>paid</td>
-<td>pagar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/pay.m4a')">🔊</button></td>
+<td data-label="Infinitivo">pay</td>
+<td data-label="Pasado">paid</td>
+<td data-label="Participio">paid</td>
+<td data-label="Traducción">pagar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/put.mp3" type="audio/mpeg"></audio></td>
-<td>put</td>
-<td>put</td>
-<td>put</td>
-<td>poner</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/put.m4a')">🔊</button></td>
+<td data-label="Infinitivo">put</td>
+<td data-label="Pasado">put</td>
+<td data-label="Participio">put</td>
+<td data-label="Traducción">poner</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/read.mp3" type="audio/mpeg"></audio></td>
-<td>read</td>
-<td>read (pronounced /rɛd/)</td>
-<td>read (pronounced /rɛd/)</td>
-<td>leer</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/read.m4a')">🔊</button></td>
+<td data-label="Infinitivo">read</td>
+<td data-label="Pasado">read (pronounced /rɛd/)</td>
+<td data-label="Participio">read (pronounced /rɛd/)</td>
+<td data-label="Traducción">leer</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/run.mp3" type="audio/mpeg"></audio></td>
-<td>run</td>
-<td>ran</td>
-<td>run</td>
-<td>correr</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/run.m4a')">🔊</button></td>
+<td data-label="Infinitivo">run</td>
+<td data-label="Pasado">ran</td>
+<td data-label="Participio">run</td>
+<td data-label="Traducción">correr</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/say.mp3" type="audio/mpeg"></audio></td>
-<td>say</td>
-<td>said</td>
-<td>said</td>
-<td>decir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/say.m4a')">🔊</button></td>
+<td data-label="Infinitivo">say</td>
+<td data-label="Pasado">said</td>
+<td data-label="Participio">said</td>
+<td data-label="Traducción">decir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/see.mp3" type="audio/mpeg"></audio></td>
-<td>see</td>
-<td>saw</td>
-<td>seen</td>
-<td>ver</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/see.m4a')">🔊</button></td>
+<td data-label="Infinitivo">see</td>
+<td data-label="Pasado">saw</td>
+<td data-label="Participio">seen</td>
+<td data-label="Traducción">ver</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/sell.mp3" type="audio/mpeg"></audio></td>
-<td>sell</td>
-<td>sold</td>
-<td>sold</td>
-<td>vender</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/sell.m4a')">🔊</button></td>
+<td data-label="Infinitivo">sell</td>
+<td data-label="Pasado">sold</td>
+<td data-label="Participio">sold</td>
+<td data-label="Traducción">vender</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/send.mp3" type="audio/mpeg"></audio></td>
-<td>send</td>
-<td>sent</td>
-<td>sent</td>
-<td>enviar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/send.m4a')">🔊</button></td>
+<td data-label="Infinitivo">send</td>
+<td data-label="Pasado">sent</td>
+<td data-label="Participio">sent</td>
+<td data-label="Traducción">enviar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/sing.mp3" type="audio/mpeg"></audio></td>
-<td>sing</td>
-<td>sang</td>
-<td>sung</td>
-<td>cantar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/sing.m4a')">🔊</button></td>
+<td data-label="Infinitivo">sing</td>
+<td data-label="Pasado">sang</td>
+<td data-label="Participio">sung</td>
+<td data-label="Traducción">cantar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/sit.mp3" type="audio/mpeg"></audio></td>
-<td>sit</td>
-<td>sat</td>
-<td>sat</td>
-<td>sentarse</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/sit.m4a')">🔊</button></td>
+<td data-label="Infinitivo">sit</td>
+<td data-label="Pasado">sat</td>
+<td data-label="Participio">sat</td>
+<td data-label="Traducción">sentarse</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/sleep.mp3" type="audio/mpeg"></audio></td>
-<td>sleep</td>
-<td>slept</td>
-<td>slept</td>
-<td>dormir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/sleep.m4a')">🔊</button></td>
+<td data-label="Infinitivo">sleep</td>
+<td data-label="Pasado">slept</td>
+<td data-label="Participio">slept</td>
+<td data-label="Traducción">dormir</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/speak.mp3" type="audio/mpeg"></audio></td>
-<td>speak</td>
-<td>spoke</td>
-<td>spoken</td>
-<td>hablar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/speak.m4a')">🔊</button></td>
+<td data-label="Infinitivo">speak</td>
+<td data-label="Pasado">spoke</td>
+<td data-label="Participio">spoken</td>
+<td data-label="Traducción">hablar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/spend.mp3" type="audio/mpeg"></audio></td>
-<td>spend</td>
-<td>spent</td>
-<td>spent</td>
-<td>gastar / pasar tiempo</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/spend.m4a')">🔊</button></td>
+<td data-label="Infinitivo">spend</td>
+<td data-label="Pasado">spent</td>
+<td data-label="Participio">spent</td>
+<td data-label="Traducción">gastar / pasar tiempo</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/stand.mp3" type="audio/mpeg"></audio></td>
-<td>stand</td>
-<td>stood</td>
-<td>stood</td>
-<td>estar de pie</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/stand.m4a')">🔊</button></td>
+<td data-label="Infinitivo">stand</td>
+<td data-label="Pasado">stood</td>
+<td data-label="Participio">stood</td>
+<td data-label="Traducción">estar de pie</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/take.mp3" type="audio/mpeg"></audio></td>
-<td>take</td>
-<td>took</td>
-<td>taken</td>
-<td>tomar / llevar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/take.m4a')">🔊</button></td>
+<td data-label="Infinitivo">take</td>
+<td data-label="Pasado">took</td>
+<td data-label="Participio">taken</td>
+<td data-label="Traducción">tomar / llevar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/teach.mp3" type="audio/mpeg"></audio></td>
-<td>teach</td>
-<td>taught</td>
-<td>taught</td>
-<td>enseñar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/teach.m4a')">🔊</button></td>
+<td data-label="Infinitivo">teach</td>
+<td data-label="Pasado">taught</td>
+<td data-label="Participio">taught</td>
+<td data-label="Traducción">enseñar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/think.mp3" type="audio/mpeg"></audio></td>
-<td>think</td>
-<td>thought</td>
-<td>thought</td>
-<td>pensar</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/think.m4a')">🔊</button></td>
+<td data-label="Infinitivo">think</td>
+<td data-label="Pasado">thought</td>
+<td data-label="Participio">thought</td>
+<td data-label="Traducción">pensar</td>
 </tr>
 <tr>
-<td><audio style="width: 100px;" controls="controls"><source src="audio/write.mp3" type="audio/mpeg"></audio></td>
-<td>write</td>
-<td>wrote</td>
-<td>written</td>
-<td>escribir</td>
+<td data-label="Audio"><button class="audio-button" onclick="playAudio('audio/write.m4a')">🔊</button></td>
+<td data-label="Infinitivo">write</td>
+<td data-label="Pasado">wrote</td>
+<td data-label="Participio">written</td>
+<td data-label="Traducción">escribir</td>
 </tr>
 </tbody>
-</table><p class="clearfix"></p></div>
+</table>
+<script>
+    // Variable global para mantener la referencia del objeto Audio
+    let currentAudio = null;
+
+    /**
+     * Detiene el audio actual (si lo hay) y reproduce uno nuevo.
+     * @param {string} audioPath La ruta del archivo M4A.
+     */
+    function playAudio(audioPath) {
+        // 1. Detener el audio que se esté reproduciendo actualmente
+        if (currentAudio && !currentAudio.paused) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0; // Reinicia el tiempo
+        }
+
+        // 2. Crear y reproducir el nuevo audio
+        currentAudio = new Audio(audioPath);
+        currentAudio.play().catch(error => {
+            console.error("Error al intentar reproducir el audio:", error);
+            // Esto puede suceder si el navegador necesita interacción del usuario para reproducir audio.
+        });
+    }
+</script><p class="clearfix"></p></div>
             </div></div></div></div>
 </div></article>
 </div></main><div class="nav-buttons"> <a href="../index.html" title="Previous" class="nav-button nav-button-left"> <span>Previous</span></a><a href="../html/game.html" title="Next" class="nav-button nav-button-right"> <span>Next</span></a>
