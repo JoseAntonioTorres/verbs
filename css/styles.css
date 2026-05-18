@@ -13,12 +13,9 @@ body {
     color: var(--text-color);
     margin: 0;
     padding-top: 80px; /* Espacio para la navbar fija */
-    display: none; /* Oculto por defecto, el auth-guard lo muestra con la clase .authorized */
 }
 
-body.authorized {
-    display: block;
-}
+
 
 /* --- ESTILOS DE LA NAVBAR MODERNA --- */
 #siteNav {
