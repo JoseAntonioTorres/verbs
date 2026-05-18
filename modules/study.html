@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study - Mastering Irregular Verbs</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        /* Estilos específicos para la sección de estudio */
+        .study-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        /* Buscador integrado para que el alumno filtre verbos rápido */
+        .search-container {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            border: 2px solid #ccc;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .search-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        /* Contenedor de la tabla interactiva */
+        .table-responsive {
+            overflow-x: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .verbs-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        
+        .verbs-table th, .verbs-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .verbs-table th {
+            background-color: rgba(24, 82, 157, 0.05);
+            color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        
+        .verbs-table tr:hover {
+            background-color: #f9fbfd;
+        }
+        
+        /* Estilo del botón de audio */
+        .btn-audio {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(24, 82, 157, 0.3);
+        }
+        
+        .btn-audio:hover {
+            background-color: var(--accent-color);
+            box-shadow: 0 2px 5px rgba(40, 173, 86, 0.4);
+            transform: scale(1.05);
+        }
+
+        .meaning-tag {
+            background-color: #f0f2f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <header></header>
+
+    <main class="content-container">
+        <div class="study-header">
+            <h1>Módulo de Estudio: Lista de Verbos</h1>
+            <p>Escucha la pronunciación nativa y analiza cómo cambian las formas en pasado y participio.</p>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="verbSearch" class="search-input" placeholder="🔍 Buscar verbo en inglés o español...">
+        </div>
+
+        <div class="table-responsive">
+            <table class="verbs-table">
+                <thead>
+                    <tr>
+                        <th>Infinitive (Base Form)</th>
+                        <th>Past Simple</th>
+                        <th>Past Participle</th>
+                        <th>Meaning</th>
+                        <th>Listen</th>
+                    </tr>
+                </thead>
+                <tbody id="verbsBody">
+                    <tr class="verb-row">
+                        <td><strong>Go</strong></td>
+                        <td>went</td>
+                        <td>gone</td>
+                        <td><span class="meaning-tag">Ir</span></td>
+                        <td>
+                            <button class="btn-audio" onclick="playAudio('go')">▶</button>
+                        </td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Eat</strong></td>
+                        <td>ate</td>
+                        <td>eaten</td>
+                        <td><span class="meaning-tag">Comer</span></td>
+                        <td>
+                            <button class="btn-audio" onclick="playAudio('eat')">▶</button>
+                        </td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Do</strong></td>
+                        <td>did</td>
+                        <td>done</td>
+                        <td><span class="meaning-tag">Hacer</span></td>
+                        <td>
+                            <button class="btn-audio" onclick="playAudio('do')">▶</button>
+                        </td>
+                    </tr>
+                    </tbody>
+            </table>
+        </div>
+    </main>
+
+    <audio id="globalAudioPlayer"></audio>
+
+    <script>
+        // 1. Función para reproducir los audios de tus carpetas
+        function playAudio(verbName) {
+            const player = document.getElementById('globalAudioPlayer');
+            // Apunta a tu carpeta local de assets
+            player.src = `../assets/audio/${verbName}.mp3`;
+            player.play().catch(error => {
+                console.error("No se encontró el archivo de audio para:", verbName);
+            });
+        }
+
+        // 2. Filtro de búsqueda en tiempo real
+        document.getElementById('verbSearch').addEventListener('keyup', function() {
+            const value = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#verbsBody .verb-row');
+            
+            rows.forEach(row => {
+                // Busca dentro de todo el texto de la fila (infinitive, past, participle, meaning)
+                const text = row.textContent.toLowerCase();
+                if (text.includes(value)) {
+                    row.style.display = ""; // Muestra la fila
+                } else {
+                    row.style.display = "none"; // Oculta la fila
+                }
+            });
+        });
+    </script>
+
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/auth-guard.js"></script>
+</body>
+</html>
