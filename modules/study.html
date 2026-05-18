@@ -109,7 +109,7 @@
             <input type="text" id="verbSearch" class="search-input" placeholder="🔍 Buscar verbo en inglés o español...">
         </div>
 
-        <div class="table-responsive">
+       <div class="table-responsive">
             <table class="verbs-table">
                 <thead>
                     <tr>
@@ -122,33 +122,370 @@
                 </thead>
                 <tbody id="verbsBody">
                     <tr class="verb-row">
-                        <td><strong>Go</strong></td>
-                        <td>went</td>
-                        <td>gone</td>
-                        <td><span class="meaning-tag">Ir</span></td>
-                        <td>
-                            <button class="btn-audio" onclick="playAudio('go')">▶</button>
-                        </td>
+                        <td><strong>Be</strong></td>
+                        <td>was / were</td>
+                        <td>been</td>
+                        <td><span class="meaning-tag">Ser / estar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('be')">▶</button></td>
                     </tr>
                     <tr class="verb-row">
-                        <td><strong>Eat</strong></td>
-                        <td>ate</td>
-                        <td>eaten</td>
-                        <td><span class="meaning-tag">Comer</span></td>
-                        <td>
-                            <button class="btn-audio" onclick="playAudio('eat')">▶</button>
-                        </td>
+                        <td><strong>Begin</strong></td>
+                        <td>began</td>
+                        <td>begun</td>
+                        <td><span class="meaning-tag">Comenzar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('begin')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Break</strong></td>
+                        <td>broke</td>
+                        <td>broken</td>
+                        <td><span class="meaning-tag">Romper</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('break')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Bring</strong></td>
+                        <td>brought</td>
+                        <td>brought</td>
+                        <td><span class="meaning-tag">Traer</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('bring')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Build</strong></td>
+                        <td>built</td>
+                        <td>built</td>
+                        <td><span class="meaning-tag">Construir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('build')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Buy</strong></td>
+                        <td>bought</td>
+                        <td>bought</td>
+                        <td><span class="meaning-tag">Comprar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('buy')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Catch</strong></td>
+                        <td>caught</td>
+                        <td>caught</td>
+                        <td><span class="meaning-tag">Atrapar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('catch')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Choose</strong></td>
+                        <td>chose</td>
+                        <td>chosen</td>
+                        <td><span class="meaning-tag">Elegir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('choose')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Come</strong></td>
+                        <td>came</td>
+                        <td>come</td>
+                        <td><span class="meaning-tag">Venir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('come')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Cost</strong></td>
+                        <td>cost</td>
+                        <td>cost</td>
+                        <td><span class="meaning-tag">Costar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('cost')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Cut</strong></td>
+                        <td>cut</td>
+                        <td>cut</td>
+                        <td><span class="meaning-tag">Cortar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('cut')">▶</button></td>
                     </tr>
                     <tr class="verb-row">
                         <td><strong>Do</strong></td>
                         <td>did</td>
                         <td>done</td>
                         <td><span class="meaning-tag">Hacer</span></td>
-                        <td>
-                            <button class="btn-audio" onclick="playAudio('do')">▶</button>
-                        </td>
+                        <td><button class="btn-audio" onclick="playAudio('do')">▶</button></td>
                     </tr>
-                    </tbody>
+                    <tr class="verb-row">
+                        <td><strong>Draw</strong></td>
+                        <td>drew</td>
+                        <td>drawn</td>
+                        <td><span class="meaning-tag">Dibujar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('draw')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Drink</strong></td>
+                        <td>drank</td>
+                        <td>drunk</td>
+                        <td><span class="meaning-tag">Beber</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('drink')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Drive</strong></td>
+                        <td>drove</td>
+                        <td>driven</td>
+                        <td><span class="meaning-tag">Conducir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('drive')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Eat</strong></td>
+                        <td>ate</td>
+                        <td>eaten</td>
+                        <td><span class="meaning-tag">Comer</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('eat')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Fall</strong></td>
+                        <td>fell</td>
+                        <td>fallen</td>
+                        <td><span class="meaning-tag">Caer</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('fall')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Feel</strong></td>
+                        <td>felt</td>
+                        <td>felt</td>
+                        <td><span class="meaning-tag">Sentir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('feel')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Find</strong></td>
+                        <td>found</td>
+                        <td>found</td>
+                        <td><span class="meaning-tag">Encontrar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('find')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Fly</strong></td>
+                        <td>flew</td>
+                        <td>flown</td>
+                        <td><span class="meaning-tag">Volar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('fly')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Forget</strong></td>
+                        <td>forgot</td>
+                        <td>forgotten</td>
+                        <td><span class="meaning-tag">Olvidar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('forget')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Get</strong></td>
+                        <td>got</td>
+                        <td>got / gotten</td>
+                        <td><span class="meaning-tag">Obtener</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('get')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Give</strong></td>
+                        <td>gave</td>
+                        <td>given</td>
+                        <td><span class="meaning-tag">Dar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('give')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Go</strong></td>
+                        <td>went</td>
+                        <td>gone</td>
+                        <td><span class="meaning-tag">Ir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('go')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Grow</strong></td>
+                        <td>grew</td>
+                        <td>grown</td>
+                        <td><span class="meaning-tag">Crecer</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('grow')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Have</strong></td>
+                        <td>had</td>
+                        <td>had</td>
+                        <td><span class="meaning-tag">Tener</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('have')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Hear</strong></td>
+                        <td>heard</td>
+                        <td>heard</td>
+                        <td><span class="meaning-tag">Escuchar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('hear')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Hold</strong></td>
+                        <td>held</td>
+                        <td>held</td>
+                        <td><span class="meaning-tag">Sostener</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('hold')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Keep</strong></td>
+                        <td>kept</td>
+                        <td>kept</td>
+                        <td><span class="meaning-tag">Mantener</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('keep')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Know</strong></td>
+                        <td>knew</td>
+                        <td>known</td>
+                        <td><span class="meaning-tag">Saber / conocer</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('know')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Leave</strong></td>
+                        <td>left</td>
+                        <td>left</td>
+                        <td><span class="meaning-tag">Dejar / salir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('leave')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Lose</strong></td>
+                        <td>lost</td>
+                        <td>lost</td>
+                        <td><span class="meaning-tag">Perder</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('lose')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Make</strong></td>
+                        <td>made</td>
+                        <td>made</td>
+                        <td><span class="meaning-tag">Hacer / fabricar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('make')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Meet</strong></td>
+                        <td>met</td>
+                        <td>met</td>
+                        <td><span class="meaning-tag">Conocer personas</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('meet')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Pay</strong></td>
+                        <td>paid</td>
+                        <td>paid</td>
+                        <td><span class="meaning-tag">Pagar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('pay')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Put</strong></td>
+                        <td>put</td>
+                        <td>put</td>
+                        <td><span class="meaning-tag">Poner</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('put')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Read</strong></td>
+                        <td>read (pronounced /rɛd/)</td>
+                        <td>read (pronounced /rɛd/)</td>
+                        <td><span class="meaning-tag">Leer</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('read')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Run</strong></td>
+                        <td>ran</td>
+                        <td>run</td>
+                        <td><span class="meaning-tag">Correr</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('run')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Say</strong></td>
+                        <td>said</td>
+                        <td>said</td>
+                        <td><span class="meaning-tag">Decir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('say')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>See</strong></td>
+                        <td>saw</td>
+                        <td>seen</td>
+                        <td><span class="meaning-tag">Ver</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('see')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Sell</strong></td>
+                        <td>sold</td>
+                        <td>sold</td>
+                        <td><span class="meaning-tag">Vender</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('sell')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Send</strong></td>
+                        <td>sent</td>
+                        <td>sent</td>
+                        <td><span class="meaning-tag">Enviar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('send')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Sing</strong></td>
+                        <td>sang</td>
+                        <td>sung</td>
+                        <td><span class="meaning-tag">Cantar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('sing')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Sit</strong></td>
+                        <td>sat</td>
+                        <td>sat</td>
+                        <td><span class="meaning-tag">Sentarse</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('sit')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Sleep</strong></td>
+                        <td>slept</td>
+                        <td>slept</td>
+                        <td><span class="meaning-tag">Dormir</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('sleep')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Speak</strong></td>
+                        <td>spoke</td>
+                        <td>spoken</td>
+                        <td><span class="meaning-tag">Hablar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('speak')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Spend</strong></td>
+                        <td>spent</td>
+                        <td>spent</td>
+                        <td><span class="meaning-tag">Gastar / pasar tiempo</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('spend')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Stand</strong></td>
+                        <td>stood</td>
+                        <td>stood</td>
+                        <td><span class="meaning-tag">Estar de pie</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('stand')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Take</strong></td>
+                        <td>took</td>
+                        <td>taken</td>
+                        <td><span class="meaning-tag">Tomar / llevar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('take')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Teach</strong></td>
+                        <td>taught</td>
+                        <td>taught</td>
+                        <td><span class="meaning-tag">Enseñar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('teach')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Think</strong></td>
+                        <td>thought</td>
+                        <td>thought</td>
+                        <td><span class="meaning-tag">Pensar</span></td>
+                        <td><button class="btn-audio" onclick="playAudio('think')">▶</button></td>
+                    </tr>
+                    <tr class="verb-row">
+                        <td><strong>Write</strong></td>
+                        <td>wrote</td>
+                        <td>written</td>
+                        <td><span class="meaning-tag">Escribir</span></td>
+                        <td><button class="btn-audio" onclick="write">▶</button></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </main>
@@ -159,10 +496,10 @@
         // 1. Función para reproducir los audios de tus carpetas
         function playAudio(verbName) {
             const player = document.getElementById('globalAudioPlayer');
-            // Apunta a tu carpeta local de assets
-            player.src = `../assets/audio/${verbName}.mp3`;
+            player.src = `../assets/audio/${verbName}.m4a`;
             player.play().catch(error => {
-                console.error("No se encontró el archivo de audio para:", verbName);
+                console.error("No se pudo reproducir el archivo:", verbName, error);
+                alert("Lo siento, no se pudo reproducir el audio para este verbo.");
             });
         }
 
