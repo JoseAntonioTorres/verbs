@@ -1,0 +1,113 @@
+/* Variables de color globales */
+:root {
+    --primary-color: #18529D;
+    --accent-color: #28AD56;
+    --bg-color: #f4f6f9;
+    --text-color: #333333;
+    --card-bg: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding-top: 80px; /* Espacio para la navbar fija */
+    display: none; /* Oculto por defecto, el auth-guard lo muestra con la clase .authorized */
+}
+
+body.authorized {
+    display: block;
+}
+
+/* --- ESTILOS DE LA NAVBAR MODERNA --- */
+#siteNav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    padding: 12px 0;
+}
+
+#siteNav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+#siteNav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+#siteNav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+#siteNav ul li a.active {
+    background-color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(40, 173, 86, 0.4);
+}
+
+/* --- DISEÑO DEL CONTENIDO --- */
+.content-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hero-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.hero-section h1 {
+    color: var(--primary-color);
+    font-size: 2.2em;
+}
+
+.media-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.video-card iframe {
+    width: 315px;
+    height: 560px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.info-card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+.info-card h2 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--bg-color);
+    padding-bottom: 10px;
+}
+
+.info-card.highlight {
+    border-left: 5px solid var(--accent-color);
+}
