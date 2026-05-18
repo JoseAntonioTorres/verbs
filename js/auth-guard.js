@@ -48,7 +48,7 @@ const footerHTML = `
             </p>
             <p style="margin: 0 0 12px 0; font-size: 15px;">
                 Desarrollado por: <strong>José Antonio Torres Osorio</strong> <br>
-                <span style="color: #777; font-size: 13px;">Intérprete Profesional & Analista de IA Educativa</span>
+                <span style="color: #777; font-size: 13px;">Intérprete Profesional & Analista de Tecnología Educativa</span>
             </p>
             <div style="display: flex; justify-content: center; gap: 20px; font-size: 13px;">
                 <a href="mailto:zS023002154@estudiantes.uv.mx" style="color: var(--accent-color); text-decoration: none; font-weight: bold;">✉️ zS023002154@estudiantes.uv.mx</a>
