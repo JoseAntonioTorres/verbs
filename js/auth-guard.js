@@ -3,8 +3,6 @@ import { auth } from "./firebase-config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 // Nota: Asegúrate de importar tu app inicializada de Firebase aquí
 
-const auth = getAuth();
-
 // Proteger la página
 onAuthStateChanged(auth, (user) => {
   if (!user) {
