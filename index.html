@@ -1,123 +1,238 @@
 <!DOCTYPE html>
-<html lang="en" id="exe-index">
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mastering Irregular Verbs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering Irregular Verbs — Bienvenido</title>
+    
+    <link rel="stylesheet" href="css/styles.css">
 
-<link rel="stylesheet" href="libs/bootstrap/bootstrap.min.css">
-<link rel="stylesheet" href="content/css/base.css">
-<link rel="stylesheet" href="theme/content.css">
+    <style>
+        /* Estilos específicos para la Landing Page de Bienvenida */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+        }
 
-<style>
-  /* Ocultamos el contenido del OVA inicialmente */
-  .ova-oculto { display: none !important; }
-  
-  /* Tu pantalla de bienvenida moderna personalizada */
-  #pantalla-bloqueo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #f4f4f9;
-    font-family: Arial, sans-serif;
-    text-align: center;
-  }
-  .tarjeta-bienvenida {
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    max-width: 400px;
-  }
-  /* Estilizamos un botón personalizado con tus colores institucionales */
-  .btn-google {
-    background-color: #18529D;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 25px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: background 0.3s;
-  }
-  .btn-google:hover { background-color: #0f3a73; }
-</style>
+        /* Contenedor de pantalla dividida (Split Screen) */
+        .welcome-wrapper {
+            display: flex;
+            min-height: 100vh;
+            flex-wrap: wrap;
+        }
+
+        /* LADO IZQUIERDO: Presentación pública del OVA */
+        .info-side {
+            flex: 1.2;
+            background-color: #ffffff;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+            min-width: 320px;
+        }
+
+        .info-side h1 {
+            color: #18529D; /* Azul Principal */
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .info-side .tagline {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .features-list {
+            margin: 20px 0 30px 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon {
+            background-color: rgba(40, 173, 86, 0.1); /* Fondo verde translúcido */
+            color: #28AD56; /* Verde de Acento */
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-size: 1rem;
+        }
+
+        .feature-text h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .feature-text p {
+            margin: 0;
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* LADO DERECHO: Panel de Autenticación */
+        .login-side {
+            flex: 0.8;
+            background: linear-gradient(135deg, #18529D 0%, #0f3a73 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            box-sizing: border-box;
+            min-width: 320px;
+            color: #ffffff;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .login-card h2 {
+            margin-0 0 15px 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .login-card p {
+            color: #e0e6ed;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* Botón personalizado de Google con tus colores */
+        .btn-google-auth {
+            background-color: #28AD56; /* Verde de acento */
+            color: #ffffff;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(40, 173, 86, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-google-auth:hover {
+            background-color: #219347;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 173, 86, 0.6);
+        }
+
+        .btn-google-auth:active {
+            transform: translateY(0);
+        }
+
+        /* Responsividad básica para pantallas pequeñas */
+        @media (max-width: 768px) {
+            .info-side { padding: 30px; text-align: center; }
+            .feature-item { text-align: left; }
+            .login-side { padding: 30px 20px; }
+        }
+    </style>
 </head>
 <body>
 
-<div id="pantalla-bloqueo">
-  <div class="tarjeta-bienvenida">
-    <h2>Mastering Irregular Verbs 📚</h2>
-    <p>Inicia sesión con tu cuenta de Google para acceder al material didáctico.</p>
-    <button class="btn-google" id="btn-login">Iniciar sesión con Google</button>
-  </div>
-</div>
+    <div class="welcome-wrapper">
+        
+        <main class="info-side">
+            <h1>Mastering Irregular Verbs</h1>
+            <p class="tagline">Objeto Virtual de Aprendizaje para el dominio del inglés práctico.</p>
+            
+            <p>Bienvenido a este espacio interactivo diseñado específicamente para ayudarte a identificar, memorizar y aplicar correctamente los verbos irregulares en pasado simple y participio de forma autónoma y efectiva.</p>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-icon">✓</span>
+                    <div class="feature-text">
+                        <h3>Módulos de Estudio Interactivos</h3>
+                        <p>Accede a guías multimedia organizadas por patrones de cambio con soporte de audio nativo.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✓</span>
+                    <div class="feature-text">
+                        <h3>Gamificación Aplicada</h3>
+                        <p>Practica lo aprendido de forma lúdica a través de retos y mecánicas de anagramas en nuestro módulo de juego.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✓</span>
+                    <div class="feature-text">
+                        <h3>Autoevaluación Formativa</h3>
+                        <p>Mide tu nivel real con ejercicios automatizados que te brindarán retroalimentación inmediata sobre tu progreso.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
 
-<div id="contenido-ova" class="ova-oculto">
-    <div class="exe-content">
-        <h1>Introduction</h1>
-        <p>Contenido del OVA disponible...</p>
+        <aside class="login-side">
+            <div class="login-card">
+                <h2>Comienza a Aprender</h2>
+                <p>Para ingresar al material didáctico, reproducir las pistas de audio y registrar tu avance, inicia sesión con tu cuenta institucional o personal.</p>
+                
+                <button class="btn-google-auth" id="btn-login-google">
+                    <span>Sign in with Google</span>
+                </button>
+            </div>
+        </aside>
+
     </div>
-</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    <script type="module">
+        // Importamos las herramientas desde el CDN de Firebase
+        import { auth } from "./js/firebase-config.js";
+        import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyDHKdijIfKanuRnq7X-S1UlhqM5OzJYHfY",
-  authDomain: "mastering-irregular-verbs.firebaseapp.com",
-  projectId: "mastering-irregular-verbs",
-  storageBucket: "mastering-irregular-verbs.firebasestorage.app",
-  messagingSenderId: "732781732974",
-  appId: "1:732781732974:web:b275bfb760d05f0d72327f",
-  measurementId: "G-VRKJ50XKTT"
-};
+        const provider = new GoogleAuthProvider();
+        const btnLogin = document.getElementById('btn-login-google');
 
-  // Inicializar Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+        // Escuchar si el estudiante ya cuenta con una sesión activa
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Si ya está logueado, lo mandamos directo al módulo de Introducción
+                window.location.href = "modules/introduction.html";
+            }
+        });
 
-  // Elementos del DOM
-  const pantallaBloqueo = document.getElementById('pantalla-bloqueo');
-  const contenidoOva = document.getElementById('contenido-ova');
-  const btnLogin = document.getElementById('btn-login');
-
-  // 3. OBSERVAR EL ESTADO DEL USUARIO (Saber si ya está logueado o no)
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // Si hay usuario: mostramos el OVA y ocultamos la pantalla de login
-      pantallaBloqueo.style.display = 'none';
-      contenidoOva.classList.remove('ova-oculto');
-      console.log("Usuario firmado:", user.email);
-    } else {
-      // Si no hay usuario: protegemos el contenido
-      pantallaBloqueo.style.display = 'flex';
-      contenidoOva.classList.add('ova-oculto');
-    }
-  });
-
-  // 4. ACCIÓN DEL BOTÓN: Disparar la ventana flotante de Google
-  btnLogin.addEventListener('click', () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // Login exitoso
-        console.log("Acceso concedido");
-      }).catch((error) => {
-        console.error("Error en la autenticación:", error.message);
-        alert("Hubo un error al conectar con Google. Inténtalo de nuevo.");
-      });
-  });
-
-  // Exportamos la función de cierre de sesión de forma global por si deseas usarla en tus menús
-  window.cerrarSesionFirebase = function() {
-    signOut(auth);
-  };
-</script>
+        // Evento para disparar la ventana flotante al hacer clic en el botón verde
+        btnLogin.addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    console.log("Autenticación exitosa");
+                    // La redirección ocurrirá automáticamente por el "onAuthStateChanged"
+                })
+                .catch((error) => {
+                    console.error("Error al autenticar:", error.message);
+                    alert("No se pudo completar el inicio de sesión. Por favor, vuelve a intentarlo.");
+                });
+        });
+    </script>
 </body>
 </html>
