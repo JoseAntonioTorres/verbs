@@ -1,5 +1,5 @@
 // js/auth-guard.js
-import { auth } from "./firebase-config.js"; 
+import { auth } from "../js/firebase-config.js"; 
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
 // Guardián de ruta: Verifica el estado del alumno
