@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game - Mastering Irregular Verbs</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        @media (min-width: 900px) {
+            .game-layout {
+                grid-template-columns: 1.2fr 0.8fr;
+            }
+        }
+
+        /* Contenedor del Juego Activo */
+        .game-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .scrambled-word {
+            font-size: 2.2rem;
+            letter-spacing: 5px;
+            color: var(--primary-color);
+            margin: 20px 0;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .game-input {
+            width: 80%;
+            max-width: 300px;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .btn-action {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-action:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Contenedor del Scoreboard */
+        .scoreboard-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary-color);
+        }
+        .scoreboard-title {
+            font-size: 1.4rem;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .score-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .score-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
+        }
+        .score-item:last-child {
+            border-bottom: none;
+        }
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .rank-badge {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        /* Medallas */
+        .rank-1 { background-color: #ffd700; color: #594400; } /* Oro */
+        .rank-2 { background-color: #c0c0c0; color: #3a3a3a; } /* Plata */
+        .rank-3 { background-color: #cd7f32; color: #fff; }    /* Bronce */
+        .rank-other { background-color: #f0f2f5; color: #666; }
+
+        .points-display {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <header></header>
+
+    <main class="content-container">
+        <div class="game-layout">
+            
+            <section class="game-card">
+                <h2>Reto de Anagramas: Verbos Irregulares</h2>
+                <p>Ordena las letras para descubrir el verbo en **Pasado** o **Participio** según la traducción.</p>
+                
+                <div class="hud">
+                    <div>Puntaje: <span id="currentScore" style="color:var(--accent-color)">0</span> pts</div>
+                    <div>Vidas: <span id="livesDisplay" style="color:#dc3545">♥♥♥</span></div>
+                </div>
+
+                <div id="gameArea">
+                    <p id="clueMeaning" style="font-style: italic; color:#666;">Traducción: ...</p>
+                    <div id="scrambledWord" class="scrambled-word">----</div>
+                    
+                    <input type="text" id="playerGuess" class="game-input" placeholder="Tu respuesta aquí..." autocomplete="off">
+                    <br>
+                    <button id="btnSubmitGuess" class="btn-action">Verificar Respuesta</button>
+                </div>
+
+                <div id="gameOverArea" style="display: none;">
+                    <h3 style="color:#dc3545; font-size: 1.8rem;">¡Juego Terminado!</h3>
+                    <p>Tu puntuación final ha sido enviada al Scoreboard general.</p>
+                    <button id="btnRestart" class="btn-action" style="background-color: var(--accent-color)">Jugar de Nuevo</button>
+                </div>
+            </section>
+
+            <aside class="scoreboard-card">
+                <h3 class="scoreboard-title">🏆 Salón de la Fama</h3>
+                <ul class="score-list" id="scoreboardList">
+                    <li class="score-item">Cargando líderes en tiempo real...</li>
+                </ul>
+            </aside>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { auth } from "../js/firebase-config.js";
+        // Importamos Firestore desde el CDN oficial
+        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+
+        // Inicializamos Firestore pasando la conexión global del OVA
+        const db = getFirestore();
+        const scoresCollection = collection(db, "scoreboard");
+
+        // --- BANCO DE PREGUNTAS DEL JUEGO ---
+        const verbPool = [
+            { correct: "went", scrambled: "netw", clue: "Pasado de 'Go' (Ir)" },
+            { correct: "began", scrambled: "nabeg", clue: "Pasado de 'Begin' (Comenzar)" },
+            { correct: "broken", scrambled: "knorbe", clue: "Participio de 'Break' (Romper)" },
+            { correct: "brought", scrambled: "thgubro", clue: "Pasado de 'Bring' (Traer)" },
+            { correct: "eaten", scrambled: "netae", clue: "Participio de 'Eat' (Comer)" },
+            { correct: "flew", scrambled: "welf", clue: "Pasado de 'Fly' (Volar)" },
+            { correct: "written", scrambled: "nettriw", clue: "Participio de 'Write' (Escribir)" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let lives = 3;
+        let currentUser = null;
+
+        // Escuchar autenticación para saber el nombre del alumno
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                initGame();
+            }
+        });
+
+        // --- ESCUCHA EN TIEMPO REAL DEL SCOREBOARD ---
+        // Trae los 7 puntajes más altos ordenados de mayor a menor
+        const q = query(scoresCollection, orderBy("score", "desc"), limit(7));
+        onSnapshot(q, (snapshot) => {
+            const scoreboardList = document.getElementById("scoreboardList");
+            scoreboardList.innerHTML = "";
+            
+            let rank = 1;
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                
+                // Asignar diseño de medalla según el ranking
+                let badgeClass = "rank-other";
+                let medal = rank;
+                if(rank === 1) { badgeClass = "rank-1"; medal = "🥇"; }
+                else if(rank === 2) { badgeClass = "rank-2"; medal = "🥈"; }
+                else if(rank === 3) { badgeClass = "rank-3"; medal = "🥉"; }
+
+                scoreboardList.innerHTML += `
+                    <li class="score-item">
+                        <div class="player-info">
+                            <span class="rank-badge ${badgeClass}">${medal}</span>
+                            <strong>${data.name}</strong>
+                        </div>
+                        <span class="points-display">${data.score} pts</span>
+                    </li>
+                `;
+                rank++;
+            });
+
+            if (scoreboardList.innerHTML === "") {
+                scoreboardList.innerHTML = `<li class="score-item" style="color:#666; text-align:center;">¡Sé el primero en registrar su récord!</li>`;
+            }
+        });
+
+        // --- LÓGICA MECÁNICA DEL JUEGO ---
+        function initGame() {
+            score = 0;
+            lives = 3;
+            currentQuestionIndex = 0;
+            document.getElementById("currentScore").textContent = score;
+            document.getElementById("livesDisplay").textContent = "♥♥♥";
+            document.getElementById("gameArea").style.display = "block";
+            document.getElementById("gameOverArea").style.display = "none";
+            // Mezclar preguntas de forma aleatoria si se desea
+            verbPool.sort(() => Math.random() - 0.5);
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestionIndex >= verbPool.length || lives <= 0) {
+                endGame();
+                return;
+            }
+            const currentData = verbPool[currentQuestionIndex];
+            document.getElementById("clueMeaning").textContent = `Pista: ${currentData.clue}`;
+            document.getElementById("scrambledWord").textContent = currentData.scrambled;
+            document.getElementById("playerGuess").value = "";
+            document.getElementById("playerGuess").focus();
+        }
+
+        function verifyAnswer() {
+            const guess = document.getElementById("playerGuess").value.trim().toLowerCase();
+            const correctAnswer = verbPool[currentQuestionIndex].correct;
+
+            if (guess === correctAnswer) {
+                score += 10; // 10 puntos por acierto
+                document.getElementById("currentScore").textContent = score;
+                alert("¡Excelente! Respuesta correcta. 🎉");
+            } else {
+                lives--;
+                let hearts = "";
+                for(let i=0; i<lives; i++) hearts += "♥";
+                document.getElementById("livesDisplay").textContent = hearts || "Sín vidas";
+                alert(`Ups... La respuesta correcta era: ${correctAnswer} ❌`);
+            }
+
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        async function endGame() {
+            document.getElementById("gameArea").style.display = "none";
+            document.getElementById("gameOverArea").style.display = "block";
+
+            // GUARDAR EL RÉCORD EN FIREBASE FIRESTORE AUTOMÁTICAMENTE
+            if (currentUser && score > 0) {
+                try {
+                    await addDoc(scoresCollection, {
+                        name: currentUser.displayName || "Estudiante Anónimo",
+                        score: score,
+                        email: currentUser.email,
+                        date: new Date().toISOString()
+                    });
+                    console.log("Puntaje guardado con éxito.");
+                } catch (error) {
+                    console.error("Error al guardar récord:", error);
+                }
+            }
+        }
+
+        // Asignar eventos de los botones
+        document.getElementById("btnSubmitGuess").addEventListener("click", verifyAnswer);
+        document.getElementById("btnRestart").addEventListener("click", initGame);
+        
+        // Permitir presionar "Enter" en el input para validar rápido
+        document.getElementById("playerGuess").addEventListener("keyup", (e) => {
+            if (e.key === "Enter") verifyAnswer();
+        });
+    </script>
+
+    <script type="module" src="../js/auth-guard.js"></script>
+</body>
+</html>
