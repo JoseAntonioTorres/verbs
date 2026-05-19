@@ -339,7 +339,7 @@
                                 style="width:100%; background-color: var(--accent-color);">Jugar</button>
                         </div>
 
-                        <!-- Tarjeta Juego 3: Reservado para futuras expansiones (Crucigramas, Conecta, etc.) -->
+                        <!-- Tarjeta Juego 3: Reservado para futuras expansiones -->
                         <div class="menu-card" id="card-pinball">
                             <div>
                                 <span class="icon">🔮</span>
@@ -370,7 +370,7 @@
                                 <div>Vidas: <span id="livesDisplay" style="color:var(--danger-color)">♥♥♥</span></div>
                             </div>
 
-                            <div id="gameArea">
+                            <div class="gameArea" id="gameArea">
                                 <p id="clueMeaning" style="font-style: italic; color:#666;">Traducción: ...</p>
                                 <div id="scrambledWord" class="scrambled-word">----</div>
 
@@ -394,7 +394,7 @@
                             <p style="margin-bottom: 10px;">Controles: Usa las **Flechas ← / →** para moverte. Dispara
                                 con **Espacio**.</p>
 
-                            <!-- NUEVO: Selector de Niveles -->
+                            <!-- Selector de Niveles -->
                             <div id="level-selector-container"
                                 style="margin: 15px 0; display: flex; justify-content: center; gap: 10px; align-items: center;">
                                 <span style="font-weight: bold; color: #555;">Selecciona tu Nivel:</span>
@@ -412,12 +412,14 @@
                                 <canvas id="invadersCanvas" width="700" height="500"></canvas>
                             </div>
                         </div>
+
+                        <!-- RENDER INDIVIDUAL: PINBALL -->
                         <div id="pinball-game-render" style="display: none;">
                             <h2 style="margin-top:0; color: var(--primary-color);">🔮 Pinball Ahorcado Irregular</h2>
                             <p style="margin-bottom: 10px;">Controles: Mantén **Flecha Abajo** para cargar el resorte.
                                 Usa **Flecha Izquierda / Derecha** para los Flippers.</p>
 
-                            <div class="canvas-container" style="max-width: 450px;"> <!-- El pinball es vertical -->
+                            <div class="canvas-container" style="max-width: 450px;">
                                 <canvas id="pinballCanvas" width="450" height="600"></canvas>
                             </div>
                         </div>
@@ -485,136 +487,53 @@
             }
         });
 
-        // --- MANEJO DE SELECCIÓN Y FLUJO DE INTERFAZ (RUTEADOR) ---
-
-        btnBackToMenu.addEventListener("click", () => {
-            if (window.currentSpaceGame) { window.currentSpaceGame.stop(); window.currentSpaceGame = null; }
-            if (window.currentPinballGame) { window.currentPinballGame.stop(); window.currentPinballGame = null; }
-            playScreen.style.display = "none";
-            selectorScreen.style.display = "block";
-            escucharScoreboard("anagrams"); // Scoreboard por defecto en el menú
-        });
-
-        // Al entrar al Pinball
-        cardPinball.addEventListener("click", async () => {
-            selectorScreen.style.display = "none";
-            playScreen.style.display = "block";
-            anagramsRender.style.display = "none";
-            invadersRender.style.display = "none";
-            pinballRender.style.display = "block";
-
-            try {
-                const { startPinballGame } = await import("../js/verb-pinball.js");
-                window.currentPinballGame = startPinballGame(currentUser, scoresCollection);
-                escucharScoreboard("pinball-hangman");
-            } catch (err) {
-                console.error(err);
-            }
-        });
-
-        // INICIALIZACIÓN POR DEFECTO AL CARGAR LA PÁGINA
-        escucharScoreboard("anagrams");
-
-        // Al entrar a Anagramas
-        cardAnagrams.addEventListener("click", () => {
-            selectorScreen.style.display = "none";
-            playScreen.style.display = "block";
-            invadersRender.style.display = "none";
-            anagramsRender.style.display = "block";
-            initAnagramsGame();
-            escucharScoreboard("anagrams");
-        });
-
-        // Al entrar a Verb Invaders (Escucha por defecto el Nivel 1 al cargar la pantalla)
-        cardInvaders.addEventListener("click", async () => {
-            selectorScreen.style.display = "none";
-            playScreen.style.display = "block";
-            anagramsRender.style.display = "none";
-            invadersRender.style.display = "block";
-
-            try {
-                const { startInvadersGame, updateLevelButtons } = await import("../js/verb-invaders.js");
-                updateLevelButtons();
-
-                const setupLevelButton = (lvl) => {
-                    const btn = document.getElementById(`btn-lvl-${lvl}`);
-                    const newBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(newBtn, btn);
-
-                    newBtn.addEventListener("click", () => {
-                        if (window.currentSpaceGame) window.currentSpaceGame.stop();
-                        window.currentSpaceGame = startInvadersGame(currentUser, scoresCollection, lvl);
-                        escucharScoreboard(`verb-invaders-lvl${lvl}`); // Filtra el marcador al cambiar nivel
-                    });
-                };
-
-                setupLevelButton(1);
-                setupLevelButton(2);
-                setupLevelButton(3);
-
-                window.currentSpaceGame = startInvadersGame(currentUser, scoresCollection, 1);
-                escucharScoreboard("verb-invaders-lvl1");
-            } catch (err) {
-                console.error(err);
-            }
-        });
-
-
         // --- CONFIGURACIÓN REALTIME DEL SALÓN DE LA FAMA ---
-        const q = query(scoresCollection, orderBy("score", "desc"), limit(7));
-        onSnapshot(q, (snapshot) => {
-            let unsubscribeScoreboard = null;
+        let unsubscribeScoreboard = null;
 
-            function escucharScoreboard(gameTypeFilter) {
-                // Si ya había una escucha activa, la cancelamos para evitar consumo doble de datos
-                if (unsubscribeScoreboard) unsubscribeScoreboard();
+        function escucharScoreboard(gameTypeFilter) {
+            if (unsubscribeScoreboard) unsubscribeScoreboard();
 
-                const scoreboardList = document.getElementById("scoreboardList");
-                scoreboardList.innerHTML = `<li class="score-item">Cargando récords de ${gameTypeFilter}...</li>`;
+            const scoreboardList = document.getElementById("scoreboardList");
+            scoreboardList.innerHTML = `<li class="score-item">Cargando récords de ${gameTypeFilter}...</li>`;
 
-                // Filtramos directamente en la consulta por el tipo de juego seleccionado
-                const scoresCollection = collection(db, "scoreboard");
-                // Nota: Para usar .where() junto a .orderBy() en Firebase, requerirías crear un índice compuesto.
-                // Para mantenerlo simple, directo y sin configurar la consola de Firebase, filtramos por ID/Filtro global:
-                const q = query(scoresCollection, orderBy("score", "desc"));
+            const qScoreboard = query(scoresCollection, orderBy("score", "desc"));
 
-                unsubscribeScoreboard = onSnapshot(q, (snapshot) => {
-                    scoreboardList.innerHTML = "";
-                    let rank = 1;
+            unsubscribeScoreboard = onSnapshot(qScoreboard, (snapshot) => {
+                scoreboardList.innerHTML = "";
+                let rank = 1;
 
-                    snapshot.forEach((docSnapshot) => {
-                        const data = docSnapshot.data();
+                snapshot.forEach((docSnapshot) => {
+                    const data = docSnapshot.data();
 
-                        // Filtramos localmente para mostrar solo el juego activo actual
-                        if (data.gameType === gameTypeFilter) {
-                            if (rank <= 7) { // Limitamos visualmente a los mejores 7
-                                let badgeClass = "rank-other";
-                                let medal = rank;
-                                if (rank === 1) { badgeClass = "rank-1"; medal = "🥇"; }
-                                else if (rank === 2) { badgeClass = "rank-2"; medal = "🥈"; }
-                                else if (rank === 3) { badgeClass = "rank-3"; medal = "🥉"; }
+                    if (data.gameType === gameTypeFilter) {
+                        if (rank <= 7) {
+                            let badgeClass = "rank-other";
+                            let medal = rank;
+                            if (rank === 1) { badgeClass = "rank-1"; medal = "🥇"; }
+                            else if (rank === 2) { badgeClass = "rank-2"; medal = "🥈"; }
+                            else if (rank === 3) { badgeClass = "rank-3"; medal = "🥉"; }
 
-                                scoreboardList.innerHTML += `
-                        <li class="score-item">
-                            <div class="player-info">
-                                <span class="rank-badge ${badgeClass}">${medal}</span>
-                                <strong>${data.name}</strong>
-                            </div>
-                            <span class="points-display">${data.score} pts</span>
-                        </li>
-                    `;
-                                rank++;
-                            }
+                            scoreboardList.innerHTML += `
+                                <li class="score-item">
+                                    <div class="player-info">
+                                        <span class="rank-badge ${badgeClass}">${medal}</span>
+                                        <strong>${data.name}</strong>
+                                    </div>
+                                    <span class="points-display">${data.score} pts</span>
+                                </li>
+                            `;
+                            rank++;
                         }
-                    });
-
-                    if (scoreboardList.innerHTML === "") {
-                        scoreboardList.innerHTML = `<li class="score-item" style="color:#666; text-align:center;">¡Nadie ha jugado a esto! Sé el primero en liderar.</li>`;
                     }
                 });
-            }
-        });
 
+                if (scoreboardList.innerHTML === "") {
+                    scoreboardList.innerHTML = `<li class="score-item" style="color:#666; text-align:center;">¡Nadie ha jugado a esto! Sé el primero en liderar.</li>`;
+                }
+            }, (error) => {
+                console.error("Error en el snapshot del scoreboard:", error);
+            });
+        }
 
         // --- LÓGICA CORE: RETO ANAGRAMAS ---
         function initAnagramsGame() {
@@ -662,37 +581,111 @@
         }
 
         async function endAnagramsGame() {
-    document.getElementById("gameArea").style.display = "none";
-    document.getElementById("gameOverArea").style.display = "block";
+            document.getElementById("gameArea").style.display = "none";
+            document.getElementById("gameOverArea").style.display = "block";
 
-    if (currentUser && score > 0) {
-        try {
-            // Creamos una clave única por estudiante y juego
-            const docId = `${currentUser.uid}_anagrams`;
-            const docRef = doc(db, "scoreboard", docId);
-            
-            // Guardamos con setDoc usando { merge: true }
-            await setDoc(docRef, {
-                name: currentUser.displayName || currentUser.email.split('@')[0],
-                score: score, // Nota: Abajo validaremos que solo sobreescriba si es mayor
-                email: currentUser.email,
-                date: new Date().toISOString(),
-                gameType: "anagrams"
-            }, { merge: true });
-            
-            console.log("Proceso de guardado de récord completado.");
-        } catch (error) {
-            console.error("Error al registrar récord en Firestore:", error);
+            if (currentUser && score > 0) {
+                try {
+                    const docId = `${currentUser.uid}_anagrams`;
+                    const docRef = doc(db, "scoreboard", docId);
+
+                    await setDoc(docRef, {
+                        name: currentUser.displayName || currentUser.email.split('@')[0],
+                        score: score,
+                        email: currentUser.email,
+                        date: new Date().toISOString(),
+                        gameType: "anagrams"
+                    }, { merge: true });
+
+                    console.log("Proceso de guardado de récord completado.");
+                } catch (error) {
+                    console.error("Error al registrar récord en Firestore:", error);
+                }
+            }
         }
-    }
-}
 
-        // Asignación de listeners de Anagramas
+        // --- MANEJO DE ASIGNACIÓN DE EVENTOS Y RUTAS (Llamados seguros al final) ---
+
+        btnBackToMenu.addEventListener("click", () => {
+            if (window.currentSpaceGame) { window.currentSpaceGame.stop(); window.currentSpaceGame = null; }
+            if (window.currentPinballGame) { window.currentPinballGame.stop(); window.currentPinballGame = null; }
+            playScreen.style.display = "none";
+            selectorScreen.style.display = "block";
+            escucharScoreboard("anagrams");
+        });
+
+        // Click Anagramas
+        cardAnagrams.addEventListener("click", () => {
+            selectorScreen.style.display = "none";
+            playScreen.style.display = "block";
+            invadersRender.style.display = "none";
+            pinballRender.style.display = "none";
+            anagramsRender.style.display = "block";
+            initAnagramsGame();
+            escucharScoreboard("anagrams");
+        });
+
+        // Click Space Invaders
+        cardInvaders.addEventListener("click", async () => {
+            selectorScreen.style.display = "none";
+            playScreen.style.display = "block";
+            anagramsRender.style.display = "none";
+            pinballRender.style.display = "none";
+            invadersRender.style.display = "block";
+
+            try {
+                const { startInvadersGame, updateLevelButtons } = await import("../js/verb-invaders.js");
+                updateLevelButtons();
+
+                const setupLevelButton = (lvl) => {
+                    const btn = document.getElementById(`btn-lvl-${lvl}`);
+                    const newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
+
+                    newBtn.addEventListener("click", () => {
+                        if (window.currentSpaceGame) window.currentSpaceGame.stop();
+                        window.currentSpaceGame = startInvadersGame(currentUser, scoresCollection, lvl);
+                        escucharScoreboard(`verb-invaders-lvl${lvl}`);
+                    });
+                };
+
+                setupLevelButton(1);
+                setupLevelButton(2);
+                setupLevelButton(3);
+
+                window.currentSpaceGame = startInvadersGame(currentUser, scoresCollection, 1);
+                escucharScoreboard("verb-invaders-lvl1");
+            } catch (err) {
+                console.error("Error cargando Verb Invaders:", err);
+            }
+        });
+
+        // Click Pinball
+        cardPinball.addEventListener("click", async () => {
+            selectorScreen.style.display = "none";
+            playScreen.style.display = "block";
+            anagramsRender.style.display = "none";
+            invadersRender.style.display = "none";
+            pinballRender.style.display = "block";
+
+            try {
+                const { startPinballGame } = await import("../js/verb-pinball.js");
+                window.currentPinballGame = startPinballGame(currentUser, scoresCollection);
+                escucharScoreboard("pinball-hangman");
+            } catch (err) {
+                console.error("Error cargando Pinball:", err);
+            }
+        });
+
+        // Eventos del DOM de Anagramas
         document.getElementById("btnSubmitGuess").addEventListener("click", verifyAnswer);
         document.getElementById("btnRestart").addEventListener("click", initAnagramsGame);
         document.getElementById("playerGuess").addEventListener("keyup", (e) => {
             if (e.key === "Enter") verifyAnswer();
         });
+
+        // EJECUCIÓN INICIAL (Ahora sí encuentra la función declarada arriba)
+        escucharScoreboard("anagrams");
     </script>
 
     <script type="module" src="../js/auth-guard.js"></script>
