@@ -1,599 +1,682 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study - Mastering Irregular Verbs</title>
+    <title>Arcade de Juegos - Mastering Irregular Verbs</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
-        /* Estilos específicos para la sección de estudio */
-        .study-header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding: 0 15px;
-        }
-        
-        /* Buscador integrado para que el alumno filtre verbos rápido */
-        .search-container {
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: center;
-            padding: 0 15px;
-        }
-        .search-input {
-            width: 100%;
-            max-width: 400px;
-            padding: 14px 20px; /* Un poco más de padding para pantallas táctiles */
-            border: 2px solid #ccc;
-            border-radius: 25px;
-            font-size: 16px; /* Evita el zoom automático en iOS al hacer focus */
-            transition: border-color 0.3s;
-            -webkit-appearance: none; /* Consistencia en móviles */
-        }
-        .search-input:focus {
-            border-color: var(--primary-color);
-            outline: none;
+        /* Paleta de variables de respaldo en caso de que falten en styles.css */
+        :root {
+            --primary-color: #18529D;
+            --accent-color: #28AD56;
+            --danger-color: #dc3545;
         }
 
-        /* Contenedor de la tabla interactiva */
-        .table-responsive {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin: 0 15px;
-            overflow: hidden;
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f9;
         }
-        
-        .verbs-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
+
+        /* Modificación solicitada: Aumento de padding superior a 40px para despegado del menú */
+        .content-container {
+            padding: 40px 20px 20px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-sizing: border-box;
         }
-        
-        .verbs-table th, .verbs-table td {
-            padding: 15px 20px;
-            border-bottom: 1px solid #eee;
+
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 20px;
         }
-        
-        .verbs-table th {
-            background-color: rgba(24, 82, 157, 0.05);
+
+        @media (min-width: 900px) {
+            .game-layout {
+                grid-template-columns: 1.4fr 0.6fr;
+            }
+        }
+
+        /* --- CONTENEDOR SELECTOR DE JUEGOS --- */
+        .arcade-title {
             color: var(--primary-color);
-            font-weight: 700;
+            margin-top: 0;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .arcade-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eef2f5;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(24, 82, 157, 0.15);
+            border-color: rgba(24, 82, 157, 0.2);
+        }
+
+        .menu-card .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .menu-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.25rem;
+        }
+
+        .menu-card p {
+            margin: 0 0 20px 0;
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* --- ESTADOS DE PANTALLA --- */
+        #game-play-screen {
+            display: none;
+        }
+
+        /* Contenedores de Paneles de Juego Activo */
+        .game-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            position: relative;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .btn-back:hover {
+            color: var(--primary-color);
+        }
+
+        /* Estilos específicos de Anagramas */
+        .scrambled-word {
+            font-size: 2.2rem;
+            letter-spacing: 5px;
+            color: var(--primary-color);
+            margin: 20px 0;
+            font-weight: bold;
             text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.5px;
         }
-        
-        .verbs-table tr:hover {
-            background-color: #f9fbfd;
+
+        .game-input {
+            width: 90%;
+            max-width: 300px;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
-        
-        /* Estilo del botón de audio */
-        .btn-audio {
+
+        .btn-action {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            width: 44px; /* Tamaño mínimo recomendado por Google para interacción táctil */
-            height: 44px;
-            border-radius: 50%;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
             cursor: pointer;
-            display: inline-flex;
+            transition: background 0.2s;
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Estilos específicos del Canvas de Space Invaders */
+        .canvas-container {
+            position: relative;
+            background: #050510;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px auto 0 auto;
+            max-width: 700px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        #invadersCanvas {
+            display: block;
+            background: #0b0b1e;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        /* Contenedor del Scoreboard (Fijo a la derecha) */
+        .scoreboard-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--primary-color);
+            align-self: start;
+        }
+
+        .scoreboard-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(24, 82, 157, 0.3);
-            font-size: 16px;
-        }
-        
-        .btn-audio:hover, .btn-audio:active {
-            background-color: var(--accent-color);
-            box-shadow: 0 2px 5px rgba(40, 173, 86, 0.4);
-            transform: scale(1.05);
+            gap: 10px;
         }
 
-        .meaning-tag {
+        .score-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rank-badge {
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .rank-1 {
+            background-color: #ffd700;
+            color: #594400;
+        }
+
+        .rank-2 {
+            background-color: #c0c0c0;
+            color: #3a3a3a;
+        }
+
+        .rank-3 {
+            background-color: #cd7f32;
+            color: #fff;
+        }
+
+        .rank-other {
             background-color: #f0f2f5;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            color: #555;
-            display: inline-block;
+            color: #666;
         }
 
-        /* Responsive: De Tabla a Tarjetas (Mobile First / Pantallas pequeñas) */
+        .points-display {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
         @media (max-width: 768px) {
-            .table-responsive {
-                background: transparent;
-                box-shadow: none;
-                margin: 0 10px;
+            .content-container {
+                padding: 30px 10px 10px 10px;
             }
 
-            .verbs-table, .verbs-table thead, .verbs-table tbody, .verbs-table th, .verbs-table td, .verbs-table tr {
-                display: block; /* Rompe la estructura de tabla tradicional */
+            .game-card {
+                padding: 20px 15px;
             }
 
-            .verbs-table thead {
-                display: none; /* Escondemos los encabezados de columna */
+            .scrambled-word {
+                font-size: 1.8rem;
             }
-
-            .verbs-table tr {
-                background: white;
-                border-radius: 12px;
-                padding: 15px;
-                margin-bottom: 15px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                position: relative; /* Para posicionar el botón de audio de forma cómoda */
-            }
-
-            .verbs-table td {
-                border-bottom: none;
-                padding: 6px 0;
-                font-size: 15px;
-                padding-left: 45%; /* Espacio para las etiquetas fijas */
-                position: relative;
-            }
-
-            /* Creamos etiquetas falsas a la izquierda para saber qué es cada dato */
-            .verbs-table td::before {
-                position: absolute;
-                left: 0;
-                width: 40%;
-                white-space: nowrap;
-                font-weight: 600;
-                color: #888;
-                font-size: 12px;
-                text-transform: uppercase;
-                top: 50%;
-                transform: translateY(-50%);
-            }
-
-            /* Inyectamos el texto de los encabezados dinámicamente mediante CSS */
-            .verbs-table td:nth-child(1)::before { content: "Infinitive:"; }
-            .verbs-table td:nth-child(2)::before { content: "Past Simple:"; }
-            .verbs-table td:nth-child(3)::before { content: "Participle:"; }
-            .verbs-table td:nth-child(4)::before { content: "Meaning:"; }
-
-            /* Estilo especial para la primera celda (el verbo principal) */
-            .verbs-table td:nth-child(1) {
-                font-size: 18px;
-                color: var(--primary-color);
-            }
-
-            /* Movemos el botón de reproducción a la esquina superior derecha de la tarjeta */
-            .verbs-table td:nth-child(5) {
-                position: absolute;
-                top: 15px;
-                right: 15px;
-                padding: 0;
-                width: auto;
-            }
-            .verbs-table td:nth-child(5)::before { content: ""; } /* Sin etiqueta para el audio */
         }
     </style>
 </head>
+
 <body>
 
     <header></header>
 
     <main class="content-container">
-        <div class="study-header">
-            <h1>Módulo de Estudio: Lista de Verbos</h1>
-            <p>Escucha la pronunciación nativa y analiza cómo cambian las formas en pasado y participio.</p>
-        </div>
+        <div class="game-layout">
 
-        <div class="search-container">
-            <input type="text" id="verbSearch" class="search-input" placeholder="🔍 Buscar verbo en inglés o español...">
-        </div>
+            <!-- CONTENEDOR DE DINÁMICAS (SELECTOR O PANTALLA DE JUEGO ACTIVO) -->
+            <section class="main-game-area">
 
-       <div class="table-responsive">
-            <table class="verbs-table">
-                <thead>
-                    <tr>
-                        <th>Infinitive (Base Form)</th>
-                        <th>Past Simple</th>
-                        <th>Past Participle</th>
-                        <th>Meaning</th>
-                        <th>Listen</th>
-                    </tr>
-                </thead>
-                <tbody id="verbsBody">
-                    <tr class="verb-row">
-                        <td><strong>Be</strong></td>
-                        <td>was / were</td>
-                        <td>been</td>
-                        <td><span class="meaning-tag">Ser / estar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('be')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Begin</strong></td>
-                        <td>began</td>
-                        <td>begun</td>
-                        <td><span class="meaning-tag">Comenzar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('begin')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Break</strong></td>
-                        <td>broke</td>
-                        <td>broken</td>
-                        <td><span class="meaning-tag">Romper</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('break')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Bring</strong></td>
-                        <td>brought</td>
-                        <td>brought</td>
-                        <td><span class="meaning-tag">Traer</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('bring')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Build</strong></td>
-                        <td>built</td>
-                        <td>built</td>
-                        <td><span class="meaning-tag">Construir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('build')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Buy</strong></td>
-                        <td>bought</td>
-                        <td>bought</td>
-                        <td><span class="meaning-tag">Comprar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('buy')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Catch</strong></td>
-                        <td>caught</td>
-                        <td>caught</td>
-                        <td><span class="meaning-tag">Atrapar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('catch')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Choose</strong></td>
-                        <td>chose</td>
-                        <td>chosen</td>
-                        <td><span class="meaning-tag">Elegir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('choose')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Come</strong></td>
-                        <td>came</td>
-                        <td>come</td>
-                        <td><span class="meaning-tag">Venir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('come')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Cost</strong></td>
-                        <td>cost</td>
-                        <td>cost</td>
-                        <td><span class="meaning-tag">Costar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('cost')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Cut</strong></td>
-                        <td>cut</td>
-                        <td>cut</td>
-                        <td><span class="meaning-tag">Cortar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('cut')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Do</strong></td>
-                        <td>did</td>
-                        <td>done</td>
-                        <td><span class="meaning-tag">Hacer</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('do')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Draw</strong></td>
-                        <td>drew</td>
-                        <td>drawn</td>
-                        <td><span class="meaning-tag">Dibujar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('draw')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Drink</strong></td>
-                        <td>drank</td>
-                        <td>drunk</td>
-                        <td><span class="meaning-tag">Beber</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('drink')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Drive</strong></td>
-                        <td>drove</td>
-                        <td>driven</td>
-                        <td><span class="meaning-tag">Conducir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('drive')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Eat</strong></td>
-                        <td>ate</td>
-                        <td>eaten</td>
-                        <td><span class="meaning-tag">Comer</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('eat')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Fall</strong></td>
-                        <td>fell</td>
-                        <td>fallen</td>
-                        <td><span class="meaning-tag">Caer</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('fall')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Feel</strong></td>
-                        <td>felt</td>
-                        <td>felt</td>
-                        <td><span class="meaning-tag">Sentir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('feel')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Find</strong></td>
-                        <td>found</td>
-                        <td>found</td>
-                        <td><span class="meaning-tag">Encontrar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('find')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Fly</strong></td>
-                        <td>flew</td>
-                        <td>flown</td>
-                        <td><span class="meaning-tag">Volar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('fly')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Forget</strong></td>
-                        <td>forgot</td>
-                        <td>forgotten</td>
-                        <td><span class="meaning-tag">Olvidar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('forget')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Get</strong></td>
-                        <td>got</td>
-                        <td>got / gotten</td>
-                        <td><span class="meaning-tag">Obtener</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('get')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Give</strong></td>
-                        <td>gave</td>
-                        <td>given</td>
-                        <td><span class="meaning-tag">Dar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('give')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Go</strong></td>
-                        <td>went</td>
-                        <td>gone</td>
-                        <td><span class="meaning-tag">Ir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('go')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Grow</strong></td>
-                        <td>grew</td>
-                        <td>grown</td>
-                        <td><span class="meaning-tag">Crecer</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('grow')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Have</strong></td>
-                        <td>had</td>
-                        <td>had</td>
-                        <td><span class="meaning-tag">Tener</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('have')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Hear</strong></td>
-                        <td>heard</td>
-                        <td>heard</td>
-                        <td><span class="meaning-tag">Escuchar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('hear')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Hold</strong></td>
-                        <td>held</td>
-                        <td>held</td>
-                        <td><span class="meaning-tag">Sostener</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('hold')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Keep</strong></td>
-                        <td>kept</td>
-                        <td>kept</td>
-                        <td><span class="meaning-tag">Mantener</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('keep')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Know</strong></td>
-                        <td>knew</td>
-                        <td>known</td>
-                        <td><span class="meaning-tag">Saber / conocer</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('know')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Leave</strong></td>
-                        <td>left</td>
-                        <td>left</td>
-                        <td><span class="meaning-tag">Dejar / salir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('leave')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Lose</strong></td>
-                        <td>lost</td>
-                        <td>lost</td>
-                        <td><span class="meaning-tag">Perder</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('lose')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Make</strong></td>
-                        <td>made</td>
-                        <td>made</td>
-                        <td><span class="meaning-tag">Hacer / fabricar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('make')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Meet</strong></td>
-                        <td>met</td>
-                        <td>met</td>
-                        <td><span class="meaning-tag">Conocer personas</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('meet')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Pay</strong></td>
-                        <td>paid</td>
-                        <td>paid</td>
-                        <td><span class="meaning-tag">Pagar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('pay')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Put</strong></td>
-                        <td>put</td>
-                        <td>put</td>
-                        <td><span class="meaning-tag">Poner</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('put')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Read</strong></td>
-                        <td>read (pronounced /rɛd/)</td>
-                        <td>read (pronounced /rɛd/)</td>
-                        <td><span class="meaning-tag">Leer</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('read')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Run</strong></td>
-                        <td>ran</td>
-                        <td>run</td>
-                        <td><span class="meaning-tag">Correr</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('run')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Say</strong></td>
-                        <td>said</td>
-                        <td>said</td>
-                        <td><span class="meaning-tag">Decir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('say')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>See</strong></td>
-                        <td>saw</td>
-                        <td>seen</td>
-                        <td><span class="meaning-tag">Ver</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('see')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Sell</strong></td>
-                        <td>sold</td>
-                        <td>sold</td>
-                        <td><span class="meaning-tag">Vender</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('sell')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Send</strong></td>
-                        <td>sent</td>
-                        <td>sent</td>
-                        <td><span class="meaning-tag">Enviar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('send')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Sing</strong></td>
-                        <td>sang</td>
-                        <td>sung</td>
-                        <td><span class="meaning-tag">Cantar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('sing')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Sit</strong></td>
-                        <td>sat</td>
-                        <td>sat</td>
-                        <td><span class="meaning-tag">Sentarse</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('sit')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Sleep</strong></td>
-                        <td>slept</td>
-                        <td>slept</td>
-                        <td><span class="meaning-tag">Dormir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('sleep')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Speak</strong></td>
-                        <td>spoke</td>
-                        <td>spoken</td>
-                        <td><span class="meaning-tag">Hablar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('speak')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Spend</strong></td>
-                        <td>spent</td>
-                        <td>spent</td>
-                        <td><span class="meaning-tag">Gastar / pasar tiempo</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('spend')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Stand</strong></td>
-                        <td>stood</td>
-                        <td>stood</td>
-                        <td><span class="meaning-tag">Estar de pie</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('stand')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Take</strong></td>
-                        <td>took</td>
-                        <td>taken</td>
-                        <td><span class="meaning-tag">Tomar / llevar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('take')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Teach</strong></td>
-                        <td>taught</td>
-                        <td>taught</td>
-                        <td><span class="meaning-tag">Enseñar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('teach')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Think</strong></td>
-                        <td>thought</td>
-                        <td>thought</td>
-                        <td><span class="meaning-tag">Pensar</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('think')">▶</button></td>
-                    </tr>
-                    <tr class="verb-row">
-                        <td><strong>Write</strong></td>
-                        <td>wrote</td>
-                        <td>written</td>
-                        <td><span class="meaning-tag">Escribir</span></td>
-                        <td><button class="btn-audio" onclick="playAudio('write')">▶</button></td>
-                    </tr>
-                </tbody>
-            </table>
+                <!-- PANTALLA 1: MENÚ SELECTOR DE JUEGOS -->
+                <div id="game-selector-screen">
+                    <h2 class="arcade-title">🕹️ Centro de Prácticas Gamificadas</h2>
+                    <p class="arcade-subtitle">Elige un reto interactivo para entrenar tus verbos irregulares y
+                        registrar tu puntuación en tiempo real.</p>
+
+                    <div class="menu-grid">
+                        <!-- Tarjeta Juego 1: Anagramas -->
+                        <div class="menu-card" id="card-anagrams">
+                            <div>
+                                <span class="icon">🔤</span>
+                                <h3>Reto Anagramas</h3>
+                                <p>Descifra los verbos reordenando las letras mezcladas. Ideal para memorizar la
+                                    ortografía precisa del pasado.</p>
+                            </div>
+                            <button class="btn-action" style="width:100%;">Jugar</button>
+                        </div>
+
+                        <!-- Tarjeta Juego 2: Space Invaders -->
+                        <div class="menu-card" id="card-invaders">
+                            <div>
+                                <span class="icon">🚀</span>
+                                <h3>Verb Invaders</h3>
+                                <p>¡Derriba las naves con errores ortográficos! Proteje e inmuniza los verbos
+                                    correctamente escritos.</p>
+                            </div>
+                            <button class="btn-action"
+                                style="width:100%; background-color: var(--accent-color);">Jugar</button>
+                        </div>
+
+                        <!-- Tarjeta Juego 3: Reservado para futuras expansiones -->
+                        <div class="menu-card" id="card-Memory">
+                            <div>
+                                <span class="icon">🧠</span>
+                                <h3>Juego de Memoria</h3>
+                                <p>Encuentra las parejas de verbos irregulares antes de que se agoten tus movimientos.</p>
+                            </div>
+                            <button class="btn-action" style="width:100%; background-color: #ff9f43;">Jugar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANTALLA 2: ENTORNO DE EJECUCIÓN (OCULTO POR DEFECTO) -->
+                <div id="game-play-screen">
+                    <div class="game-card">
+                        <button class="btn-back" id="btnBackToMenu">← Volver al Menú de Juegos</button>
+
+                        <!-- RENDER INDIVIDUAL: RETO DE ANAGRAMAS -->
+                        <div id="anagrams-game-render" style="display: none;">
+                            <h2 style="margin-top:0; color: var(--primary-color);">Reto de Anagramas: Verbos Irregulares
+                            </h2>
+                            <p>Ordena las letras para descubrir el verbo en **Pasado** o **Participio** según la
+                                traducción.</p>
+
+                            <div class="hud">
+                                <div>Puntaje: <span id="currentScore" style="color:var(--accent-color)">0</span> pts
+                                </div>
+                                <div>Vidas: <span id="livesDisplay" style="color:var(--danger-color)">♥♥♥</span></div>
+                            </div>
+
+                            <div class="gameArea" id="gameArea">
+                                <p id="clueMeaning" style="font-style: italic; color:#666;">Traducción: ...</p>
+                                <div id="scrambledWord" class="scrambled-word">----</div>
+
+                                <input type="text" id="playerGuess" class="game-input"
+                                    placeholder="Tu respuesta aquí..." autocomplete="off">
+                                <br>
+                                <button id="btnSubmitGuess" class="btn-action">Verificar Respuesta</button>
+                            </div>
+
+                            <div id="gameOverArea" style="display: none;">
+                                <h3 style="color:var(--danger-color); font-size: 1.8rem;">¡Juego Terminado!</h3>
+                                <p>Tu puntuación final ha sido enviada al Scoreboard general.</p>
+                                <button id="btnRestart" class="btn-action"
+                                    style="background-color: var(--accent-color)">Jugar de Nuevo</button>
+                            </div>
+                        </div>
+
+                        <!-- RENDER INDIVIDUAL: VERB INVADERS -->
+                        <div id="invaders-game-render" style="display: none;">
+                            <h2 style="margin-top:0; color: var(--primary-color);">🚀 Verb Invaders</h2>
+                            <p style="margin-bottom: 10px;">Controles: Usa las **Flechas ← / →** para moverte. Dispara
+                                con **Espacio**.</p>
+
+                            <!-- Selector de Niveles -->
+                            <div id="level-selector-container"
+                                style="margin: 15px 0; display: flex; justify-content: center; gap: 10px; align-items: center;">
+                                <span style="font-weight: bold; color: #555;">Selecciona tu Nivel:</span>
+                                <button id="btn-lvl-1" class="btn-action"
+                                    style="padding: 6px 15px; font-size: 14px;">Nivel 1</button>
+                                <button id="btn-lvl-2" class="btn-action"
+                                    style="padding: 6px 15px; font-size: 14px; background-color: #6c757d;" disabled>🔒
+                                    Nivel 2</button>
+                                <button id="btn-lvl-3" class="btn-action"
+                                    style="padding: 6px 15px; font-size: 14px; background-color: #6c757d;" disabled>🔒
+                                    Nivel 3</button>
+                            </div>
+
+                            <div class="canvas-container">
+                                <canvas id="invadersCanvas" width="700" height="500"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- PANEL DERECHO: SALÓN DE LA FAMA COLECTIVO -->
+            <aside class="scoreboard-card">
+                <h3 class="scoreboard-title">🏆 Salón de la Fama</h3>
+                <ul class="score-list" id="scoreboardList">
+                    <li class="score-item">Cargando líderes en tiempo real...</li>
+                </ul>
+            </aside>
+
         </div>
     </main>
 
-    <audio id="globalAudioPlayer"></audio>
+    <!-- CONTROLADORES INTEGRADOS DE INTERFAZ Y FIREBASE -->
+    <script type="module">
+        import { auth } from "../js/firebase-config.js";
+        import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
-    <script>
-        function playAudio(verbName) {
-            const player = document.getElementById('globalAudioPlayer');
-            player.src = `../assets/audio/${verbName}.m4a`;
-            player.play().catch(error => {
-                console.error("No se pudo reproducir el archivo:", verbName, error);
-                alert("Lo siento, no se pudo reproducir el audio para este verbo.");
+        // Inicialización de Firestore
+        const db = getFirestore();
+        const scoresCollection = collection(db, "scoreboard");
+
+        // Elementos del Ruteador Visual
+        const selectorScreen = document.getElementById("game-selector-screen");
+        const playScreen = document.getElementById("game-play-screen");
+        const cardAnagrams = document.getElementById("card-anagrams");
+        const cardInvaders = document.getElementById("card-invaders");
+        const btnBackToMenu = document.getElementById("btnBackToMenu");
+        const cardMemory = document.getElementById("card-memory");
+        const memoryGameRender = document.getElementById("memory-game-render");
+
+        // Renderizadores de juego
+        const anagramsRender = document.getElementById("anagrams-game-render");
+        const invadersRender = document.getElementById("invaders-game-render");
+
+        // Variables Globales de Estado
+        let currentUser = null;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let lives = 3;
+
+        // Banco de Datos Original para el juego de Anagramas
+        const verbPool = [
+            { correct: "went", scrambled: "netw", clue: "Pasado de 'Go' (Ir)" },
+            { correct: "began", scrambled: "nabeg", clue: "Pasado de 'Begin' (Comenzar)" },
+            { correct: "broken", scrambled: "knorbe", clue: "Participio de 'Break' (Romper)" },
+            { correct: "brought", scrambled: "thgubro", clue: "Pasado de 'Bring' (Traer)" },
+            { correct: "eaten", scrambled: "netae", clue: "Participio de 'Eat' (Comer)" },
+            { correct: "flew", scrambled: "welf", clue: "Pasado de 'Fly' (Volar)" },
+            { correct: "written", scrambled: "nettriw", clue: "Participio de 'Write' (Escribir)" }
+        ];
+
+        // Escucha del estado de autenticación de Firebase
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+            }
+        });
+
+        // --- CONFIGURACIÓN REALTIME DEL SALÓN DE LA FAMA ---
+        let unsubscribeScoreboard = null;
+
+        function escucharScoreboard(gameTypeFilter) {
+            if (unsubscribeScoreboard) unsubscribeScoreboard();
+
+            const scoreboardList = document.getElementById("scoreboardList");
+            scoreboardList.innerHTML = `<li class="score-item">Cargando récords de ${gameTypeFilter}...</li>`;
+
+            const qScoreboard = query(scoresCollection, orderBy("score", "desc"));
+
+            unsubscribeScoreboard = onSnapshot(qScoreboard, (snapshot) => {
+                scoreboardList.innerHTML = "";
+                let rank = 1;
+
+                snapshot.forEach((docSnapshot) => {
+                    const data = docSnapshot.data();
+
+                    if (data.gameType === gameTypeFilter) {
+                        if (rank <= 7) {
+                            let badgeClass = "rank-other";
+                            let medal = rank;
+                            if (rank === 1) { badgeClass = "rank-1"; medal = "🥇"; }
+                            else if (rank === 2) { badgeClass = "rank-2"; medal = "🥈"; }
+                            else if (rank === 3) { badgeClass = "rank-3"; medal = "🥉"; }
+
+                            scoreboardList.innerHTML += `
+                                <li class="score-item">
+                                    <div class="player-info">
+                                        <span class="rank-badge ${badgeClass}">${medal}</span>
+                                        <strong>${data.name}</strong>
+                                    </div>
+                                    <span class="points-display">${data.score} pts</span>
+                                </li>
+                            `;
+                            rank++;
+                        }
+                    }
+                });
+
+                if (scoreboardList.innerHTML === "") {
+                    scoreboardList.innerHTML = `<li class="score-item" style="color:#666; text-align:center;">¡Nadie ha jugado a esto! Sé el primero en liderar.</li>`;
+                }
+            }, (error) => {
+                console.error("Error en el snapshot del scoreboard:", error);
             });
         }
 
-        document.getElementById('verbSearch').addEventListener('keyup', function() {
-            const value = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#verbsBody .verb-row');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(value)) {
-                    row.style.display = ""; 
-                } else {
-                    row.style.display = "none"; 
+        // --- LÓGICA CORE: RETO ANAGRAMAS ---
+        function initAnagramsGame() {
+            score = 0;
+            lives = 3;
+            currentQuestionIndex = 0;
+            document.getElementById("currentScore").textContent = score;
+            document.getElementById("livesDisplay").textContent = "♥♥♥";
+            document.getElementById("gameArea").style.display = "block";
+            document.getElementById("gameOverArea").style.display = "none";
+            verbPool.sort(() => Math.random() - 0.5);
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestionIndex >= verbPool.length || lives <= 0) {
+                endAnagramsGame();
+                return;
+            }
+            const currentData = verbPool[currentQuestionIndex];
+            document.getElementById("clueMeaning").textContent = `Pista: ${currentData.clue}`;
+            document.getElementById("scrambledWord").textContent = currentData.scrambled;
+            document.getElementById("playerGuess").value = "";
+            document.getElementById("playerGuess").focus();
+        }
+
+        function verifyAnswer() {
+            const guess = document.getElementById("playerGuess").value.trim().toLowerCase();
+            const correctAnswer = verbPool[currentQuestionIndex].correct;
+
+            if (guess === correctAnswer) {
+                score += 10;
+                document.getElementById("currentScore").textContent = score;
+                alert("¡Excelente! Respuesta correcta. 🎉");
+            } else {
+                lives--;
+                let hearts = "";
+                for (let i = 0; i < lives; i++) hearts += "♥";
+                document.getElementById("livesDisplay").textContent = hearts || "Sin vidas";
+                alert(`Ups... La respuesta correcta era: ${correctAnswer} ❌`);
+            }
+
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        async function endAnagramsGame() {
+            document.getElementById("gameArea").style.display = "none";
+            document.getElementById("gameOverArea").style.display = "block";
+
+            if (currentUser && score > 0) {
+                try {
+                    const docId = `${currentUser.uid}_anagrams`;
+                    const docRef = doc(db, "scoreboard", docId);
+
+                    await setDoc(docRef, {
+                        name: currentUser.displayName || currentUser.email.split('@')[0],
+                        score: score,
+                        email: currentUser.email,
+                        date: new Date().toISOString(),
+                        gameType: "anagrams"
+                    }, { merge: true });
+
+                    console.log("Proceso de guardado de récord completado.");
+                } catch (error) {
+                    console.error("Error al registrar récord en Firestore:", error);
                 }
-            });
+            }
+        }
+
+        // --- MANEJO DE ASIGNACIÓN DE EVENTOS Y RUTAS (Llamados seguros al final) ---
+
+        btnBackToMenu.addEventListener("click", () => {
+            if (window.currentSpaceGame) { window.currentSpaceGame.stop(); window.currentSpaceGame = null; }
+            if (window.currentMemoryGame) { window.currentMemoryGame.stop(); window.currentMemoryGame = null; }
+            playScreen.style.display = "none";
+            selectorScreen.style.display = "block";
+            escucharScoreboard("anagrams");
         });
+
+        // Click Anagramas
+        cardAnagrams.addEventListener("click", () => {
+            selectorScreen.style.display = "none";
+            playScreen.style.display = "block";
+            invadersRender.style.display = "none";
+            memoryGameRender.style.display = "none";
+            anagramsRender.style.display = "block";
+            initAnagramsGame();
+            escucharScoreboard("anagrams");
+        });
+
+        // Click Space Invaders
+        cardInvaders.addEventListener("click", async () => {
+            selectorScreen.style.display = "none";
+            playScreen.style.display = "block";
+            anagramsRender.style.display = "none";
+            memoryGameRender.style.display = "none";
+            invadersRender.style.display = "block";
+
+            try {
+                const { startInvadersGame, updateLevelButtons } = await import("../js/verb-invaders.js");
+                updateLevelButtons();
+
+                const setupLevelButton = (lvl) => {
+                    const btn = document.getElementById(`btn-lvl-${lvl}`);
+                    const newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
+
+                    newBtn.addEventListener("click", () => {
+                        if (window.currentSpaceGame) window.currentSpaceGame.stop();
+                        window.currentSpaceGame = startInvadersGame(currentUser, scoresCollection, lvl);
+                        escucharScoreboard(`verb-invaders-lvl${lvl}`);
+                    });
+                };
+
+                setupLevelButton(1);
+                setupLevelButton(2);
+                setupLevelButton(3);
+
+                window.currentSpaceGame = startInvadersGame(currentUser, scoresCollection, 1);
+                escucharScoreboard("verb-invaders-lvl1");
+            } catch (err) {
+                console.error("Error cargando Verb Invaders:", err);
+            }
+        });
+
+        // Click Memory
+        cardMemory.addEventListener("click", async () => {
+            selectorScreen.style.display = "none";
+            playScreen.style.display = "block";
+            anagramsRender.style.display = "none";
+            invadersRender.style.display = "none";
+            memoryGameRender.style.display = "block";
+
+            try {
+                const { startMemoryGame } = await import("../js/verb-memory.js");
+                window.currentMemoryGame = startMemoryGame(currentUser, scoresCollection);
+                escucharScoreboard("verb-memory");
+            } catch (err) {
+                console.error("Error cargando Memory:", err);
+            }
+        });
+
+        // Eventos del DOM de Anagramas
+        document.getElementById("btnSubmitGuess").addEventListener("click", verifyAnswer);
+        document.getElementById("btnRestart").addEventListener("click", initAnagramsGame);
+        document.getElementById("playerGuess").addEventListener("keyup", (e) => {
+            if (e.key === "Enter") verifyAnswer();
+        });
+
+        // EJECUCIÓN INICIAL (Ahora sí encuentra la función declarada arriba)
+        escucharScoreboard("anagrams");
     </script>
 
-    <script type="module" src="../js/firebase-config.js"></script>
     <script type="module" src="../js/auth-guard.js"></script>
 </body>
+
 </html>
