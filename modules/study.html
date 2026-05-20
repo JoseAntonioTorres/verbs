@@ -9,23 +9,26 @@
         /* Estilos específicos para la sección de estudio */
         .study-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            padding: 0 15px;
         }
         
         /* Buscador integrado para que el alumno filtre verbos rápido */
         .search-container {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: center;
+            padding: 0 15px;
         }
         .search-input {
             width: 100%;
             max-width: 400px;
-            padding: 12px 20px;
+            padding: 14px 20px; /* Un poco más de padding para pantallas táctiles */
             border: 2px solid #ccc;
             border-radius: 25px;
-            font-size: 16px;
+            font-size: 16px; /* Evita el zoom automático en iOS al hacer focus */
             transition: border-color 0.3s;
+            -webkit-appearance: none; /* Consistencia en móviles */
         }
         .search-input:focus {
             border-color: var(--primary-color);
@@ -34,10 +37,11 @@
 
         /* Contenedor de la tabla interactiva */
         .table-responsive {
-            overflow-x: auto;
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin: 0 15px;
+            overflow: hidden;
         }
         
         .verbs-table {
@@ -69,8 +73,8 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 44px; /* Tamaño mínimo recomendado por Google para interacción táctil */
+            height: 44px;
             border-radius: 50%;
             cursor: pointer;
             display: inline-flex;
@@ -78,9 +82,10 @@
             justify-content: center;
             transition: all 0.2s ease;
             box-shadow: 0 2px 5px rgba(24, 82, 157, 0.3);
+            font-size: 16px;
         }
         
-        .btn-audio:hover {
+        .btn-audio:hover, .btn-audio:active {
             background-color: var(--accent-color);
             box-shadow: 0 2px 5px rgba(40, 173, 86, 0.4);
             transform: scale(1.05);
@@ -88,10 +93,81 @@
 
         .meaning-tag {
             background-color: #f0f2f5;
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: 4px;
             font-size: 0.9em;
             color: #555;
+            display: inline-block;
+        }
+
+        /* Responsive: De Tabla a Tarjetas (Mobile First / Pantallas pequeñas) */
+        @media (max-width: 768px) {
+            .table-responsive {
+                background: transparent;
+                box-shadow: none;
+                margin: 0 10px;
+            }
+
+            .verbs-table, .verbs-table thead, .verbs-table tbody, .verbs-table th, .verbs-table td, .verbs-table tr {
+                display: block; /* Rompe la estructura de tabla tradicional */
+            }
+
+            .verbs-table thead {
+                display: none; /* Escondemos los encabezados de columna */
+            }
+
+            .verbs-table tr {
+                background: white;
+                border-radius: 12px;
+                padding: 15px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                position: relative; /* Para posicionar el botón de audio de forma cómoda */
+            }
+
+            .verbs-table td {
+                border-bottom: none;
+                padding: 6px 0;
+                font-size: 15px;
+                padding-left: 45%; /* Espacio para las etiquetas fijas */
+                position: relative;
+            }
+
+            /* Creamos etiquetas falsas a la izquierda para saber qué es cada dato */
+            .verbs-table td::before {
+                position: absolute;
+                left: 0;
+                width: 40%;
+                white-space: nowrap;
+                font-weight: 600;
+                color: #888;
+                font-size: 12px;
+                text-transform: uppercase;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            /* Inyectamos el texto de los encabezados dinámicamente mediante CSS */
+            .verbs-table td:nth-child(1)::before { content: "Infinitive:"; }
+            .verbs-table td:nth-child(2)::before { content: "Past Simple:"; }
+            .verbs-table td:nth-child(3)::before { content: "Participle:"; }
+            .verbs-table td:nth-child(4)::before { content: "Meaning:"; }
+
+            /* Estilo especial para la primera celda (el verbo principal) */
+            .verbs-table td:nth-child(1) {
+                font-size: 18px;
+                color: var(--primary-color);
+            }
+
+            /* Movemos el botón de reproducción a la esquina superior derecha de la tarjeta */
+            .verbs-table td:nth-child(5) {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                padding: 0;
+                width: auto;
+            }
+            .verbs-table td:nth-child(5)::before { content: ""; } /* Sin etiqueta para el audio */
         }
     </style>
 </head>
@@ -483,7 +559,7 @@
                         <td>wrote</td>
                         <td>written</td>
                         <td><span class="meaning-tag">Escribir</span></td>
-                        <td><button class="btn-audio" onclick="write">▶</button></td>
+                        <td><button class="btn-audio" onclick="playAudio('write')">▶</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -493,7 +569,6 @@
     <audio id="globalAudioPlayer"></audio>
 
     <script>
-        // 1. Función para reproducir los audios de tus carpetas
         function playAudio(verbName) {
             const player = document.getElementById('globalAudioPlayer');
             player.src = `../assets/audio/${verbName}.m4a`;
@@ -503,18 +578,16 @@
             });
         }
 
-        // 2. Filtro de búsqueda en tiempo real
         document.getElementById('verbSearch').addEventListener('keyup', function() {
             const value = this.value.toLowerCase();
             const rows = document.querySelectorAll('#verbsBody .verb-row');
             
             rows.forEach(row => {
-                // Busca dentro de todo el texto de la fila (infinitive, past, participle, meaning)
                 const text = row.textContent.toLowerCase();
                 if (text.includes(value)) {
-                    row.style.display = ""; // Muestra la fila
+                    row.style.display = ""; 
                 } else {
-                    row.style.display = "none"; // Oculta la fila
+                    row.style.display = "none"; 
                 }
             });
         });
