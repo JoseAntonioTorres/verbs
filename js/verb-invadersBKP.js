@@ -1,11 +1,14 @@
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-import { verbPool } from "./vocabulary.js"; 
+import { verbPool } from "./vocabulary.js";
 
+// Función auxiliar para gestionar y renderizar el estado de los botones de nivel
 export function updateLevelButtons() {
     const maxUnlocked = parseInt(localStorage.getItem("invadersMaxLevel") || "1");
+    
     for (let i = 1; i <= 3; i++) {
         const btn = document.getElementById(`btn-lvl-${i}`);
         if (!btn) continue;
+
         if (i <= maxUnlocked) {
             btn.removeAttribute("disabled");
             btn.innerText = `Nivel ${i}`;
@@ -22,6 +25,7 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
     const canvas = document.getElementById("invadersCanvas");
     const ctx = canvas.getContext("2d");
 
+    // --- CONFIGURACIÓN DE DIFICULTAD ---
     const levelConfigs = {
         1: { enemySpeed: 0.6, fireRate: 0.004, rows: 2, cols: 4, name: "Present Perfect" },
         2: { enemySpeed: 0.9, fireRate: 0.007, rows: 3, cols: 5, name: "Past Simple" },
@@ -30,21 +34,25 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
 
     const config = levelConfigs[selectedLevel] || levelConfigs[1];
 
+    // Forzar proporciones estables en cualquier pantalla
     canvas.width = 800;
     canvas.height = 600;
 
+    // --- VARIABLES DE CONTROL TEMPORAL (DELTA TIME) ---
     let lastTime = performance.now();
 
+    // --- ESTADOS DEL JUEGO ---
     let player = {
         x: canvas.width / 2 - 25,
         y: canvas.height - 60,
         width: 50,
         height: 30,
-        speed: 400,
+        speed: 400, // Velocidad en píxeles por segundo (independiente de FPS)
         lives: 3
     };
 
     let keys = { ArrowLeft: false, ArrowRight: false, Space: false };
+    // Soporte táctil móvil
     let touchX = null; 
     let isTouching = false;
 
@@ -58,86 +66,37 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
     let targetVerb = null;
     let animationId = null;
 
+    // Temporizador de disparo automatizado para móviles para balancear la experiencia
     let lastPlayerShot = 0;
-    const playerShotDelay = 350; 
+    const playerShotDelay = 350; // ms entre disparos de la nave
 
-    // --- NUEVA VARIABLE PARA CONTROL DE PRECISIÓN ---
-    let wrongShipsDestroyedInRound = 0;
-
-    // --- FUNCIÓN DE VOZ INTERACTIVA (TEXT-TO-SPEECH) ---
-    function speakPhrase(phrase) {
-        // Verificar soporte y que el juego esté activo para evitar voces infinitas
-        if ('speechSynthesis' in window && gameActive) {
-            // Cancelar cualquier lectura previa estancada
-            window.speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(phrase);
-            utterance.lang = 'en-US'; // Forzamos acento en inglés para la práctica oral
-            utterance.rate = 0.95;    // Velocidad sutilmente pausada para entender claro
-            utterance.pitch = 1.0;
-            
-            window.speechSynthesis.speak(utterance);
-        }
-    }
-
-    // --- FUNCIÓN AUXILIAR PARA DIBUJAR CORAZONES VECTORIALES ---
-    function drawHeart(x, y, width, height) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x + width / 2, y + height / 5);
-        // Curva superior izquierda
-        ctx.bezierCurveTo(x + width / 2, y, x, y, x, y + height / 2);
-        // Vértice inferior
-        ctx.bezierCurveTo(x, y + (height * 4) / 5, x + width / 2, y + height, x + width / 2, y + height);
-        // Vértice inferior derecho hacia curva derecha
-        ctx.bezierCurveTo(x + width / 2, y + height, x + width, y + (height * 4) / 5, x + width, y + height / 2);
-        // Curva superior derecha
-        ctx.bezierCurveTo(x + width, y, x + width / 2, y, x + width / 2, y + height / 5);
-        ctx.closePath();
-        ctx.fillStyle = "#ff4757"; // Rojo arcade vivo
-        ctx.fill();
-        ctx.restore();
-    }
-
-    // --- INICIALIZACIÓN DE RONDA ---
+       // --- INICIALIZACIÓN ---
     function initRound() {
         bullets = [];
         enemyBullets = [];
         enemies = [];
-        wrongShipsDestroyedInRound = 0; // Reiniciamos el contador de fallos de la ronda
-
+        
+        // Seleccionar el verbo objetivo de la ronda
         const randomVerb = verbPool[Math.floor(Math.random() * verbPool.length)];
         
-        let targetType = "";
-        let targetAnswer = "";
-
         if (selectedLevel === 1) {
-            targetType = "the participle of";
-            targetAnswer = randomVerb.participle.toUpperCase();
+            targetVerb = { question: `Dispara al Participio de: "${randomVerb.infinitive.toUpperCase()}"`, answer: randomVerb.participle.toUpperCase() };
         } else if (selectedLevel === 2) {
-            targetType = "the past of";
-            targetAnswer = randomVerb.past.toUpperCase();
+            targetVerb = { question: `Dispara al Pasado de: "${randomVerb.infinitive.toUpperCase()}"`, answer: randomVerb.past.toUpperCase() };
         } else {
             const usePart = Math.random() > 0.5;
-            targetType = usePart ? "the participle of" : "the past of";
-            targetAnswer = usePart ? randomVerb.participle.toUpperCase() : randomVerb.past.toUpperCase();
+            targetVerb = usePart 
+                ? { question: `[MIX] Participio de: "${randomVerb.infinitive.toUpperCase()}"`, answer: randomVerb.participle.toUpperCase() }
+                : { question: `[MIX] Pasado de: "${randomVerb.infinitive.toUpperCase()}"`, answer: randomVerb.past.toUpperCase() };
         }
 
-        // Estructura de datos limpia de la pregunta
-        targetVerb = {
-            question: `Shoot ${targetType} ${randomVerb.infinitive.toUpperCase()}`,
-            answer: targetAnswer
-        };
-
-        // LLAMADA DE VOZ: La IA lee la instrucción exacta en inglés automáticamente al iniciar la ronda
-        speakPhrase(targetVerb.question);
-
-        // Generar grilla de enemigos
+        // Crear grilla de naves enemigas alienígenas
         const startX = 100;
         const startY = 80;
         const spacingX = 140;
         const spacingY = 50;
 
+        // Asegurar que al menos un enemigo tenga la respuesta correcta
         let poolAnswers = [targetVerb.answer];
         while (poolAnswers.length < (config.rows * config.cols)) {
             const randomWrong = verbPool[Math.floor(Math.random() * verbPool.length)];
@@ -146,6 +105,7 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
                 poolAnswers.push(wrongWord);
             }
         }
+        // Mezclar respuestas
         poolAnswers.sort(() => Math.random() - 0.5);
 
         let answerIndex = 0;
@@ -165,7 +125,7 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
         }
     }
 
-    // CONTROLES DE EVENTOS
+    // --- GESTIÓN DE EVENTOS (TECLADO) ---
     function handleKeyDown(e) {
         if (e.code === "ArrowLeft") keys.ArrowLeft = true;
         if (e.code === "ArrowRight") keys.ArrowRight = true;
@@ -176,13 +136,23 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
         if (e.code === "ArrowRight") keys.ArrowRight = false;
         if (e.code === "Space") keys.Space = false;
     }
-    function handleTouchStart(e) { isTouching = true; updateTouchPos(e); }
-    function handleTouchMove(e) { updateTouchPos(e); }
-    function handleTouchEnd() { isTouching = false; touchX = null; }
-    
+
+    // --- GESTIÓN DE EVENTOS (TÁCTIL MÓVIL) ---
+    function handleTouchStart(e) {
+        isTouching = true;
+        updateTouchPos(e);
+    }
+    function handleTouchMove(e) {
+        updateTouchPos(e);
+    }
+    function handleTouchEnd() {
+        isTouching = false;
+        touchX = null;
+    }
     function updateTouchPos(e) {
         const rect = canvas.getBoundingClientRect();
         const t = e.touches[0];
+        // Traducir coordenadas de pantalla a la resolución interna del canvas (800x600)
         touchX = (t.clientX - rect.left) * (canvas.width / rect.width);
     }
 
@@ -192,7 +162,9 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
     canvas.addEventListener("touchmove", handleTouchMove, { passive: true });
     canvas.addEventListener("touchend", handleTouchEnd);
 
+    // --- MOTOR DE EFECTOS MÓVIL (LIGERO) ---
     function createExplosion(x, y, color) {
+        // Reducido a 5 partículas para evitar sobrecargar la CPU del móvil
         for (let i = 0; i < 5; i++) {
             particles.push({
                 x, y,
@@ -205,22 +177,28 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
         }
     }
 
+    // --- ACTUALIZACIÓN DE LÓGICA (CON DELTA TIME) ---
     function update(dt) {
+        // Mover Nave (Teclado)
         if (keys.ArrowLeft) player.x -= player.speed * dt;
         if (keys.ArrowRight) player.x += player.speed * dt;
 
+        // Mover Nave (Soporte Táctil Móvil)
         if (isTouching && touchX !== null) {
             const playerCenterX = player.x + player.width / 2;
             const diff = touchX - playerCenterX;
+            // Zona muerta de 10px para evitar vibraciones en el dedo
             if (Math.abs(diff) > 10) {
                 if (diff < 0) player.x -= player.speed * dt;
                 else player.x += player.speed * dt;
             }
         }
 
+        // Límites del escenario
         if (player.x < 0) player.x = 0;
         if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
 
+        // Gestión de Disparos Automática/Manual balanceada para móviles
         const now = performance.now();
         if (keys.Space || isTouching) {
             if (now - lastPlayerShot > playerShotDelay) {
@@ -229,11 +207,13 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
             }
         }
 
+        // Actualizar Balas Aliadas
         bullets.forEach((b, index) => {
             b.y += b.vy * dt;
             if (b.y < 0) bullets.splice(index, 1);
         });
 
+        // Actualizar Partículas
         particles.forEach((p, index) => {
             p.x += p.vx * dt;
             p.y += p.vy * dt;
@@ -241,10 +221,14 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
             if (p.alpha <= 0) particles.splice(index, 1);
         });
 
+        // Actualizar Invasores
         let changeDir = false;
         enemies.forEach(e => {
             e.x += e.dir * config.enemySpeed * 100 * dt;
-            if (e.x <= 10 || e.x + e.width >= canvas.width - 10) changeDir = true;
+            if (e.x <= 10 || e.x + e.width >= canvas.width - 10) {
+                changeDir = true;
+            }
+            // Disparo enemigo fortuito
             if (Math.random() < config.fireRate) {
                 enemyBullets.push({ x: e.x + e.width / 2, y: e.y + e.height, vy: 250 });
             }
@@ -253,13 +237,17 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
         if (changeDir) {
             enemies.forEach(e => {
                 e.dir *= -1;
-                e.y += 20;
-                if (e.y + e.height >= player.y) player.lives = 0; 
+                e.y += 20; // Bajan de nivel de cuadrícula
+                if (e.y + e.height >= player.y) {
+                    player.lives = 0; // Invasión total = Fin del juego
+                }
             });
         }
 
+        // Actualizar Balas Enemigas
         enemyBullets.forEach((eb, index) => {
             eb.y += eb.vy * dt;
+            // Colisión con la Nave Jugador
             if (eb.x > player.x && eb.x < player.x + player.width &&
                 eb.y > player.y && eb.y < player.y + player.height) {
                 enemyBullets.splice(index, 1);
@@ -270,60 +258,45 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
             if (eb.y > canvas.height) enemyBullets.splice(index, 1);
         });
 
-        // PROCESAR COLISIONES BALA-INVASOR (LÓGICA DE PRECISIÓN ACTUALIZADA)
-       // PROCESAR COLISIONES BALA-INVASOR (CORREGIDO PARA EVITAR SALTOS DE RONDA)
+        // Procesar Colisiones Bala-Invasor
         for (let bIdx = bullets.length - 1; bIdx >= 0; bIdx--) {
             const b = bullets[bIdx];
-            let bulletRemoved = false; // Bandera para romper el mapeo de esta bala
-
             for (let eIdx = enemies.length - 1; eIdx >= 0; eIdx--) {
                 const e = enemies[eIdx];
-                
                 if (b.x > e.x && b.x < e.x + e.width && b.y > e.y && b.y < e.y + e.height) {
                     bullets.splice(bIdx, 1);
-                    bulletRemoved = true;
                     
                     if (e.isTarget) {
+                        // ¡Enemigo Correcto!
                         createExplosion(e.x + e.width / 2, e.y + e.height / 2, "#28AD56");
-                        
-                        // RECOMPENSA DE PRECISIÓN:
-                        if (wrongShipsDestroyedInRound === 0) {
-                            score += 150; // ¡Bono por puntería perfecta!
-                        } else {
-                            score += 40;  // Puntuación estándar
-                        }
-
+                        score += 100;
                         enemies.splice(eIdx, 1);
-                        
-                        // OPTIMIZACIÓN CRÍTICA: Vaciamos las balas activas restantes en pantalla 
-                        // para que ninguna golpee por accidente a la nueva oleada que va a spawnear.
-                        bullets = []; 
-                        
-                        // Avanzamos de ronda
+                        // Avanza la ronda de inmediato
                         initRound();
                     } else {
-                        // El alumno le disparó a un distractor incorrecto
+                        // Respuesta Errónea
                         createExplosion(e.x + e.width / 2, e.y + e.height / 2, "#dc3545");
-                        score = Math.max(0, score - 30);
-                        wrongShipsDestroyedInRound++; 
+                        score = Math.max(0, score - 25);
                         enemies.splice(eIdx, 1);
                         
+                        // Si destruye el último clon y no queda el objetivo válido, rearmar ronda
                         if (enemies.length === 0 || !enemies.some(inv => inv.isTarget)) {
-                            bullets = []; // Limpieza de seguridad
                             initRound();
                         }
                     }
-                    break; // Rompe el bucle de enemigos para esta bala
+                    break;
                 }
             }
-            if (bulletRemoved) continue; // Pasa a la siguiente bala de forma segura
         }
     }
 
+    // --- MOTOR DE RENDIMIENTO DE RENDER (DISEÑO PLANO LIGERO) ---
     function draw() {
+        // Limpieza de Canvas rápida sin arrastrar capas pesadas
         ctx.fillStyle = "#0b132b";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        // Renderizar Partículas de explosión
         particles.forEach(p => {
             ctx.save();
             ctx.globalAlpha = p.alpha;
@@ -334,6 +307,7 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
             ctx.restore();
         });
 
+        // Dibujar Nave Jugador (Vectorizado limpio sin texturas pesadas)
         ctx.fillStyle = "#00b4d8";
         ctx.beginPath();
         ctx.moveTo(player.x + player.width / 2, player.y);
@@ -342,23 +316,30 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
         ctx.closePath();
         ctx.fill();
 
+        // Alerones estéticos
         ctx.fillStyle = "#0077b6";
         ctx.fillRect(player.x, player.y + player.height - 8, 8, 8);
         ctx.fillRect(player.x + player.width - 8, player.y + player.height - 8, 8, 8);
 
+        // Dibujar Balas Aliadas
         ctx.fillStyle = "#fffb00";
         bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 12));
 
+        // Dibujar Balas Enemigas
         ctx.fillStyle = "#ff4757";
         enemyBullets.forEach(eb => ctx.fillRect(eb.x, eb.y, 4, 10));
 
+        // Dibujar Invasores (Diseño plano optimizado)
         enemies.forEach(e => {
             ctx.fillStyle = "#1c2541";
             ctx.strokeStyle = "#5bc0be";
             ctx.lineWidth = 2;
+            
+            // Caja del Alien
             ctx.fillRect(e.x, e.y, e.width, e.height);
             ctx.strokeRect(e.x, e.y, e.width, e.height);
 
+            // Texto tipográfico incorporado de forma segura y simplificada
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 12px Arial";
             ctx.textAlign = "center";
@@ -366,32 +347,32 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
             ctx.fillText(e.word, e.x + e.width / 2, e.y + e.height / 2);
         });
 
-        // HUD SUPERIOR
+        // --- INTERFAZ HUD SUPERIOR (ESTÁTICA) ---
         ctx.fillStyle = "rgba(28, 37, 65, 0.85)";
         ctx.fillRect(0, 0, canvas.width, 50);
 
         ctx.fillStyle = "#ffffff";
         ctx.font = "14px Arial";
         ctx.textAlign = "left";
-        ctx.fillText(`Nivel ${selectedLevel}`, 20, 28);
-        ctx.fillText(`Puntos: ${score}`, 110, 28);
+        ctx.fillText(`Nivel ${selectedLevel}: ${config.name}`, 20, 28);
+        ctx.fillText(`Puntos: ${score}`, 240, 28);
 
-        // --- RENDER DE VIDAS CAMBIADO A CORAZONES VECTORIALES ---
-        ctx.fillStyle = "#ffffff";
-        ctx.fillText("Vidas: ", canvas.width - 130, 28);
+        // Mostrar Vidas en formato de barras limpias
+        ctx.fillText("Vidas: ", canvas.width - 120, 28);
+        ctx.fillStyle = "#00b4d8";
         for (let i = 0; i < player.lives; i++) {
-            // Dibujamos un corazón en lugar de bloques rectangulares
-            drawHeart(canvas.width - 80 + (i * 22), 16, 16, 16);
+            ctx.fillRect(canvas.width - 70 + (i * 15), 18, 10, 12);
         }
 
-        // TEXTO CENTRAL INSTRUCCIONAL EN PANTALLA
+        // Banner Instruccional Central Destacado
         if (targetVerb) {
             ctx.fillStyle = "#fffb00";
-            ctx.font = "bold 16px Arial";
+            ctx.font = "bold 15px Arial";
             ctx.textAlign = "center";
-            ctx.fillText(targetVerb.question, canvas.width / 2 - 20, 28);
+            ctx.fillText(targetVerb.question, canvas.width / 2, 28);
         }
 
+        // Pantalla de Game Over Interna
         if (!gameActive && player.lives <= 0) {
             ctx.fillStyle = "rgba(11, 19, 43, 0.95)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -405,24 +386,27 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
         }
     }
 
+    // --- BUCLE PRINCIPAL REGULADO ---
     function loop() {
         const now = performance.now();
+        // Calculamos el multiplicador Delta Time en fracciones de segundo
         let dt = (now - lastTime) / 1000;
         lastTime = now;
+
+        // Evitar saltos físicos gigantescos si el juego cambia de pestaña
         if (dt > 0.1) dt = 0.1;
 
         update(dt);
         draw();
-        if (gameActive) animationId = requestAnimationFrame(loop);
+        
+        if (gameActive) {
+            animationId = requestAnimationFrame(loop);
+        }
     }
 
     async function endGame() {
         gameActive = false;
         cancelAnimationFrame(animationId);
-        
-        // Detener por completo el sintetizador de voz si el juego acaba
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        
         draw();
 
         const gameId = `verb-invaders-lvl${selectedLevel}`;
@@ -434,8 +418,12 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
 
             try {
                 const docSnap = await getDoc(docRef);
-                if (docSnap.exists() && score <= docSnap.data().score) return;
+                if (docSnap.exists() && score <= docSnap.data().score) {
+                    console.log("Puntaje actual menor o igual al récord previo.");
+                    return;
+                }
 
+                // Guardar nuevo récord
                 await setDoc(docRef, {
                     name: currentUser.displayName || currentUser.email.split('@')[0],
                     score: score,
@@ -444,10 +432,13 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
                     gameType: gameId
                 }, { merge: true });
 
+                console.log("¡Nuevo récord personal guardado con éxito!");
+
+                // Sistema de progresión automática
                 const currentMax = parseInt(localStorage.getItem("invadersMaxLevel") || "1");
                 if (selectedLevel === currentMax && currentMax < 3) {
                     localStorage.setItem("invadersMaxLevel", (currentMax + 1).toString());
-                    updateLevelButtons();
+                    updateLevelButtons(); // Sincroniza interfaz del HTML si está expuesta
                 }
             } catch (error) {
                 console.error("Error al registrar récord en Space Invaders:", error);
@@ -455,6 +446,7 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
         }
     }
 
+    // --- EJECUCIÓN INICIAL ---
     initRound();
     loop();
 
@@ -462,7 +454,6 @@ export function startInvadersGame(currentUser, scoresCollection, selectedLevel =
         stop: () => {
             gameActive = false;
             cancelAnimationFrame(animationId);
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel(); // Parar voz al salir del juego
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);
             canvas.removeEventListener("touchstart", handleTouchStart);

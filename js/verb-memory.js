@@ -2,7 +2,7 @@ import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/fireb
 import { verbPool } from "./vocabulary.js";
 
 export function startMemoryGame(currentUser, scoresCollection) {
-    const canvas = document.getElementById("memoryCanvas"); // Reutiliza el contenedor canvas existente
+    const canvas = document.getElementById("memoryCanvas");
     const ctx = canvas.getContext("2d");
 
     let cards = [];
@@ -13,14 +13,14 @@ export function startMemoryGame(currentUser, scoresCollection) {
     let gameActive = true;
     let animationId = null;
 
-    // Ajustar dimensiones del Canvas para una cuadrícula cómoda de Memoria (4x4)
+    // Dimensiones óptimas para el canvas (4x4)
     canvas.width = 600;
     canvas.height = 600;
 
     const gridRows = 4;
     const gridCols = 4;
-    const cardWidth = 120;
-    const cardHeight = 120;
+    const cardWidth = 115;  // Ajustado sutilmente para balancear márgenes
+    const cardHeight = 115;
     const padding = 20;
     const startX = (canvas.width - (gridCols * (cardWidth + padding) - padding)) / 2;
     const startY = (canvas.height - (gridRows * (cardHeight + padding) - padding)) / 2;
@@ -30,59 +30,96 @@ export function startMemoryGame(currentUser, scoresCollection) {
         constructor(text, type, matchId, x, y) {
             this.text = text;
             this.type = type; // 'infinitive' o 'conjugation'
-            this.matchId = matchId; // ID para verificar pareja
+            this.matchId = matchId;
             this.x = x;
             this.y = y;
             this.isFlipped = false;
             this.isMatched = false;
-            this.flipAnimProgress = 0; // Para efectos visuales fluidos
+            this.flipAnimProgress = 0; // 0 = Cerrada (Reverso), 1 = Abierta (Anverso)
         }
 
         draw() {
+            // OPTIMIZACIÓN CRÍTICA: Si la carta ya está emparejada y abierta, 
+            // no necesita animarse ni calcular transformaciones pesadas.
+            if (this.isMatched && this.flipAnimProgress === 1) {
+                ctx.save();
+                ctx.fillStyle = "#28AD56";
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                this.roundRect(this.x, this.y, cardWidth, cardHeight, 12);
+                ctx.fill();
+                ctx.stroke();
+
+                // Renderizado plano de texto estático (sin translate/scale)
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 13px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                // Pintamos el texto directamente en su posición final relativa al canvas
+                this.wrapText(this.text, this.x + cardWidth / 2, this.y + cardHeight / 2 - 8, cardWidth - 12, 16);
+
+                ctx.fillStyle = "rgba(255,255,255,0.75)";
+                ctx.font = "italic 10px Arial";
+                ctx.fillText(this.type === "infinitive" ? "Infinitive" : "Conjugation", this.x + cardWidth / 2, this.y + cardHeight - 15);
+                ctx.restore();
+                return;
+            }
+
+            // --- RENDERIZADO CON ANIMACIÓN (Para giros activos) ---
             ctx.save();
             ctx.translate(this.x + cardWidth / 2, this.y + cardHeight / 2);
 
-            // Efecto de rotación 3D simulado al voltear
-            let scaleX = Math.cos(this.flipAnimProgress * Math.PI / 2);
-            ctx.scale(scaleX, 1);
+            let scaleX = Math.cos(this.flipAnimProgress * Math.PI);
+            let absScaleX = Math.abs(scaleX);
 
-            if (!this.isFlipped && !this.isMatched && this.flipAnimProgress === 0) {
-                // Reverso de la carta
+            if (absScaleX < 0.05) {
+                ctx.restore();
+                return;
+            }
+
+            ctx.scale(absScaleX, 1);
+
+            // OPTIMIZACIÓN: Sombra ligera nativa (Reducida drásticamente de 8 a 3 para dispositivos móviles)
+            ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
+            ctx.shadowBlur = 3;
+            ctx.shadowOffsetY = 2;
+
+            if (this.flipAnimProgress < 0.5) {
+                // REVERSO
                 ctx.fillStyle = "#18529D";
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 3;
                 this.roundRect(-cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight, 12);
                 ctx.fill();
+                ctx.shadowColor = "transparent"; // Limpieza inmediata de sombra
                 ctx.stroke();
 
-                // Detalle decorativo del reverso
-                ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-                ctx.font = "bold 40px Arial";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+                ctx.font = "bold 44px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText("?", 0, 0);
             } else {
-                // Anverso de la carta (Destapada)
-                ctx.fillStyle = this.isMatched ? "#28AD56" : "#ffffff";
-                ctx.strokeStyle = this.isMatched ? "#ffffff" : "#18529D";
+                // ANVERSO
+                ctx.fillStyle = "#ffffff";
+                ctx.strokeStyle = "#18529D";
                 ctx.lineWidth = 3;
                 this.roundRect(-cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight, 12);
                 ctx.fill();
+                ctx.shadowColor = "transparent";
                 ctx.stroke();
 
-                // Texto del Verbo
-                ctx.fillStyle = this.isMatched ? "#ffffff" : "#333333";
-                ctx.font = "bold 15px Arial";
+                ctx.fillStyle = "#222222";
+                ctx.font = "bold 13px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                
-                // Ajuste de texto largo
-                this.wrapText(this.text, 0, -5, cardWidth - 15, 18);
-                
-                // Tipo de conjugación en pequeño abajo
-                ctx.fillStyle = this.isMatched ? "rgba(255,255,255,0.7)" : "#666666";
-                ctx.font = "italic 11px Arial";
-                ctx.fillText(this.type === "infinitive" ? "Infinitive" : "Target", 0, cardHeight / 2 - 15);
+
+                this.wrapText(this.text, 0, -8, cardWidth - 12, 16);
+
+                ctx.fillStyle = "#666666";
+                ctx.font = "italic 10px Arial";
+                ctx.fillText(this.type === "infinitive" ? "Infinitive" : "Conjugation", 0, cardHeight / 2 - 15);
             }
             ctx.restore();
         }
@@ -123,15 +160,13 @@ export function startMemoryGame(currentUser, scoresCollection) {
 
     // --- PREPARACIÓN DEL TABLERO ---
     function initBoard() {
-        // Mezclamos el repositorio y tomamos 8 verbos para rellenar una matriz de 16 cartas (8 parejas)
         let shuffledPool = [...verbPool].sort(() => Math.random() - 0.5);
         let selectedVerbs = shuffledPool.slice(0, 8);
 
         let setupCards = [];
         selectedVerbs.forEach((verb, index) => {
-            // Evaluamos si usamos el pasado o participio del repositorio como contraparte
             let targetConjugation = (verb.past === verb.participle) ? verb.past : `${verb.past} / ${verb.participle}`;
-            
+
             setupCards.push({ text: verb.infinitive.toUpperCase(), type: "infinitive", matchId: index });
             setupCards.push({ text: targetConjugation.toUpperCase(), type: "conjugation", matchId: index });
         });
@@ -175,39 +210,40 @@ export function startMemoryGame(currentUser, scoresCollection) {
         let [card1, card2] = selectedCards;
 
         if (card1.matchId === card2.matchId) {
-            // ¡Pareja Correcta!
+            // Pareja Correcta
             setTimeout(() => {
                 card1.isMatched = true;
                 card2.isMatched = true;
                 selectedCards = [];
                 pairsFound++;
                 score += 20 * comboMultiplier;
-                comboMultiplier++; // Incrementa racha de combo
+                comboMultiplier++;
 
                 if (pairsFound === 8) {
                     endGame();
                 }
             }, 500);
         } else {
-            // Error de emparejamiento
+            // Error de emparejamiento (Espera prudente para memorizar)
             setTimeout(() => {
                 card1.isFlipped = false;
                 card2.isFlipped = false;
                 selectedCards = [];
-                comboMultiplier = 1; // Resetea combo
+                comboMultiplier = 1;
                 score = Math.max(0, score - 5);
             }, 1200);
         }
     }
 
-    // --- CICLO PRINCIPAL (RENDER) ---
+    // --- CICLO DE ACTUALIZACIÓN INTEGRADO ---
     function update() {
-        // Animaciones suaves de las cartas al voltearse
+        // Subir de 0.08 a 0.12 hace que la animación requiera menos frames totales, 
+        // acelerando el giro de forma óptima en pantallas móviles.
         cards.forEach(card => {
             if (card.isFlipped && card.flipAnimProgress < 1) {
-                card.flipAnimProgress = Math.min(1, card.flipAnimProgress + 0.1);
+                card.flipAnimProgress = Math.min(1, card.flipAnimProgress + 0.12);
             } else if (!card.isFlipped && card.flipAnimProgress > 0) {
-                card.flipAnimProgress = Math.max(0, card.flipAnimProgress - 0.1);
+                card.flipAnimProgress = Math.max(0, card.flipAnimProgress - 0.12);
             }
         });
     }
@@ -216,26 +252,29 @@ export function startMemoryGame(currentUser, scoresCollection) {
         ctx.fillStyle = "#f4f6f9";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Dibujar el set completo de cartas
+        // Renderizar cartas
         cards.forEach(card => card.draw());
 
-        // Panel HUD Superior Integrado en Canvas
+        // HUD Superior
         ctx.fillStyle = "#333333";
         ctx.font = "bold 16px Arial";
         ctx.textAlign = "left";
-        ctx.fillText(`Puntos: ${score}`, startX, 30);
-        
-        ctx.textAlign = "right";
-        ctx.fillText(comboMultiplier > 1 ? `Combo: x${comboMultiplier} 🔥` : "", canvas.width - startX, 30);
+        ctx.fillText(`Puntos: ${score}`, startX, 35);
 
+        ctx.textAlign = "right";
+        ctx.fillText(comboMultiplier > 1 ? `Combo: x${comboMultiplier} 🔥` : "", canvas.width - startX, 35);
+
+        // Pantalla de Victoria Interna
         if (!gameActive) {
-            ctx.fillStyle = "rgba(24, 82, 157, 0.95)";
+            ctx.fillStyle = "rgba(24, 82, 157, 0.96)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 32px Arial";
+            ctx.font = "bold 30px Arial";
             ctx.textAlign = "center";
             ctx.fillText("¡Felicidades! Tablero Resuelto", canvas.width / 2, canvas.height / 2 - 20);
-            ctx.font = "18px Arial";
+
+            ctx.font = "16px Arial";
             ctx.fillText(`Puntuación final: ${score} pts guardados`, canvas.width / 2, canvas.height / 2 + 20);
         }
     }
@@ -278,7 +317,7 @@ export function startMemoryGame(currentUser, scoresCollection) {
         }
     }
 
-    // Inicialización del ecosistema del juego
+    // Inicializar el motor del tablero
     initBoard();
     loop();
 

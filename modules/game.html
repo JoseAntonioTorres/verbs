@@ -174,7 +174,7 @@
             background-color: var(--accent-color);
         }
 
-        /* Estilos específicos del Canvas de Space Invaders */
+        /* Estilos específicos del Canvas de Space Invaders y Memory */
         .canvas-container {
             position: relative;
             background: #050510;
@@ -185,11 +185,19 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        #invadersCanvas {
+        #invadersCanvas,
+        #memoryCanvas {
             display: block;
-            background: #0b0b1e;
             margin: 0 auto;
             max-width: 100%;
+        }
+
+        #invadersCanvas {
+            background: #0b0b1e;
+        }
+
+        #memoryCanvas {
+            background: #f4f6f9;
         }
 
         /* Contenedor del Scoreboard (Fijo a la derecha) */
@@ -306,17 +314,14 @@
     <main class="content-container">
         <div class="game-layout">
 
-            <!-- CONTENEDOR DE DINÁMICAS (SELECTOR O PANTALLA DE JUEGO ACTIVO) -->
             <section class="main-game-area">
 
-                <!-- PANTALLA 1: MENÚ SELECTOR DE JUEGOS -->
                 <div id="game-selector-screen">
                     <h2 class="arcade-title">🕹️ Centro de Prácticas Gamificadas</h2>
                     <p class="arcade-subtitle">Elige un reto interactivo para entrenar tus verbos irregulares y
                         registrar tu puntuación en tiempo real.</p>
 
                     <div class="menu-grid">
-                        <!-- Tarjeta Juego 1: Anagramas -->
                         <div class="menu-card" id="card-anagrams">
                             <div>
                                 <span class="icon">🔤</span>
@@ -327,7 +332,6 @@
                             <button class="btn-action" style="width:100%;">Jugar</button>
                         </div>
 
-                        <!-- Tarjeta Juego 2: Space Invaders -->
                         <div class="menu-card" id="card-invaders">
                             <div>
                                 <span class="icon">🚀</span>
@@ -339,24 +343,22 @@
                                 style="width:100%; background-color: var(--accent-color);">Jugar</button>
                         </div>
 
-                        <!-- Tarjeta Juego 3: Reservado para futuras expansiones -->
-                        <div class="menu-card" id="card-Memory">
+                        <div class="menu-card" id="card-memory">
                             <div>
                                 <span class="icon">🧠</span>
                                 <h3>Juego de Memoria</h3>
-                                <p>Encuentra las parejas de verbos irregulares antes de que se agoten tus movimientos.</p>
+                                <p>Encuentra las parejas de verbos irregulares emparejando el infinitivo con sus
+                                    conjugaciones.</p>
                             </div>
                             <button class="btn-action" style="width:100%; background-color: #ff9f43;">Jugar</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- PANTALLA 2: ENTORNO DE EJECUCIÓN (OCULTO POR DEFECTO) -->
                 <div id="game-play-screen">
                     <div class="game-card">
                         <button class="btn-back" id="btnBackToMenu">← Volver al Menú de Juegos</button>
 
-                        <!-- RENDER INDIVIDUAL: RETO DE ANAGRAMAS -->
                         <div id="anagrams-game-render" style="display: none;">
                             <h2 style="margin-top:0; color: var(--primary-color);">Reto de Anagramas: Verbos Irregulares
                             </h2>
@@ -387,13 +389,11 @@
                             </div>
                         </div>
 
-                        <!-- RENDER INDIVIDUAL: VERB INVADERS -->
                         <div id="invaders-game-render" style="display: none;">
                             <h2 style="margin-top:0; color: var(--primary-color);">🚀 Verb Invaders</h2>
                             <p style="margin-bottom: 10px;">Controles: Usa las **Flechas ← / →** para moverte. Dispara
                                 con **Espacio**.</p>
 
-                            <!-- Selector de Niveles -->
                             <div id="level-selector-container"
                                 style="margin: 15px 0; display: flex; justify-content: center; gap: 10px; align-items: center;">
                                 <span style="font-weight: bold; color: #555;">Selecciona tu Nivel:</span>
@@ -412,12 +412,21 @@
                             </div>
                         </div>
 
+                        <div id="memory-game-render" style="display: none;">
+                            <h2 style="margin-top:0; color: var(--primary-color);">🧠 Memoria de Verbos Irregulares</h2>
+                            <p style="margin-bottom: 10px;">Encuentra los pares: Empareja el verbo en **Infinitivo** con
+                                su conjugación correspondiente.</p>
+
+                            <div class="canvas-container" style="max-width: 600px;">
+                                <canvas id="memoryCanvas" width="600" height="600"></canvas>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
             </section>
 
-            <!-- PANEL DERECHO: SALÓN DE LA FAMA COLECTIVO -->
             <aside class="scoreboard-card">
                 <h3 class="scoreboard-title">🏆 Salón de la Fama</h3>
                 <ul class="score-list" id="scoreboardList">
@@ -428,7 +437,6 @@
         </div>
     </main>
 
-    <!-- CONTROLADORES INTEGRADOS DE INTERFAZ Y FIREBASE -->
     <script type="module">
         import { auth } from "../js/firebase-config.js";
         import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
@@ -592,11 +600,11 @@
             }
         }
 
-        // --- MANEJO DE ASIGNACIÓN DE EVENTOS Y RUTAS (Llamados seguros al final) ---
-
         btnBackToMenu.addEventListener("click", () => {
             if (window.currentSpaceGame) { window.currentSpaceGame.stop(); window.currentSpaceGame = null; }
+            // Limpieza segura del juego de memoria
             if (window.currentMemoryGame) { window.currentMemoryGame.stop(); window.currentMemoryGame = null; }
+
             playScreen.style.display = "none";
             selectorScreen.style.display = "block";
             escucharScoreboard("anagrams");
@@ -648,20 +656,25 @@
             }
         });
 
-        // Click Memory
+        // Click Juego de Memoria (Sustituye al Pinball)
         cardMemory.addEventListener("click", async () => {
             selectorScreen.style.display = "none";
             playScreen.style.display = "block";
             anagramsRender.style.display = "none";
             invadersRender.style.display = "none";
-            memoryGameRender.style.display = "block";
+            memoryGameRender.style.display = "block"; // Mostramos el panel de memoria
 
             try {
+                // Importamos dinámicamente tu archivo real
                 const { startMemoryGame } = await import("../js/verb-memory.js");
+
+                // Ejecutamos el juego y lo guardamos en el window para el botón Volver
                 window.currentMemoryGame = startMemoryGame(currentUser, scoresCollection);
-                escucharScoreboard("verb-memory");
+
+                // Sincronizamos con la categoría de Firestore que definiste en verb-memory.js
+                escucharScoreboard("memory-game");
             } catch (err) {
-                console.error("Error cargando Memory:", err);
+                console.error("Error cargando el juego de Memoria:", err);
             }
         });
 
@@ -672,7 +685,7 @@
             if (e.key === "Enter") verifyAnswer();
         });
 
-        // EJECUCIÓN INICIAL (Ahora sí encuentra la función declarada arriba)
+        // EJECUCIÓN INICIAL
         escucharScoreboard("anagrams");
     </script>
 
