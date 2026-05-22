@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Facilitador - Analytics</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .facilitator-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--primary-color, #18529D);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .panel-title {
+            color: var(--primary-color, #18529D);
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #28AD56;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        .stat-card p {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Tabla de Analíticas */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        th {
+            background-color: rgba(248, 250, 156, 0.17);
+            color: #333;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #fcfdfe;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .badge-practice {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .badge-assessment {
+            background: #fff3e0;
+            color: #e65100;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header></header>
+
+    <main class="facilitator-container">
+        <div class="header-panel">
+            <h2 class="panel-title">👁️ Consola de Monitoreo (Facilitadores)</h2>
+            <span style="color: #666;" id="facilitator-welcome">Cargando perfil...</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Alumnos Registrados</h3>
+                <p id="total-students">0</p>
+            </div>
+            <div class="stat-card" style="border-left-color: #18529D;">
+                <h3>Promedio de Exámenes</h3>
+                <p id="avg-assessment">0%</p>
+            </div>
+            <div class="stat-card" style="border-left-color: #ff9f43;">
+                <h3>Ejercicios Prácticos Completados</h3>
+                <p id="total-practices">0</p>
+            </div>
+        </div>
+
+        <h3>📊 Progreso Detallado por Estudiante</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Email</th>
+                        <th>Tiempo de Conexión</th>
+                        <th>Puntajes de Juegos</th>
+                        <th>Actividades (Practice)</th>
+                        <th>Examen (Assessment)</th>
+                    </tr>
+                </thead>
+                <tbody id="analytics-table-body">
+                    <tr>
+                        <td colspan="6" style="text-align:center; color:#999;">Conectando con la base de datos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script type="module">
+        import { auth } from "../js/firebase-config.js";
+        import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+
+        const db = getFirestore();
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById("facilitator-welcome").textContent = `${user.role}: ${user.displayName || user.email}`;
+                cargarAnaliticasTiempoReal();
+            }
+        });
+
+        function cargarAnaliticasTiempoReal() {
+            // REESTRUCTURACIÓN: Apuntamos a la colección unificada "users" y extraemos sólo a los estudiantes
+            const q = query(collection(db, "users"), where("profile.role", "==", "student"));
+
+            onSnapshot(q, (snapshot) => {
+                const tbody = document.getElementById("analytics-table-body");
+                tbody.innerHTML = "";
+
+                let totalStudents = 0;
+                let totalAssessmentScore = 0;
+                let countAssessments = 0;
+                let totalPracticesCount = 0;
+
+                if (snapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No hay alumnos registrados bajo esta estructura aún.</td></tr>`;
+                    return;
+                }
+
+                snapshot.forEach((docSnapshot) => {
+                    const data = docSnapshot.data();
+                    totalStudents++;
+
+                    // Desestructurar de forma segura las nuevas subestructuras jerárquicas
+                    const perfil = data.profile || {};
+                    const analiticas = data.analytics || {};
+                    const juegos = data.games_records || {};
+                    const practicas = data.practice_modules || {};
+                    const examen = data.assessment || null;
+
+                    // Formatear Tiempo de Uso de forma amigable (desde analytics)
+                    let tiempoUso = "0 min";
+                    if (analiticas.totalTimeSpent) {
+                        const minutos = Math.floor(analiticas.totalTimeSpent / 60);
+                        tiempoUso = minutos > 0 ? `${minutos} min` : `${analiticas.totalTimeSpent} seg`;
+                    }
+
+                    // Formatear Puntuaciones de Juegos (desde games_records)
+                    let juegosText = `
+                        🔤 Anagramas: ${juegos.anagrams || 0} pts<br>    
+                        🚀 Invaders: ${juegos.invaders || 0} pts<br>
+                        🏃‍♂️ Runner: ${juegos.runner || 0} pts<br>
+                        🧠 Memoria: ${juegos.memory || 0} pts
+                    `;
+
+                    // Formatear Practice.html (desde practice_modules)
+                    let practiceText = "⏳ Sin intentos";
+                    if (practicas && Object.keys(practicas).length > 0) {
+                        practiceText = Object.entries(practicas).map(([id, p]) => {
+                            totalPracticesCount++;
+                            return `<span class="badge badge-practice">${id.replace('_', ' ')}: ${p.score}/${p.total}</span>`;
+                        }).join(" ");
+                    }
+
+                    // Formatear Assessment.html (desde el mapa raíz assessment)
+                    let assessmentText = "❌ No presentado";
+                    if (examen && examen.total > 0) {
+                        countAssessments++;
+                        totalAssessmentScore += (examen.score / examen.total) * 100;
+                        assessmentText = `<strong style="color:#e65100;">${examen.score}/${examen.total}</strong> (${Math.round((examen.score / examen.total) * 100)}%)`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${perfil.name || 'Anónimo'}</strong></td>
+                            <td style="color:#666;">${perfil.email || '-'}</td>
+                            <td>⏳ ${tiempoUso}</td>
+                            <td>${juegosText}</td>
+                            <td>${practiceText}</td>
+                            <td>${assessmentText}</td>
+                        </tr>
+                    `;
+                });
+
+                // Actualizar Tarjetas de Resumen Dinámicamente en tiempo real
+                document.getElementById("total-students").textContent = totalStudents;
+                document.getElementById("total-practices").textContent = totalPracticesCount;
+                document.getElementById("avg-assessment").textContent = countAssessments > 0
+                    ? `${Math.round(totalAssessmentScore / countAssessments)}%`
+                    : "0%";
+            });
+        }
+    </script>
+
+    <script type="module" src="../js/auth-guard.js"></script>
+</body>
+
+</html>

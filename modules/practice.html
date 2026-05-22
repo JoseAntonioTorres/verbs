@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +22,7 @@
             padding: 30px;
             border-radius: 16px;
         }
+
         .flashcard-container {
             width: 300px;
             height: 180px;
@@ -28,19 +30,21 @@
             cursor: pointer;
             margin-bottom: 20px;
         }
+
         .flashcard {
             width: 100%;
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.6s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border-radius: 12px;
         }
-        /* Clase que se añade con JS para voltear la tarjeta */
+
         .flashcard.flipped {
             transform: rotateY(180deg);
         }
+
         .card-face {
             position: absolute;
             width: 100%;
@@ -54,29 +58,35 @@
             padding: 20px;
             box-sizing: border-box;
         }
+
         .card-front {
             background-color: #ffffff;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
+            color: var(--primary-color, #18529D);
+            border: 2px solid var(--primary-color, #18529D);
         }
+
         .card-front h3 {
             font-size: 2rem;
             margin: 0;
         }
+
         .card-back {
-            background-color: var(--primary-color);
+            background-color: var(--primary-color, #18529D);
             color: white;
             transform: rotateY(180deg);
             text-align: center;
         }
+
         .card-back p {
             margin: 5px 0;
             font-size: 1.1rem;
         }
+
         .flashcard-controls {
             display: flex;
             gap: 15px;
         }
+
         .btn-nav-card {
             background-color: #ffffff;
             border: 1px solid #ccc;
@@ -86,10 +96,11 @@
             font-weight: bold;
             transition: all 0.2s;
         }
+
         .btn-nav-card:hover {
-            background-color: var(--primary-color);
+            background-color: var(--primary-color, #18529D);
             color: white;
-            border-color: var(--primary-color);
+            border-color: var(--primary-color, #18529D);
         }
 
         /* --- ESTILOS DEL CUESTIONARIO EN CONTEXTO --- */
@@ -97,33 +108,42 @@
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
         }
+
         .quiz-title {
             border-bottom: 2px solid #f0f0f0;
             padding-bottom: 10px;
             margin-bottom: 25px;
             color: #333;
         }
+
         .question-block {
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 1px dashed #e0e0e0;
         }
+
         .question-text {
             font-size: 1.1rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 15px;
         }
+
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 10px;
         }
+
         @media(min-width: 600px) {
-            .options-grid { grid-template-columns: 1fr 1fr; }
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
+
         .option-btn {
             background-color: #f8f9fa;
             border: 2px solid #e9ecef;
@@ -134,200 +154,235 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .option-btn:hover {
+
+        .option-btn:hover:not(:disabled) {
             background-color: #e9ecef;
             border-color: #ced4da;
         }
-        /* Estados de Retroalimentación */
+
         .option-btn.correct {
             background-color: rgba(40, 173, 86, 0.15) !important;
             border-color: #28AD56 !important;
             color: #1b7339;
             font-weight: bold;
         }
+
         .option-btn.incorrect {
             background-color: rgba(220, 53, 69, 0.1) !important;
             border-color: #dc3545 !important;
             color: #a71d2a;
         }
+
         .rationale-text {
             margin-top: 12px;
             padding: 10px 15px;
             background-color: #f1f3f9;
-            border-left: 4px solid var(--primary-color);
+            border-left: 4px solid var(--primary-color, #18529D);
             border-radius: 4px;
             font-size: 14px;
             color: #444;
-            display: none; /* Se muestra con JS */
+            display: none;
+        }
+
+        /* --- SECCIÓN DE RESULTADOS --- */
+        .score-banner {
+            display: none;
+            background: linear-gradient(135deg, #28AD56 0%, #1b7339 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(40, 173, 86, 0.2);
+        }
+
+        .btn-reset {
+            background-color: white;
+            color: #1b7339;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-reset:hover {
+            background-color: #f4f6f9;
         }
     </style>
 </head>
+
 <body>
 
     <header></header>
 
     <main class="content-container">
-        
+
         <div class="practice-header">
             <h1>Módulo de Práctica: Verbos en Contexto</h1>
-            <p>Refuerza tu memoria con las tarjetas interactivas y resuelve los ejercicios prácticos con retroalimentación inmediata.</p>
+            <p>Refuerza tu memoria con las tarjetas interactivas y resuelve los ejercicios prácticos con
+                retroalimentación inmediata.</p>
         </div>
 
         <section class="flashcard-section">
             <h2>Tarjetas de Memorización (Flashcards)</h2>
-            <p style="color:#666; margin-bottom: 20px;">Haz clic sobre la tarjeta para voltearla y ver sus conjugaciones pasadas.</p>
-            
-            <div class="flashcard-container" onclick="toggleCard()">
+            <p style="color:#666; margin-bottom: 20px;">Haz clic sobre la tarjeta para voltearla y ver sus conjugaciones
+                pasadas.</p>
+
+            <div class="flashcard-container" id="btn-toggle-card">
                 <div class="flashcard" id="cardElement">
                     <div class="card-face card-front">
-                        <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color:#888;">Infinitivo</span>
-                        <h3 id="frontText">Go</h3>
+                        <span
+                            style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color:#888;">Infinitivo</span>
+                        <h3 id="frontText">-</h3>
                     </div>
                     <div class="card-face card-back">
-                        <p><strong>Pasado Simple:</strong> <span id="backPast">went</span></p>
-                        <p><strong>Participio:</strong> <span id="backParticiple">gone</span></p>
-                        <p style="font-style: italic; font-size: 0.9rem; margin-top: 10px; color:#e0e6ed;">Traducción: <span id="backMeaning">Ir</span></p>
+                        <p><strong>Pasado Simple:</strong> <span id="backPast">-</span></p>
+                        <p><strong>Participio:</strong> <span id="backParticiple">-</span></p>
+                        <p style="font-style: italic; font-size: 0.9rem; margin-top: 10px; color:#e0e6ed;">Traducción:
+                            <span id="backMeaning">-</span>
+                        </p>
                     </div>
                 </div>
             </div>
 
             <div class="flashcard-controls">
-                <button class="btn-nav-card" onclick="prevCard()">◀ Anterior</button>
-                <button class="btn-nav-card" onclick="nextCard()">Siguiente ▶</button>
+                <button class="btn-nav-card" id="btn-prev-card">◀ Anterior</button>
+                <button class="btn-nav-card" id="btn-next-card">Siguiente ▶</button>
             </div>
         </section>
 
         <section class="quiz-section">
             <h2 class="quiz-title">Ejercicios de Opción Múltiple</h2>
-            <div id="quizContainer">
-                </div>
+            <div id="quizContainer"></div>
+
+            <div id="scoreBanner" class="score-banner">
+                <h3>🎉 ¡Módulo Completado!</h3>
+                <p id="scoreText">Tu puntuación es de 0 / 0</p>
+                <small style="display:block; margin-top:5px; opacity:0.9;">Progreso sincronizado automáticamente con tu
+                    expediente académico.</small>
+                <button class="btn-reset" id="btn-reset-quiz">Volver a intentar</button>
+            </div>
         </section>
 
     </main>
 
-    <script>
-        // --- DATOS PARA LAS FLASHCARDS ---
-        const flashcardsData = [
-            { infinitive: "Be", past: "was / were", participle: "been", meaning: "ser / estar" },
-            { infinitive: "Begin", past: "began", participle: "begun", meaning: "comenzar" },
-            { infinitive: "Break", past: "broke", participle: "broken", meaning: "romper" },
-            { infinitive: "Bring", past: "brought", participle: "brought", meaning: "traer" },
-            { infinitive: "Build", past: "built", participle: "built", meaning: "construir" }
-        ];
+    <footer></footer>
+
+    <script type="module">
+        import { auth } from "../js/firebase-config.js";
+        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+
+        // Importación dinámica del pool centralizado
+        import { verbPool } from "../js/vocabulary.js";
+
+        const db = getFirestore();
+        let currentUser = null;
+
+        const bancoActivoID = "verbs_context";
+
         let currentCardIndex = 0;
+        let correctAnswersCount = 0;
+        let answeredQuestionsCount = 0;
+        let listaPreguntasDinámicas = [];
 
-        function toggleCard() {
-            document.getElementById('cardElement').classList.toggle('flipped');
-        }
+        // ESCUCHA DE AUTENTICACIÓN COORDINADA
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
 
+                // Inicializamos la interfaz de práctica SÓLO cuando el usuario está listo
+                // Esto da margen de milisegundos para que auth-guard pinte el header sin colisiones
+                setTimeout(() => {
+                    updateCard();
+                    generarQuizDesdePool();
+                    renderQuiz();
+                }, 50);
+            }
+        });
+
+        // --- COMPONENTE FLASHCARDS ---
         function updateCard() {
             const card = document.getElementById('cardElement');
-            card.classList.remove('flipped'); // Regresar al frente antes de cambiar el texto
-            
+            if (!card) return; // Salvaguarda estructural
+            card.classList.remove('flipped');
+
             setTimeout(() => {
-                const data = flashcardsData[currentCardIndex];
+                const data = verbPool[currentCardIndex];
+                const traduccion = data.clue ? data.clue.split('/')[0].trim() : "Sin traducción";
+
                 document.getElementById('frontText').textContent = data.infinitive;
                 document.getElementById('backPast').textContent = data.past;
                 document.getElementById('backParticiple').textContent = data.participle;
-                document.getElementById('backMeaning').textContent = data.meaning;
-            }, 200); // Pequeña pausa para que ocurra la animación estética de volteo
+                document.getElementById('backMeaning').textContent = traduccion;
+            }, 200);
         }
 
-        function nextCard() {
-            currentCardIndex = (currentCardIndex + 1) % flashcardsData.length;
+        document.getElementById('btn-toggle-card').addEventListener('click', () => {
+            document.getElementById('cardElement').classList.toggle('flipped');
+        });
+
+        document.getElementById('btn-next-card').addEventListener('click', () => {
+            currentCardIndex = (currentCardIndex + 1) % verbPool.length;
             updateCard();
-        }
+        });
 
-        function prevCard() {
-            currentCardIndex = (currentCardIndex - 1 + flashcardsData.length) % flashcardsData.length;
+        document.getElementById('btn-prev-card').addEventListener('click', () => {
+            currentCardIndex = (currentCardIndex - 1 + verbPool.length) % verbPool.length;
             updateCard();
+        });
+
+        // --- GENERADOR AUTOMÁTICO DE CUESTIONARIOS ---
+        function generarQuizDesdePool() {
+            
+            // 1. Barajar el pool completo de verbos de forma aleatoria
+            const verbosBarajados = [...verbPool].sort(() => 0.5 - Math.random());
+            
+            // 2. Tomar únicamente los primeros 10 verbos para el Mock Quiz
+            const seleccionVerbos = verbosBarajados.slice(0, 10);
+
+            // 3. Mapear la selección para construir el cuestionario interactivo
+            listaPreguntasDinámicas = seleccionVerbos.map((verbo, index) => {
+                const respuestaCorrecta = verbo.past;
+                
+                // Filtrar distractores del pool general (excluyendo la respuesta correcta)
+                const otrosVerbos = verbPool.filter(v => v.past !== respuestaCorrecta);
+                const distractores = otrosVerbos
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 3)
+                    .map(v => v.past);
+
+                // Combinar y barajar las 4 opciones de respuesta
+                const opcionesOpciones = [respuestaCorrecta, ...distractores].sort(() => 0.5 - Math.random());
+                const idxCorrecto = opcionesOpciones.indexOf(respuestaCorrecta);
+                
+                // Extraer la traducción limpia desde la pista
+                const significado = verbo.clue ? verbo.clue.split('/')[0].trim() : verbo.infinitive;
+                const oracionContextual = verbo.sentence || `Complete the sentence: "They ________ the exercise perfectly."`;
+
+                return {
+                    number: index + 1, // Numeración del 1 al 10
+                    question: `${oracionContextual} <br><small style="color: #777;">[Infinitive: <strong>${verbo.infinitive}</strong> - (${significado})]</small>`,
+                    options: opcionesOpciones,
+                    correctIndex: idxCorrecto,
+                    rationale: `The correct form for this past context is '${verbo.past}', which is the irregular simple past of '${verbo.infinitive}' (${significado}).`
+                };
+            });
         }
-
-
-        // --- BATERÍA PEDAGÓGICA DE 10 PREGUNTAS EN CONTEXTO ---
-        const quizQuestions = [
-            {
-                number: 1,
-                question: "Yesterday, Sarah ______ to the library to study for her linguistics exam.",
-                options: ["went", "gone", "goes", "go"],
-                correctIndex: 0,
-                rationale: "El marcador temporal 'yesterday' indica una acción terminada en el pasado, por lo que se requiere el pasado simple del verbo 'go'."
-            },
-            {
-                number: 2,
-                question: "By the time the professor arrived, the class had already ______.",
-                options: ["began", "begun", "begin", "begins"],
-                correctIndex: 1,
-                rationale: "El tiempo pasado perfecto ('had' + participio) demanda la forma 'begun' para el verbo 'begin'."
-            },
-            {
-                number: 3,
-                question: "The mechanics ______ a brand new prototype laboratory last year.",
-                options: ["builded", "build", "built", "building"],
-                correctIndex: 2,
-                rationale: "El pasado simple de 'build' cambia la 'd' final por una 't', denotando de forma correcta una acción concluida."
-            },
-            {
-                number: 4,
-                question: "I have ______ that clinical terminology book twice this month.",
-                options: ["readed", "reads", "red", "read"],
-                correctIndex: 3,
-                rationale: "El participio del verbo 'read' se escribe exactamente igual que su forma base, aunque su pronunciación cambie a /rɛd/."
-            },
-            {
-                number: 5,
-                question: "They ______ a lot of water after running the marathon.",
-                options: ["drank", "drunk", "drink", "drinked"],
-                correctIndex: 0,
-                rationale: "Se emplea 'drank' porque es la forma específica del pasado simple para expresar la acción concluida."
-            },
-            {
-                number: 6,
-                question: "The instructor ______ us the criteria for evaluating the educational project.",
-                options: ["taught", "teached", "thought", "teach"],
-                correctIndex: 0,
-                rationale: "La palabra 'taught' es el pasado simple correcto del verbo irregular 'teach' (enseñar)."
-            },
-            {
-                number: 7,
-                question: "She had ______ all the evaluation files before leaving the office.",
-                options: ["wrote", "write", "written", "writed"],
-                correctIndex: 2,
-                rationale: "El participio de pasado de 'write' es 'written', requerido de forma obligatoria tras el auxiliar del pasado perfecto 'had'."
-            },
-            {
-                number: 8,
-                question: "Last night, the speaker ______ very clearly during the presentation.",
-                options: ["spoke", "spoken", "speaks", "speaked"],
-                correctIndex: 0,
-                rationale: "La forma 'spoke' es el pasado simple correcto del verbo irregular 'speak'."
-            },
-            {
-                number: 9,
-                question: "He has ______ his keys in the classroom three times this week.",
-                options: ["lost", "loosed", "lose", "losen"],
-                correctIndex: 0,
-                rationale: "El verbo 'lose' comparte la misma forma 'lost' tanto para su pasado simple como para su participio de pasado."
-            },
-            {
-                number: 10,
-                question: "The student ______ a beautiful landscape for the project cover.",
-                options: ["drawn", "drawed", "draws", "drew"],
-                correctIndex: 3,
-                rationale: "El término 'drew' constituye la forma legítima de pasado simple del verbo irregular 'draw'."
-            }
-        ];
-
-        // Función para renderizar el cuestionario al cargar la página
+        // --- RENDERIZADO DEL CUESTIONARIO ---
         function renderQuiz() {
             const container = document.getElementById('quizContainer');
+            if (!container) return;
             container.innerHTML = "";
 
-            quizQuestions.forEach((q, qIndex) => {
+            listaPreguntasDinámicas.forEach((q, qIndex) => {
                 let optionsHTML = "";
                 q.options.forEach((opt, oIndex) => {
                     optionsHTML += `
-                        <button class="option-btn" onclick="checkAnswer(this, ${qIndex}, ${oIndex})">
+                        <button class="option-btn" data-q="${qIndex}" data-o="${oIndex}">
                             ${opt}
                         </button>
                     `;
@@ -345,36 +400,72 @@
                     </div>
                 `;
             });
+
+            container.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const qIdx = parseInt(this.getAttribute('data-q'));
+                    const oIdx = parseInt(this.getAttribute('data-o'));
+                    checkAnswer(this, qIdx, oIdx);
+                });
+            });
         }
 
-        // Función evaluadora que se ejecuta en tiempo real por cada pregunta
         function checkAnswer(selectedButton, questionIndex, optionIndex) {
-            const questionData = quizQuestions[questionIndex];
+            const questionData = listaPreguntasDinámicas[questionIndex];
             const parentBlock = selectedButton.parentElement;
             const allButtons = parentBlock.querySelectorAll('.option-btn');
-            
-            // Deshabilitar todos los botones de esa pregunta para que no cambie la respuesta
-            allButtons.forEach(btn => btn.disabled = true);
 
-            // Verificar si acertó
+            allButtons.forEach(btn => btn.disabled = true);
+            answeredQuestionsCount++;
+
             if (optionIndex === questionData.correctIndex) {
                 selectedButton.classList.add('correct');
+                correctAnswersCount++;
             } else {
                 selectedButton.classList.add('incorrect');
-                // Iluminar también la correcta de forma pasiva para guiar al alumno
                 allButtons[questionData.correctIndex].classList.add('correct');
             }
 
-            // Mostrar el bloque explicativo con la justificación lingüística
-            const rationaleBox = document.getElementById(`rationale-${questionIndex}`);
-            rationaleBox.style.display = "block";
+            document.getElementById(`rationale-${questionIndex}`).style.display = "block";
+
+            if (answeredQuestionsCount === listaPreguntasDinámicas.length) {
+                showFinalResults();
+            }
         }
 
-        // Inicializar los componentes al cargar
-        renderQuiz();
-    </script>
+        async function showFinalResults() {
+            const totalQuestions = listaPreguntasDinámicas.length;
+            document.getElementById('scoreText').textContent = `Lograste responder acertadamente ${correctAnswersCount} de ${totalQuestions} enunciados.`;
+            document.getElementById('scoreBanner').style.display = "block";
 
-    <script type="module" src="../js/firebase-config.js"></script>
+            if (currentUser) {
+                try {
+                    const userRef = doc(db, "users", currentUser.uid);
+                    const updatePayload = {};
+
+                    updatePayload[`practice_modules.${bancoActivoID}`] = {
+                        score: correctAnswersCount,
+                        total: totalQuestions,
+                        updatedAt: new Date().toISOString()
+                    };
+
+                    await updateDoc(userRef, updatePayload);
+                    console.log("Progreso de práctica sincronizado exitosamente.");
+                } catch (error) {
+                    console.error("Error al reportar analíticas a Firestore:", error);
+                }
+            }
+        }
+
+        document.getElementById('btn-reset-quiz').addEventListener('click', () => {
+            correctAnswersCount = 0;
+            answeredQuestionsCount = 0;
+            document.getElementById('scoreBanner').style.display = "none";
+            generarQuizDesdePool();
+            renderQuiz();
+        });
+    </script>
     <script type="module" src="../js/auth-guard.js"></script>
 </body>
+
 </html>

@@ -65,7 +65,6 @@
 <body>
 
     <div class="welcome-wrapper">
-        <!-- Lado Informativo -->
         <main class="info-side">
             <h1>Mastering Irregular Verbs</h1>
             <p class="tagline">Objeto Virtual de Aprendizaje para el dominio del inglés práctico.</p>
@@ -89,20 +88,16 @@
             </div>
         </main>
 
-        <!-- Lado del Formulario de Acceso -->
         <aside class="login-side">
             <div class="login-card">
-                <!-- Selectores de Modo -->
                 <div class="auth-tabs">
                     <button class="tab-btn active" id="tab-login">Ingresar</button>
                     <button class="tab-btn" id="tab-register">Registrarse</button>
                 </div>
 
-                <!-- Feedbacks informativos -->
                 <div id="auth-error" class="alert-msg alert-danger"></div>
                 <div id="auth-success" class="alert-msg alert-success"></div>
 
-                <!-- Formulario estructurado para Email/Password -->
                 <form id="auth-form">
                     <div class="form-group">
                         <label for="email">Correo Electrónico</label>
@@ -117,7 +112,6 @@
 
                 <div class="divider">o también</div>
 
-                <!-- Autenticación Social -->
                 <button class="btn-google-auth" id="btn-login-google">
                     <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" style="margin-right: 10px;">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -131,9 +125,10 @@
         </aside>
     </div>
 
-    <!-- Integración Lógica Modular -->
     <script type="module">
-        import { auth } from "./js/firebase-config.js";
+        // ESTANDARIZACIÓN: Importamos los servicios unificados desde tu config local
+        import { auth, db } from "./js/firebase-config.js";
+        
         import { 
             signInWithPopup, 
             GoogleAuthProvider, 
@@ -141,6 +136,9 @@
             signInWithEmailAndPassword,
             createUserWithEmailAndPassword
         } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        
+        // Importamos únicamente las funciones operativas que requiere index.html de Firestore
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
         const googleProvider = new GoogleAuthProvider();
         
@@ -177,15 +175,68 @@
             successDiv.style.display = 'none';
         }
 
+        // CONTROLADOR REESTRUCTURADO: Manejo inteligente de rutas según rol al detectar sesión activa
+        async function redirigirSegunRol(user) {
+            try {
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    const userRole = userData.profile?.role || "student";
+
+                    if (userRole === "facilitator") {
+                        window.location.href = "modules/facilitator.html";
+                    } else {
+                        window.location.href = "modules/introduction.html";
+                    }
+                } else {
+                    // Si es primer inicio con Google, recolectamos los datos de perfil y la photoURL nativa
+                    const nombreCompleto = user.displayName || user.email.split('@')[0];
+                    const avatarUrl = user.photoURL || ""; 
+                    await inicializarExpedienteEstudiante(user, nombreCompleto, avatarUrl);
+                    window.location.href = "modules/introduction.html";
+                }
+            } catch (err) {
+                console.error("Error al derivar ruta por rol:", err);
+                window.location.href = "modules/introduction.html";
+            }
+        }
+
+        // Helper para crear el mapa unificado del estudiante en Firestore obedeciendo el estándar profile.avatar
+        async function inicializarExpedienteEstudiante(user, nombreCompleto, avatarUrl = "") {
+            const userRef = doc(db, "users", user.uid);
+            await setDoc(userRef, {
+                profile: {
+                    name: nombreCompleto,
+                    email: user.email,
+                    role: "student",
+                    avatar: avatarUrl, // Mapeado para que auth-guard.js lo lea directamente
+                    createdAt: new Date().toISOString()
+                },
+                analytics: {
+                    totalTimeSpent: 0,
+                    lastActive: new Date().toISOString()
+                },
+                games_records: {
+                    anagrams: 0,
+                    invaders: 0,
+                    runner: 0,
+                    memory: 0
+                },
+                practice_modules: {}
+            }, { merge: true });
+        }
+
         // Observador persistente de la sesión activa
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                window.location.href = "modules/introduction.html";
+                redirigirSegunRol(user);
             }
         });
 
         // Envío del Formulario (Login o Registro)
-        authForm.addEventListener('submit', (e) => {
+        authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             clearAlerts();
 
@@ -202,19 +253,30 @@
                     showError("auth/weak-password");
                     return;
                 }
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then(() => {
-                        successDiv.textContent = "¡Registro exitoso! Redirigiendo...";
-                        successDiv.style.display = 'block';
-                    })
-                    .catch(error => showError(error.code));
+                
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const defaultName = email.split('@')[0];
+                    
+                    successDiv.textContent = "Creando expediente escolar...";
+                    successDiv.style.display = 'block';
+
+                    // Al ser registro por formulario, no hay foto inicial, pasamos vacío para activar el Failsafe automático de iniciales
+                    await inicializarExpedienteEstudiante(userCredential.user, defaultName, "");
+                    
+                } catch (error) {
+                    showError(error.code);
+                }
             }
         });
 
-        // Manejador del proveedor de Google
+        // Manejador del proveedor de Google (Social)
         btnGoogle.addEventListener('click', () => {
             clearAlerts();
             signInWithPopup(auth, googleProvider)
+                .then((result) => {
+                    // El observador "onAuthStateChanged" se encarga de la redirección
+                })
                 .catch(error => showError(error.code));
         });
 

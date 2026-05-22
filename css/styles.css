@@ -108,3 +108,19 @@ body {
 .info-card.highlight {
     border-left: 5px solid var(--accent-color);
 }
+/* Estilos para las etiquetas de rol en la barra de navegación */
+.badge-facilitator {
+    color: #155724;
+    background-color: #d4edda;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #c3e6cb;
+}
+
+.badge-student {
+    color: #004085;
+    background-color: #cce5ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #b8daff;
+}

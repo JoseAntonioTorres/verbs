@@ -287,32 +287,70 @@ export function startMemoryGame(currentUser, scoresCollection) {
 
     async function endGame() {
         gameActive = false;
-        cancelAnimationFrame(animationId);
+        if (typeof cancelAnimationFrame === "function") cancelAnimationFrame(animationId);
         draw();
 
         if (currentUser && score > 0) {
             const db = getFirestore();
-            const docId = `${currentUser.uid}_memory-game`;
-            const docRef = doc(db, "scoreboard", docId);
+
+            // 1. ESTRUCTURA ACTUAL: Guardar en la tabla general de posiciones (Scoreboard)
+            const docIdScoreboard = `${currentUser.uid}_memory-game`;
+            const scoreboardRef = doc(db, "scoreboard", docIdScoreboard);
 
             try {
-                const docSnap = await getDoc(docRef);
+                const docSnap = await getDoc(scoreboardRef);
+                let esNuevoRecord = true;
+
                 if (docSnap.exists() && score <= docSnap.data().score) {
-                    console.log("No superaste tu récord anterior.");
-                    return;
+                    console.log("No superaste tu récord anterior en el marcador global.");
+                    esNuevoRecord = false;
                 }
 
-                await setDoc(docRef, {
-                    name: currentUser.displayName || currentUser.email.split('@')[0],
-                    score: score,
-                    email: currentUser.email,
-                    date: new Date().toISOString(),
-                    gameType: "memory-game"
-                }, { merge: true });
+                if (esNuevoRecord) {
+                    await setDoc(scoreboardRef, {
+                        name: currentUser.displayName || currentUser.email.split('@')[0],
+                        score: score,
+                        email: currentUser.email,
+                        date: new Date().toISOString(),
+                        gameType: "memory-game"
+                    }, { merge: true });
+                    console.log("Récord de Memoria actualizado en la nube (Scoreboard).");
+                }
 
-                console.log("Récord de Memoria actualizado en la nube.");
+                // ======================================================================
+                // NUEVO AGREGADO: Sincronizar el puntaje con el expediente del Facilitador
+                // ======================================================================
+                // Aquí usamos directamente el UID del usuario como ID único del documento
+                const progressRef = doc(db, "student_progress", currentUser.uid);
+
+                // Leemos el progreso actual para no pisar un puntaje más alto guardado previamente
+                const progressSnap = await getDoc(progressRef);
+                let mapeoProgreso = {};
+
+                // Verificamos si ya existía un récord de este juego en su perfil de alumno
+                if (progressSnap.exists() && progressSnap.data().gameMemory) {
+                    // Si el puntaje actual es mayor al que tenía registrado en su perfil, lo actualizamos
+                    if (score > progressSnap.data().gameMemory) {
+                        mapeoProgreso.gameMemory = score;
+                    }
+                } else {
+                    // Si nunca había jugado, registramos su primer puntaje
+                    mapeoProgreso.gameMemory = score;
+                }
+
+                // Si hay un dato nuevo que actualizar, hacemos un setDoc con merge seguro
+                if (Object.keys(mapeoProgreso).length > 0 || !progressSnap.exists()) {
+                    await setDoc(progressRef, {
+                        studentName: currentUser.displayName || currentUser.email.split('@')[0],
+                        studentEmail: currentUser.email,
+                        gameMemory: score, // Campo directo que leerá el panel del Facilitador
+                        lastActive: new Date().toISOString()
+                    }, { merge: true });
+                    console.log("Puntaje sincronizado con el Panel de Facilitadores.");
+                }
+
             } catch (e) {
-                console.error("Error al guardar puntuación de Memoria:", e);
+                console.error("Error al procesar las puntuaciones de Memoria:", e);
             }
         }
     }
