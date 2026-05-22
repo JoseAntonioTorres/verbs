@@ -17,92 +17,83 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             margin-bottom: 30px;
         }
-        .question-item {
+        .question-block {
             margin-bottom: 35px;
             padding-bottom: 25px;
             border-bottom: 1px solid #f0f2f5;
         }
-        .question-title {
+        .question-text {
             font-size: 1.15rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 15px;
+            line-height: 1.5;
         }
-        /* Opciones estilo Radio Button moderno */
-        .options-group {
-            display: flex;
-            flex-direction: column;
+        /* Grid de Opciones adaptado idéntico a practice.html */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 12px;
+            margin-top: 10px;
         }
-        .option-label {
-            display: flex;
-            align-items: center;
-            padding: 14px 20px;
-            background-color: #f8f9fa;
+        .option-btn {
+            background-color: #ffffff;
             border: 2px solid #e9ecef;
             border-radius: 8px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #495057;
             cursor: pointer;
-            font-size: 15px;
             transition: all 0.2s ease;
+            text-align: center;
         }
-        .option-label:hover {
-            background-color: #f1f3f5;
-            border-color: #dee2e6;
+        .option-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #ced4da;
         }
-        /* Cambios visuales cuando seleccionan una opción */
-        .option-label input[type="radio"] {
-            margin-right: 15px;
-            accent-color: var(--primary-color);
-            transform: scale(1.2);
-        }
-        .option-label.selected {
+        /* UI de Selección activa para el Examen (Estilo azul de practice) */
+        .option-btn.selected-exam {
+            border-color: #18529D;
             background-color: rgba(24, 82, 157, 0.05);
-            border-color: var(--primary-color);
+            color: #18529D;
             font-weight: 600;
         }
-
         /* Botón de envío */
-        .btn-submit-exam {
-            background-color: var(--primary-color);
+        .btn-submit-assessment {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 40px auto 0 auto;
+            background-color: #28AD56;
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 30px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-            display: block;
-            margin: 40px auto 0 auto;
-            box-shadow: 0 4px 15px rgba(24, 82, 157, 0.3);
-            transition: all 0.3s ease;
+            transition: background 0.2s ease;
         }
-        .btn-submit-exam:hover {
-            background-color: #0f3a73;
-            transform: translateY(-2px);
+        .btn-submit-assessment:hover {
+            background-color: #21964b;
         }
-
-        /* Panel de resultados oculto al inicio */
-        .results-panel {
+        /* Banner de Resultados */
+        .score-banner {
             display: none;
-            text-align: center;
-            padding: 40px 20px;
             background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-top: 6px solid var(--accent-color);
+            border-left: 5px solid #28AD56;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-top: 40px;
+            text-align: center;
         }
-        .score-circle {
-            width: 120px;
-            height: 120px;
-            background-color: rgba(40, 173, 86, 0.1);
-            color: var(--accent-color);
-            font-size: 2.5rem;
-            font-weight: bold;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px auto;
+        .score-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #28AD56;
+            margin: 15px 0;
         }
     </style>
 </head>
@@ -111,177 +102,198 @@
     <header></header>
 
     <main class="content-container">
-        
-        <div class="assessment-header">
-            <h1>Evaluación Final (Assessment)</h1>
-            <p>Demuestra los conocimientos adquiridos. Responde con atención; tu calificación se registrará de forma definitiva en el sistema.</p>
+        <section class="assessment-header">
+            <h1>Evaluación Final Oficial</h1>
+            <p class="subtitle">Demuestra tu dominio global sobre los verbos irregulares. Esta calificación será registrada en tu expediente escolar.</p>
+        </section>
+
+        <div id="assessment-card" class="assessment-card">
+            <div id="quizContainer"></div>
+            <button id="btn-submit-exam" class="btn-submit-assessment">Enviar Evaluación</button>
         </div>
 
-        <form id="assessmentForm" class="assessment-card">
-            
-            <div class="question-item">
-                <div class="question-title">1. ¿Cuál es el pasado simple correcto del verbo "Write"?</div>
-                <div class="options-group">
-                    <label class="option-label"><input type="radio" name="q1" value="written"> written</label>
-                    <label class="option-label"><input type="radio" name="q1" value="wrote"> wrote</label>
-                    <label class="option-label"><input type="radio" name="q1" value="write"> write</label>
-                    <label class="option-label"><input type="radio" name="q1" value="writed"> writed</label>
-                </div>
-            </div>
-
-            <div class="question-item">
-                <div class="question-title">2. Completa: "She has ______ an incredible mobile app using HTML and JavaScript."</div>
-                <div class="options-group">
-                    <label class="option-label"><input type="radio" name="q2" value="build"> build</label>
-                    <label class="option-label"><input type="radio" name="q2" value="building"> building</label>
-                    <label class="option-label"><input type="radio" name="q2" value="built"> built</label>
-                    <label class="option-label"><input type="radio" name="q2" value="builded"> builded</label>
-                </div>
-            </div>
-
-            <div class="question-item">
-                <div class="question-title">3. ¿Qué forma verbal corresponde al participio del verbo "Begin"?</div>
-                <div class="options-group">
-                    <label class="option-label"><input type="radio" name="q3" value="began"> began</label>
-                    <label class="option-label"><input type="radio" name="q3" value="begin"> begin</label>
-                    <label class="option-label"><input type="radio" name="q3" value="begun"> begun</label>
-                    <label class="option-label"><input type="radio" name="q3" value="begins"> begins</label>
-                </div>
-            </div>
-
-            <div class="question-item">
-                <div class="question-title">4. El pasado y participio del verbo "Read" se escriben igual que su forma base, pero ¿cómo se pronuncian fonéticamente?</div>
-                <div class="options-group">
-                    <label class="option-label"><input type="radio" name="q4" value="rid"> /rɪd/</label>
-                    <label class="option-label"><input type="radio" name="q4" value="riid"> /riːd/</label>
-                    <label class="option-label"><input type="radio" name="q4" value="red"> /rɛd/ (como el color rojo)</label>
-                    <label class="option-label"><input type="radio" name="q4" value="road"> /roʊd/</label>
-                </div>
-            </div>
-
-            <div class="question-item">
-                <div class="question-title">5. ¿Cuál es el pasado simple correcto del verbo "Teach" (Enseñar)?</div>
-                <div class="options-group">
-                    <label class="option-label"><input type="radio" name="q5" value="teached"> teached</label>
-                    <label class="option-label"><input type="radio" name="q5" value="taught"> taught</label>
-                    <label class="option-label"><input type="radio" name="q5" value="thought"> thought</label>
-                    <label class="option-label"><input type="radio" name="q5" value="teach"> teach</label>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-submit-exam">Enviar Evaluación</button>
-        </form>
-
-        <div id="resultsPanel" class="results-panel">
-            <h2>¡Evaluación Concluida!</h2>
-            <p>Tu hoja de respuestas ha sido calificada y registrada con éxito.</p>
-            <div class="score-circle"><span id="finalScoreText">0</span>%</div>
-            <h3 id="feedbackMessage">Buen trabajo</h3>
-            <p style="color:#666; margin-top: 15px;">Puedes ver tus módulos o cerrar sesión en la barra superior.</p>
-        </div>
-
+        <section id="scoreBanner" class="score-banner">
+            <h2>Resultados del Examen</h2>
+            <p id="scoreText" style="font-size: 1.1rem; color: #555;"></p>
+            <div id="scoreGrade" class="score-number">0%</div>
+            <p id="feedbackText" style="font-weight: 600; font-size: 1.2rem;"></p>
+        </section>
     </main>
 
     <script type="module">
-        import { auth } from "../js/firebase-config.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { auth, db } from "../js/firebase-config.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-        const db = getFirestore();
+       import { verbPool } from "../js/vocabulary.js"; 
+
         let currentUser = null;
+        let listaPreguntasDinámicas = [];
+        let respuestasSeleccionadasUsuario = {}; // Guarda { qIndex: oIndex }
 
-        // Respuestas correctas del examen
-        const correctAnswers = {
-            q1: "wrote",
-            q2: "built",
-            q3: "begun",
-            q4: "red",
-            q5: "taught"
-        };
-
-        // Monitorear quién está tomando el examen
+        // RASTREO DE USUARIO ACTIVO
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-            }
+            if (user) currentUser = user;
         });
 
-        // Efecto visual: Cambiar color de fondo de la opción seleccionada
-        document.querySelectorAll('.option-label input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                // Quitar la clase 'selected' de los hermanos en el mismo bloque
-                const group = this.closest('.options-group');
-                group.querySelectorAll('.option-label').forEach(lbl => lbl.classList.remove('selected'));
-                // Añadirlo a la fila seleccionada
-                this.closest('.option-label').classList.add('selected');
+        // --- GENERADOR AUTOMÁTICO DE EXAMEN (Lógica exacta de practice.html) ---
+        function generarAssessmentDesdePool() {
+            // 1. Barajar el pool plano completo de verbos
+            const verbosBarajados = [...verbPool].sort(() => 0.5 - Math.random());
+            
+            // 2. Tomamos 10 reactivos aleatorios para la evaluación final
+            const seleccionVerbos = verbosBarajados.slice(0, 10);
+
+            // 3. Mapeamos la selección estructurando las opciones
+            listaPreguntasDinámicas = seleccionVerbos.map((verbo, index) => {
+                const respuestaCorrecta = verbo.past;
+                
+                // Filtrar distractores del pool general plano
+                const otrosVerbos = verbPool.filter(v => v.past !== respuestaCorrecta);
+                const distractores = otrosVerbos
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 3)
+                    .map(v => v.past);
+
+                // Combinar y barajar opciones de respuesta
+                const opcionesOpciones = [respuestaCorrecta, ...distractores].sort(() => 0.5 - Math.random());
+                const idxCorrecto = opcionesOpciones.indexOf(respuestaCorrecta);
+                
+                // Extraer significado e instrucciones contextuales
+                const significado = verbo.clue ? verbo.clue.split('/')[0].trim() : verbo.infinitive;
+                const oracionContextual = verbo.sentence || `Complete the sentence: "They ________ the exercise perfectly."`;
+
+                return {
+                    number: index + 1,
+                    question: `${oracionContextual} <br><small style="color: #777;">[Infinitive: <strong>${verbo.infinitive}</strong> - (${significado})]</small>`,
+                    options: opcionesOpciones,
+                    correctIndex: idxCorrecto
+                };
             });
-        });
+        }
 
-        // Procesamiento del Examen al hacer Submit
-        document.getElementById('assessmentForm').addEventListener('submit', async function(e) {
-            e.preventDefault(); // Evitar que la página parpadee o se recargue
+        // --- RENDERIZADO DEL CUESTIONARIO (Estilo botones de grid) ---
+        function renderAssessment() {
+            const container = document.getElementById('quizContainer');
+            if (!container) return;
+            container.innerHTML = "";
 
-            // Verificar que el usuario contestó todas las preguntas
-            const formData = new FormData(this);
-            const totalQuestions = Object.keys(correctAnswers).length;
-            let answeredCount = 0;
+            listaPreguntasDinámicas.forEach((q, qIndex) => {
+                let optionsHTML = "";
+                q.options.forEach((opt, oIndex) => {
+                    optionsHTML += `
+                        <button class="option-btn" data-q="${qIndex}" data-o="${oIndex}">
+                            ${opt}
+                        </button>
+                    `;
+                });
 
-            for (let key of formData.keys()) {
-                answeredCount++;
-            }
+                container.innerHTML += `
+                    <div class="question-block" id="block-${qIndex}">
+                        <div class="question-text">${q.number}. ${q.question}</div>
+                        <div class="options-grid">
+                            ${optionsHTML}
+                        </div>
+                    </div>
+                `;
+            });
 
-            if (answeredCount < totalQuestions) {
-                alert("⚠️ Por favor, responde todas las preguntas antes de enviar el examen.");
+            // Asignar los escuchadores de clics a los botones
+            container.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const qIdx = parseInt(this.getAttribute('data-q'));
+                    const oIdx = parseInt(this.getAttribute('data-o'));
+                    
+                    // Almacenar selección del usuario
+                    respuestasSeleccionadasUsuario[qIdx] = oIdx;
+
+                    // Cambio visual estético: desmarcar hermanos y marcar el seleccionado
+                    const parentGrid = this.parentElement;
+                    parentGrid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected-ui', 'selected-exam'));
+                    this.classList.add('selected-exam');
+                });
+            });
+        }
+
+        // Inicializar generación y pintado de elementos
+        generarAssessmentDesdePool();
+        renderAssessment();
+
+        // --- MANEJO DEL ENVÍO AL FACILITADOR ---
+        document.getElementById('btn-submit-exam').addEventListener('click', async () => {
+            const totalQuestions = listaPreguntasDinámicas.length;
+            
+            // Validación preventiva: Verificar si respondió todas las preguntas
+            const cantidadRespondidas = Object.keys(respuestasSeleccionadasUsuario).length;
+            if (cantidadRespondidas < totalQuestions) {
+                alert(`Por favor, responde todas las preguntas antes de enviar. (${cantidadRespondidas}/${totalQuestions} contestadas)`);
                 return;
             }
 
-            // Validar respuestas y calcular puntaje
-            let correctCount = 0;
-            for (let key in correctAnswers) {
-                if (formData.get(key) === correctAnswers[key]) {
-                    correctCount++;
+            let correctAnswersCount = 0;
+
+            // Procesar y calificar las respuestas
+            listaPreguntasDinámicas.forEach((q, qIndex) => {
+                const respuestaUsuario = respuestasSeleccionadasUsuario[qIndex];
+                
+                // Bloquear los botones para evitar modificaciones posteriores
+                const block = document.getElementById(`block-${qIndex}`);
+                block.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+
+                if (respuestaUsuario === q.correctIndex) {
+                    correctAnswersCount++;
                 }
-            }
+            });
 
-            const finalGradePercentage = Math.round((correctCount / totalQuestions) * 100);
+            const finalGradePercentage = Math.round((correctAnswersCount / totalQuestions) * 100);
 
-            // OCULTAR EXAMEN Y MOSTRAR RESULTADOS EN PANTALLA
-            document.getElementById('assessmentForm').style.display = "none";
-            document.getElementById('resultsPanel').style.display = "block";
-            document.getElementById('finalScoreText').textContent = finalGradePercentage;
+            // Mostrar el panel de retroalimentación
+            document.getElementById('scoreText').textContent = `Lograste responder acertadamente ${correctAnswersCount} de ${totalQuestions} enunciados.`;
+            
+            const gradeElement = document.getElementById('scoreGrade');
+            gradeElement.textContent = `${finalGradePercentage}%`;
 
-            // Personalizar mensaje según la nota obtenida
-            const feedbackElement = document.getElementById('feedbackMessage');
-            if(finalGradePercentage >= 90) {
-                feedbackElement.textContent = "¡Excelente! Has demostrado un dominio absoluto de los verbos irregulares. 🌟";
+            const feedbackElement = document.getElementById('feedbackText');
+            if (finalGradePercentage === 100) {
+                feedbackElement.textContent = "¡Espectacular! Tienes un dominio absoluto de los verbos irregulares. 🌟";
                 feedbackElement.style.color = "#28AD56";
-            } else if(finalGradePercentage >= 70) {
-                feedbackElement.textContent = "¡Bien hecho! Aprobaste la evaluación satisfactoriamente. 👍";
+                gradeElement.style.color = "#28AD56";
+            } else if (finalGradePercentage >= 70) {
+                feedbackElement.textContent = "¡Bien hecho! Aprobaste la evaluación de forma satisfactoria. 👍";
                 feedbackElement.style.color = "#18529D";
+                gradeElement.style.color = "#18529D";
             } else {
-                feedbackElement.textContent = "Sigue practicando. Te recomendamos repasar el módulo de estudio y jugar un par de veces más. 📚";
+                feedbackElement.textContent = "Sigue practicando. Te recomendamos repasar los módulos de estudio y jugar de nuevo. 📚";
                 feedbackElement.style.color = "#dc3545";
+                gradeElement.style.color = "#dc3545";
             }
 
-            // GUARDAR CALIFICACIÓN OFICIAL EN FIREBASE FIRESTORE
+            document.getElementById('scoreBanner').style.display = "block";
+            document.getElementById('scoreBanner').scrollIntoView({ behavior: 'smooth' });
+
+            // GUARDAR CALIFICACIÓN EN EL NODO COMPATIBLE CON EL DASHBOARD
             if (currentUser) {
                 try {
-                    await addDoc(collection(db, "assessments"), {
-                        studentName: currentUser.displayName || "Alumno Anónimo",
-                        studentEmail: currentUser.email,
-                        score: finalGradePercentage,
-                        correctAnswersCount: correctCount,
-                        totalQuestionsCount: totalQuestions,
-                        submittedAt: new Date().toISOString()
-                    });
-                    console.log("Calificación guardada con éxito en la nube.");
+                    const userRef = doc(db, "users", currentUser.uid);
+                    await setDoc(userRef, {
+                        profile: {
+                            name: currentUser.displayName || "Alumno Anónimo",
+                            email: currentUser.email
+                        },
+                        assessment: {
+                            score: correctAnswersCount, // Leído por el dashboard como examen.score
+                            total: totalQuestions,      // Leído por el dashboard como examen.total
+                            updatedAt: new Date().toISOString()
+                        }
+                    }, { merge: true });
+
+                    console.log("Calificación del examen guardada exitosamente en el expediente.");
                 } catch (error) {
-                    console.error("Error crítico al subir la calificación:", error);
+                    console.error("Error al reportar el examen final a Firestore:", error);
                 }
             }
         });
     </script>
-
     <script type="module" src="../js/auth-guard.js"></script>
 </body>
 </html>
