@@ -1,6 +1,6 @@
 // js/verb-runner.js
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-import { verbPool } from "./vocabulary.js";
+import { verbPool } from "../verbs.js";
 
 export function startRunnerGame(currentUser, scoresCollection) {
     const canvas = document.getElementById("runnerCanvas");

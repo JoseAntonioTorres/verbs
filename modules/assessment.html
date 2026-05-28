@@ -16,7 +16,30 @@
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             margin-bottom: 30px;
+            position: relative;
         }
+        
+        /* --- Widget del Cronómetro Flotante Fijo --- */
+        .timer-badge {
+            position: fixed;
+            top: 80px;
+            right: 25px;
+            background-color: rgba(241, 243, 245, 0.95);
+            backdrop-filter: blur(4px);
+            color: #495057;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
         .question-block {
             margin-bottom: 35px;
             padding-bottom: 25px;
@@ -29,37 +52,54 @@
             margin-bottom: 15px;
             line-height: 1.5;
         }
-        /* Grid de Opciones adaptado idéntico a practice.html */
+        
+        /* --- Cuadrícula de Opciones Alineadas en una Sola Línea --- */
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr); /* Fuerza exactamente 4 columnas alineadas */
             gap: 12px;
             margin-top: 10px;
         }
+        
+        /* Botones más estilizados y angostos */
         .option-btn {
             background-color: #ffffff;
             border: 2px solid #e9ecef;
             border-radius: 8px;
-            padding: 14px;
-            font-size: 1rem;
+            padding: 10px 5px; /* Padding vertical moderado y horizontal mínimo para optimizar espacio */
+            font-size: 0.95rem;
             font-weight: 500;
             color: #495057;
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: center;
+            white-space: nowrap; /* Evita que el verbo se parta en dos líneas si es estrecho */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Si el texto llega a ser muy largo por accidente, no rompe el botón */
         }
-        .option-btn:hover {
+        .option-btn:hover:not(:disabled) {
             background-color: #f8f9fa;
             border-color: #ced4da;
         }
-        /* UI de Selección activa para el Examen (Estilo azul de practice) */
         .option-btn.selected-exam {
             border-color: #18529D;
             background-color: rgba(24, 82, 157, 0.05);
             color: #18529D;
             font-weight: 600;
         }
-        /* Botón de envío */
+        
+        /* Responsividad para móviles y tabletas */
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2x2 en pantallas medianas */
+            }
+        }
+        @media (max-width: 480px) {
+            .options-grid {
+                grid-template-columns: 1fr; /* 1 sola columna en teléfonos muy pequeños */
+            }
+        }
+
         .btn-submit-assessment {
             display: block;
             width: 100%;
@@ -75,10 +115,21 @@
             cursor: pointer;
             transition: background 0.2s ease;
         }
-        .btn-submit-assessment:hover {
+        .btn-submit-assessment:hover:not(:disabled) {
             background-color: #21964b;
         }
-        /* Banner de Resultados */
+        .focus-warning-banner {
+            display: none;
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-align: center;
+        }
         .score-banner {
             display: none;
             background: #ffffff;
@@ -101,11 +152,17 @@
 
     <header></header>
 
+    <div class="timer-badge">
+        ⏱️ Tiempo: <span id="timerDisplay">00:00</span>
+    </div>
+
     <main class="content-container">
         <section class="assessment-header">
             <h1>Evaluación Final Oficial</h1>
             <p class="subtitle">Demuestra tu dominio global sobre los verbos irregulares. Esta calificación será registrada en tu expediente escolar.</p>
         </section>
+
+        <div id="focusWarning" class="focus-warning-banner"></div>
 
         <div id="assessment-card" class="assessment-card">
             <div id="quizContainer"></div>
@@ -116,50 +173,111 @@
             <h2>Resultados del Examen</h2>
             <p id="scoreText" style="font-size: 1.1rem; color: #555;"></p>
             <div id="scoreGrade" class="score-number">0%</div>
+            <p id="timeElapsedText" style="color: #666; margin-bottom: 10px; font-size: 1rem;"></p>
+            <p id="tabSwitchesText" style="color: #ba8b00; margin-bottom: 20px; font-size: 0.95rem; font-weight: 500;"></p>
             <p id="feedbackText" style="font-weight: 600; font-size: 1.2rem;"></p>
         </section>
     </main>
 
     <script type="module">
-        import { auth, db } from "../js/firebase-config.js";
+        import { auth, db } from "../js/services/firebase-config.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
         import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-       import { verbPool } from "../js/vocabulary.js"; 
+        import { verbPool } from "../js/verbs.js"; 
 
         let currentUser = null;
         let listaPreguntasDinámicas = [];
-        let respuestasSeleccionadasUsuario = {}; // Guarda { qIndex: oIndex }
+        let respuestasSeleccionadasUsuario = {};
 
-        // RASTREO DE USUARIO ACTIVO
+        let startTime = null;
+        let totalSecondsElapsed = 0;
+        let timerInterval = null;
+        let tabSwitchCount = 0;
+        let examSubmitted = false;
+
         onAuthStateChanged(auth, (user) => {
             if (user) currentUser = user;
         });
 
-        // --- GENERADOR AUTOMÁTICO DE EXAMEN (Lógica exacta de practice.html) ---
-        function generarAssessmentDesdePool() {
-            // 1. Barajar el pool plano completo de verbos
-            const verbosBarajados = [...verbPool].sort(() => 0.5 - Math.random());
+        function iniciarCronometro() {
+            startTime = new Date();
+            timerInterval = setInterval(() => {
+                if (examSubmitted) return;
+                totalSecondsElapsed++;
+                
+                const mins = Math.floor(totalSecondsElapsed / 60).toString().padStart(2, '0');
+                const secs = (totalSecondsElapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function formatearTiempoFinal(totalSegundos) {
+            const mins = Math.floor(totalSegundos / 60);
+            const secs = totalSegundos % 60;
+            if (mins === 0) return `${secs} segundos`;
+            return `${mins} min y ${secs} seg`;
+        }
+
+        function registrarCambioDeContexto() {
+            if (examSubmitted) return;
+
+            tabSwitchCount++;
+            const warningBanner = document.getElementById('focusWarning');
+            warningBanner.textContent = `⚠️ Procura no revisar otras ventanas mientras estés haciendo la evaluación. Llevas ${tabSwitchCount} llamada(s) de atención.`;
+            warningBanner.style.display = "block";
             
-            // 2. Tomamos 10 reactivos aleatorios para la evaluación final
+            console.warn(`[Integridad] El alumno perdió el foco del examen. Incidencias: ${tabSwitchCount}`);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') registrarCambioDeContexto();
+        });
+        window.addEventListener('blur', () => {
+            registrarCambioDeContexto();
+        });
+
+        function generarDistractoresEstructurales(inf, pastCorrecto) {
+            const distractores = new Set();
+
+            let regularizado = inf.endsWith('e') ? inf + 'd' : inf + 'ed';
+            if (regularizado !== pastCorrecto) distractores.add(regularizado);
+
+            let terminadoEnT = inf.endsWith('e') ? inf.slice(0, -1) + 't' : inf + 't';
+            if (terminadoEnT !== pastCorrecto) distractores.add(terminadoEnT);
+
+            if (inf.length > 2) {
+                const ultimaLetra = inf.slice(-1);
+                if (['g','p','n','m','d'].includes(ultimaLetra)) {
+                    let duplaFalsa = inf + ultimaLetra + 'ed';
+                    if (duplaFalsa !== pastCorrecto) distractores.add(duplaFalsa);
+                }
+            }
+
+            return Array.from(distractores);
+        }
+
+        function generarAssessmentDesdePool() {
+            const verbosBarajados = [...verbPool].sort(() => 0.5 - Math.random());
             const seleccionVerbos = verbosBarajados.slice(0, 10);
 
-            // 3. Mapeamos la selección estructurando las opciones
             listaPreguntasDinámicas = seleccionVerbos.map((verbo, index) => {
                 const respuestaCorrecta = verbo.past;
+                const inf = verbo.infinitive.toLowerCase().trim();
                 
-                // Filtrar distractores del pool general plano
-                const otrosVerbos = verbPool.filter(v => v.past !== respuestaCorrecta);
-                const distractores = otrosVerbos
+                let falsosMorfológicos = generarDistractoresEstructurales(inf, respuestaCorrecta);
+
+                const otrosVerbosReales = verbPool
+                    .filter(v => v.past !== respuestaCorrecta && !falsosMorfológicos.includes(v.past))
                     .sort(() => 0.5 - Math.random())
-                    .slice(0, 3)
                     .map(v => v.past);
 
-                // Combinar y barajar opciones de respuesta
-                const opcionesOpciones = [respuestaCorrecta, ...distractores].sort(() => 0.5 - Math.random());
+                const poolDistractoresMezclado = [...falsosMorfológicos, ...otrosVerbosReales];
+                const distractoresFinales = poolDistractoresMezclado.slice(0, 3);
+
+                const opcionesOpciones = [respuestaCorrecta, ...distractoresFinales].sort(() => 0.5 - Math.random());
                 const idxCorrecto = opcionesOpciones.indexOf(respuestaCorrecta);
                 
-                // Extraer significado e instrucciones contextuales
                 const significado = verbo.clue ? verbo.clue.split('/')[0].trim() : verbo.infinitive;
                 const oracionContextual = verbo.sentence || `Complete the sentence: "They ________ the exercise perfectly."`;
 
@@ -172,7 +290,6 @@
             });
         }
 
-        // --- RENDERIZADO DEL CUESTIONARIO (Estilo botones de grid) ---
         function renderAssessment() {
             const container = document.getElementById('quizContainer');
             if (!container) return;
@@ -198,45 +315,41 @@
                 `;
             });
 
-            // Asignar los escuchadores de clics a los botones
             container.querySelectorAll('.option-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
                     const qIdx = parseInt(this.getAttribute('data-q'));
                     const oIdx = parseInt(this.getAttribute('data-o'));
                     
-                    // Almacenar selección del usuario
                     respuestasSeleccionadasUsuario[qIdx] = oIdx;
 
-                    // Cambio visual estético: desmarcar hermanos y marcar el seleccionado
                     const parentGrid = this.parentElement;
-                    parentGrid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected-ui', 'selected-exam'));
+                    parentGrid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected-exam'));
                     this.classList.add('selected-exam');
                 });
             });
         }
 
-        // Inicializar generación y pintado de elementos
         generarAssessmentDesdePool();
         renderAssessment();
+        iniciarCronometro();
 
-        // --- MANEJO DEL ENVÍO AL FACILITADOR ---
         document.getElementById('btn-submit-exam').addEventListener('click', async () => {
             const totalQuestions = listaPreguntasDinámicas.length;
-            
-            // Validación preventiva: Verificar si respondió todas las preguntas
             const cantidadRespondidas = Object.keys(respuestasSeleccionadasUsuario).length;
+            
             if (cantidadRespondidas < totalQuestions) {
                 alert(`Por favor, responde todas las preguntas antes de enviar. (${cantidadRespondidas}/${totalQuestions} contestadas)`);
                 return;
             }
 
+            examSubmitted = true;
+            clearInterval(timerInterval);
+            document.getElementById('focusWarning').style.display = "none";
+
             let correctAnswersCount = 0;
 
-            // Procesar y calificar las respuestas
             listaPreguntasDinámicas.forEach((q, qIndex) => {
                 const respuestaUsuario = respuestasSeleccionadasUsuario[qIndex];
-                
-                // Bloquear los botones para evitar modificaciones posteriores
                 const block = document.getElementById(`block-${qIndex}`);
                 block.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
 
@@ -247,9 +360,17 @@
 
             const finalGradePercentage = Math.round((correctAnswersCount / totalQuestions) * 100);
 
-            // Mostrar el panel de retroalimentación
             document.getElementById('scoreText').textContent = `Lograste responder acertadamente ${correctAnswersCount} de ${totalQuestions} enunciados.`;
+            document.getElementById('timeElapsedText').textContent = `⏱️ Tiempo total empleado: ${formatearTiempoFinal(totalSecondsElapsed)}`;
             
+            const tabText = document.getElementById('tabSwitchesText');
+            if (tabSwitchCount > 0) {
+                tabText.textContent = `⚠️ Salidas detectadas del entorno del examen: ${tabSwitchCount} veces.`;
+            } else {
+                tabText.textContent = `💯 Excelente honestidad académica. No saliste del examen.`;
+                tabText.style.color = "#28AD56";
+            }
+
             const gradeElement = document.getElementById('scoreGrade');
             gradeElement.textContent = `${finalGradePercentage}%`;
 
@@ -271,7 +392,6 @@
             document.getElementById('scoreBanner').style.display = "block";
             document.getElementById('scoreBanner').scrollIntoView({ behavior: 'smooth' });
 
-            // GUARDAR CALIFICACIÓN EN EL NODO COMPATIBLE CON EL DASHBOARD
             if (currentUser) {
                 try {
                     const userRef = doc(db, "users", currentUser.uid);
@@ -281,19 +401,21 @@
                             email: currentUser.email
                         },
                         assessment: {
-                            score: correctAnswersCount, // Leído por el dashboard como examen.score
-                            total: totalQuestions,      // Leído por el dashboard como examen.total
+                            score: correctAnswersCount,
+                            total: totalQuestions,
+                            timeElapsedSeconds: totalSecondsElapsed,
+                            tabSwitchesDetected: tabSwitchCount,
                             updatedAt: new Date().toISOString()
                         }
                     }, { merge: true });
 
-                    console.log("Calificación del examen guardada exitosamente en el expediente.");
+                    console.log("Calificación y registros de monitoreo guardados con éxito.");
                 } catch (error) {
-                    console.error("Error al reportar el examen final a Firestore:", error);
+                    console.error("Error al reportar los datos del examen a Firestore:", error);
                 }
             }
         });
     </script>
-    <script type="module" src="../js/auth-guard.js"></script>
+    <script type="module" src="../js/services/auth-guard.js"></script>
 </body>
 </html>

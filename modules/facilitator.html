@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel del Facilitador - Analytics</title>
+    <title>Panel del Facilitador - Mastering Irregular Verbs</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
         .facilitator-container {
@@ -158,7 +158,7 @@
     </main>
 
     <script type="module">
-        import { auth } from "../js/firebase-config.js";
+        import { auth } from "../js/services/firebase-config.js";
         import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
@@ -254,7 +254,7 @@
         }
     </script>
 
-    <script type="module" src="../js/auth-guard.js"></script>
+    <script type="module" src="../js/services/auth-guard.js"></script>
 </body>
 
 </html>

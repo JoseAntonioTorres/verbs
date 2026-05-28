@@ -1,43 +1,454 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Introduction - Mastering Irregular Verbs</title>
     <link rel="stylesheet" href="../css/styles.css">
+
+    <script type="module" src="../js/services/auth-guard.js"></script>
+
+    <script type="module">
+        import { verbPool } from "../js/verbs.js";
+        import { auth, db } from "../js/services/firebase-config.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userRef = doc(db, "users", user.uid);
+                    const userSnap = await getDoc(userRef);
+                    const userData = userSnap.exists() ? userSnap.data() : {};
+                    inicializarComponentesIntro(userData);
+                } catch (error) {
+                    console.error("Error al cargar datos del alumno:", error);
+                    inicializarComponentesIntro({});
+                }
+            }
+        });
+
+        function inicializarComponentesIntro(userData) {
+            if (!verbPool || verbPool.length === 0) return;
+
+            // 1. CONTROLADOR DEL VERBO DEL DÍA
+            const indiceAleatorio = Math.floor(Math.random() * verbPool.length);
+            const verboDia = verbPool[indiceAleatorio];
+
+            document.getElementById('v-day-structures').innerHTML = `${verboDia.infinitive} → <span style="color:#28AD56">${verboDia.past}</span>`;
+            document.getElementById('v-day-translation').textContent = `(${verboDia.clue ? verboDia.clue.split('/')[0].trim() : ''})`;
+            document.getElementById('v-day-clue').textContent = verboDia.sentence || "";
+
+            // 2. CONTROLADOR DEL ROADMAP
+            const records = userData.games_records || {};
+            const hasPlayedGame = (records.anagrams > 0 || records.invaders > 0 || records.runner > 0 || records.memory > 0);
+
+            if (hasPlayedGame) {
+                activarBurbujaRoadmap("step-icon-game", "#28AD56");
+            }
+            if (userData.practice_modules && Object.keys(userData.practice_modules).length > 0) {
+                activarBurbujaRoadmap("step-icon-practice", "#28AD56");
+            }
+
+            // --- Lógica del Scoreboard Badge (Paso 2: Game) ---
+            const posicionScoreboard = userData.scoreboard_position;
+            const gameBadge = document.getElementById('game-rank-badge');
+            
+            if (posicionScoreboard) {
+                gameBadge.style.display = "flex";
+                if (posicionScoreboard === 1) {
+                    gameBadge.textContent = "🥇";
+                } else if (posicionScoreboard === 2) {
+                    gameBadge.textContent = "🥈";
+                } else if (posicionScoreboard === 3) {
+                    gameBadge.textContent = "🥉";
+                } else {
+                    gameBadge.textContent = `#${posicionScoreboard}`;
+                    gameBadge.style.fontSize = "10px";
+                    gameBadge.style.background = "#18529D";
+                }
+            }
+
+            // --- Lógica de Medallas de Evaluación (Paso 4: Assessment adaptado a tu Firestore) ---
+            const assessmentData = userData.assessment || {};
+            const score = assessmentData.score;
+            const total = assessmentData.total;
+            const assessmentMedal = document.getElementById('assessment-medal-badge');
+
+            if (score !== undefined && total !== undefined && total > 0) {
+                const porcentaje = (score / total) * 100;
+                assessmentMedal.style.display = "flex";
+                
+                if (porcentaje >= 90) {
+                    assessmentMedal.textContent = "🏆"; 
+                    assessmentMedal.style.background = "#D4AF37"; 
+                    activarBurbujaRoadmap("step-icon-assessment", "#28AD56"); 
+                } else if (porcentaje >= 70) {
+                    assessmentMedal.textContent = "🏅"; 
+                    assessmentMedal.style.background = "#C0C0C0";
+                    activarBurbujaRoadmap("step-icon-assessment", "#28AD56");
+                } else {
+                    assessmentMedal.textContent = "🎯"; 
+                    assessmentMedal.style.background = "#A0AEC0";
+                }
+            }
+
+            // 3. CONTROLADOR DEL MINI-RETO (CHALLENGE EXPRESS)
+            const retoVerbo = verbPool[(indiceAleatorio + 5) % verbPool.length];
+            const respuestaCorrecta = retoVerbo.past;
+
+            let oracionOculta = retoVerbo.sentence || `They _______ a lot last week.`;
+            if (oracionOculta.includes(retoVerbo.past)) {
+                oracionOculta = oracionOculta.replace(retoVerbo.past, "_______");
+            }
+
+            document.getElementById('challenge-question').innerHTML = `${oracionOculta} <small style="color:#718096; margin-left:5px;">(Infinitive: <strong>${retoVerbo.infinitive}</strong>)</small>`;
+
+            const distractores = verbPool
+                .filter(v => v.past !== respuestaCorrecta)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 2)
+                .map(v => v.past);
+
+            const opciones = [respuestaCorrecta, ...distractores].sort(() => 0.5 - Math.random());
+            const contenedorOpciones = document.getElementById('challenge-options');
+            contenedorOpciones.innerHTML = "";
+
+            opciones.forEach(opcion => {
+                const btn = document.createElement('button');
+                btn.textContent = opcion;
+                btn.className = "challenge-btn";
+
+                btn.onclick = () => {
+                    Array.from(contenedorOpciones.children).forEach(b => b.disabled = true);
+                    if (opcion === respuestaCorrecta) {
+                        btn.style.background = "#28AD56";
+                        btn.style.color = "#fff";
+                        btn.style.borderColor = "#28AD56";
+                        btn.textContent = "✓ ¡Correcto!";
+                    } else {
+                        btn.style.background = "#dc3545";
+                        btn.style.color = "#fff";
+                        btn.style.borderColor = "#dc3545";
+                        btn.textContent = "✗ Incorrecto";
+                    }
+                };
+                contenedorOpciones.appendChild(btn);
+            });
+        }
+
+        function activarBurbujaRoadmap(idElemento, colorHex) {
+            const el = document.getElementById(idElemento);
+            if (el) {
+                el.style.background = colorHex;
+                el.style.color = "white";
+                el.style.boxShadow = `0 4px 10px rgba(40,173,86,0.3)`;
+            }
+        }
+    </script>
+
+    <style>
+        /* CSS Responsivo e Integrado */
+        .intro-grid-container {
+            max-width: 1050px;
+            margin: 20px auto;
+            padding: 0 15px;
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+        }
+
+        /* Bloque Teórico Superior en 2 columnas Flex */
+        .theory-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .info-card-mini {
+            flex: 2;
+            min-width: 280px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px 20px;
+        }
+        .info-card-mini h2, .objective-card-mini h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #18529D;
+            font-weight: 700;
+        }
+        .info-card-mini p, .objective-card-mini p {
+            margin: 0;
+            font-size: 13.5px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        .objective-card-mini {
+            flex: 1;
+            min-width: 250px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            opacity: 0.85;
+        }
+
+        /* Verbo del día */
+        .v-day-section {
+            background: #edf2f7;
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Roadmap con conectores dinámicos adaptados a Mobile */
+        .roadmap-section {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 25px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            text-align: center;
+        }
+        .roadmap-axis {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            max-width: 900px;
+            margin: 25px auto 10px auto;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .roadmap-progress-line {
+            position: absolute;
+            top: 25px;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+        .roadmap-step {
+            flex: 1;
+            min-width: 130px;
+            z-index: 2;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        .roadmap-step:hover { transform: translateY(-3px); }
+        
+        /* Contenedores de burbuja con posición relativa fija */
+        .bubble-container {
+            position: relative;
+            width: 54px;
+            height: 54px;
+            margin: 0 auto 10px auto;
+        }
+        .step-bubble {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #edf2f7;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Variación de burbuja tipo píldora alargada para Assessment */
+        .step-bubble-pill {
+            width: auto;
+            height: auto;
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: #edf2f7;
+            color: #a0aec0;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Badges de Gamificación */
+        .status-badge {
+            display: none;
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #e53e3e;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        /* Challenge Express */
+        .challenge-section {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .challenge-btn {
+            background: #fff;
+            border: 1px solid #cbd5e0;
+            color: #4a5568;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .challenge-btn:hover:not(:disabled) {
+            background: #f7fafc;
+            border-color: #a0aec0;
+        }
+
+        /* Media Queries para teléfonos */
+        @media (max-width: 680px) {
+            .roadmap-progress-line { display: none; }
+            .roadmap-axis { flex-direction: column; gap: 15px; }
+            .roadmap-step { display: flex; align-items: center; text-align: left; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
+            .bubble-container { margin: 0 15px 0 0; width: 54px; height: 54px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+            .challenge-section, .v-day-section { flex-direction: column; align-items: flex-start; }
+            #challenge-options { width: 100%; justify-content: space-between; }
+            .challenge-btn { flex: 1; text-align: center; font-size: 12px; padding: 8px 5px; }
+        }
+    </style>
 </head>
+
 <body>
 
     <header></header>
 
     <main class="content-container">
-        <section class="hero-section">
-            <h1>Introducción — ¿Por qué aprender verbos irregulares?</h1>
-            <p class="subtitle">Descubre la importancia de dominar los pilares del tiempo pasado en inglés.</p>
+        <section class="hero-section" style="padding: 20px 15px; text-align: center;">
+            <h1 style="font-size: 26px; margin-bottom: 5px;">Mastering Irregular Verbs</h1>
+            <p class="subtitle" style="margin: 0; font-size: 15px; color:#718096;">Tu espacio interactivo para dominar el pasado en inglés.</p>
         </section>
 
-        <section class="media-grid">
-            <div class="video-card">
-                <iframe src="https://www.youtube.com/embed/6Sy_12qB5d4" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+        <div class="intro-grid-container">
+            
+            <div class="theory-row">
+                <article class="info-card-mini">
+                    <h2>¿Qué son los verbos irregulares?</h2>
+                    <p>Son aquellos que rompen la regla común; no terminan en <strong>-ed</strong> al hablar en pasado (ej. <em>go → went</em>). Dominarlos es clave porque representan más de la mitad de las interacciones cotidianas en inglés.</p>
+                </article>
+                
+                <article class="objective-card-mini">
+                    <h3>Meta del Módulo</h3>
+                    <p>Aprender a identificar, escuchar y usar correctamente las estructuras irregulares en contextos comunicativos reales.</p>
+                </article>
             </div>
-            <div class="video-card">
-                <iframe src="https://www.youtube.com/embed/Dhb53ckdrLY" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+
+            <div class="v-day-section">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <span style="font-size: 16px;">📅</span>
+                    <span style="font-size: 12px; font-weight: 700; color: #4a5568; text-transform: uppercase;">Píldora del día:</span>
+                    <strong id="v-day-structures" style="font-size: 14px; color: #18529D;">Cargando...</strong>
+                    <span id="v-day-translation" style="font-size: 13px; color: #718096; font-style: italic;"></span>
+                </div>
+                <span id="v-day-clue" style="font-size: 12px; color: #4a5568; font-style: italic; max-width: 100%;"></span>
             </div>
-        </section>
 
-        <section class="info-card">
-            <h2>¿Qué son los verbos irregulares?</h2>
-            <p>Los verbos irregulares en inglés son verbos cuya forma en pasado simple y/o participio no se forma añadiendo la terminación <strong>-ed</strong>. Aprenderlos es esencial porque muchos de los verbos más frecuentes del idioma son irregulares (por ejemplo: <em>go, have, be, do</em>).</p>
-            <p>Este OVA te guiará desde la identificación hasta la producción usando ejercicios, audio y actividades autocorregibles.</p>
-        </section>
+            <nav class="roadmap-section">
+                <h3 style="margin: 0 0 5px 0; color: #2d3748; font-size: 18px; font-weight: 700;">Tu Ruta de Aprendizaje</h3>
+                <p style="margin: 0; color: #718096; font-size: 13px;">Explora las zonas completando las actividades en orden sugerido:</p>
+                
+                <div class="roadmap-axis">
+                    <div class="roadmap-progress-line"></div>
 
-        <section class="info-card highlight">
-            <h2>Objetivos del Aprendizaje</h2>
-            <h3>Objetivo General</h3>
-            <p>Desarrollar en el estudiante la habilidad para identificar, comprender y utilizar correctamente los verbos irregulares en inglés en sus diferentes formas verbales, aplicándolos en situaciones comunicativas reales.</p>
-        </section>
+                    <div onclick="window.location.href='study.html'" class="roadmap-step">
+                        <div class="bubble-container">
+                            <div id="step-icon-study" class="step-bubble" style="background: #28AD56; color: white; box-shadow: 0 4px 10px rgba(40,173,86,0.3);">🎧</div>
+                        </div>
+                        <div>
+                            <h5 style="margin: 0; font-size: 14px; color: #2d3748; font-weight: 700;">1. Study</h5>
+                            <p style="margin: 2px 0 0 0; font-size: 11px; color: #718096;">Patrones Multimedia</p>
+                        </div>
+                    </div>
+
+                    <div onclick="window.location.href='game.html'" class="roadmap-step">
+                        <div class="bubble-container">
+                            <div id="step-icon-game" class="step-bubble">🎮</div>
+                            <span id="game-rank-badge" class="status-badge" style="background: #2b6cb0;">-</span>
+                        </div>
+                        <div>
+                            <h5 style="margin: 0; font-size: 14px; color: #2d3748; font-weight: 700;">2. Game</h5>
+                            <p style="margin: 2px 0 0 0; font-size: 11px; color: #718096;">Zona Lúdica</p>
+                        </div>
+                    </div>
+
+                    <div onclick="window.location.href='practice.html'" class="roadmap-step">
+                        <div class="bubble-container">
+                            <div id="step-icon-practice" class="step-bubble">⏱️</div>
+                        </div>
+                        <div>
+                            <h5 style="margin: 0; font-size: 14px; color: #2d3748; font-weight: 700;">3. Practice</h5>
+                            <p style="margin: 2px 0 0 0; font-size: 11px; color: #718096;">Mock Quizzes</p>
+                        </div>
+                    </div>
+
+                    <div onclick="window.location.href='assessment.html'" class="roadmap-step">
+                        <div class="bubble-container" style="width: auto; max-width: 150px; display: inline-block;">
+                            <div id="step-icon-assessment" class="step-bubble-pill">
+                                Assessment
+                            </div>
+                            <span id="assessment-medal-badge" class="status-badge" style="top: -8px; right: -8px;">🏅</span>
+                        </div>
+                        <div>
+                            <p style="margin: 2px 0 0 0; font-size: 11px; color: #718096;">Prueba de Fuego</p>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <section class="challenge-section">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 22px;">🧠</span>
+                    <div>
+                        <h4 style="margin: 0; color: #1a202c; font-size: 15px; font-weight: 700;">Challenge Express</h4>
+                        <p id="challenge-question" style="margin: 2px 0 0 0; color: #4a5568; font-size: 13.5px;">Cargando reto...</p>
+                    </div>
+                </div>
+                <div id="challenge-options" style="display: flex; gap: 8px;"></div>
+            </section>
+
+        </div>
     </main>
 
-    <script type="module" src="../js/auth-guard.js"></script>
 </body>
 </html>

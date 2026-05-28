@@ -9,133 +9,95 @@
     <style>
         .practice-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
-        /* --- ESTILOS DE LAS FLASHCARDS --- */
-        .flashcard-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* --- DISEÑO RESPONSIVO EN DOS COLUMNAS (WORKSPACE) --- */
+        .workspace-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            align-items: start;
             margin-bottom: 50px;
-            background: rgba(24, 82, 157, 0.03);
-            padding: 30px;
-            border-radius: 16px;
         }
 
-        .flashcard-container {
-            width: 300px;
-            height: 180px;
-            perspective: 1000px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .flashcard {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-        }
-
-        .flashcard.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 12px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .card-front {
-            background-color: #ffffff;
-            color: var(--primary-color, #18529D);
-            border: 2px solid var(--primary-color, #18529D);
-        }
-
-        .card-front h3 {
-            font-size: 2rem;
-            margin: 0;
-        }
-
-        .card-back {
-            background-color: var(--primary-color, #18529D);
-            color: white;
-            transform: rotateY(180deg);
-            text-align: center;
-        }
-
-        .card-back p {
-            margin: 5px 0;
-            font-size: 1.1rem;
-        }
-
-        .flashcard-controls {
-            display: flex;
-            gap: 15px;
-        }
-
-        .btn-nav-card {
-            background-color: #ffffff;
-            border: 1px solid #ccc;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .btn-nav-card:hover {
-            background-color: var(--primary-color, #18529D);
-            color: white;
-            border-color: var(--primary-color, #18529D);
-        }
-
-        /* --- ESTILOS DEL CUESTIONARIO EN CONTEXTO --- */
+        /* --- COMPONENTE: QUIZ EN CONTEXTO (PRINCIPAL) --- */
         .quiz-section {
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-bottom: 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
         }
 
         .quiz-title {
             border-bottom: 2px solid #f0f0f0;
             padding-bottom: 10px;
+            margin-top: 0;
             margin-bottom: 25px;
             color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .question-block {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 35px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid transparent;
             border-bottom: 1px dashed #e0e0e0;
+            transition: all 0.2s ease;
+        }
+
+        /* Estado visual para la pregunta enfocada/activa */
+        .question-block.active-focus {
+            background-color: rgba(24, 82, 157, 0.02);
+            border-color: rgba(24, 82, 157, 0.15);
+            border-bottom-style: solid;
+        }
+
+        .question-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
         .question-text {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
+            color: #222;
+            line-height: 1.5;
+        }
+
+        /* Botón de Audio del Enunciado */
+        .btn-sentence-audio {
+            background-color: transparent;
+            border: 2px solid var(--primary-color, #18529D);
+            color: var(--primary-color, #18529D);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-sentence-audio:hover {
+            background-color: var(--primary-color, #18529D);
+            color: white;
+            transform: scale(1.05);
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
         @media(min-width: 600px) {
@@ -147,11 +109,12 @@
         .option-btn {
             background-color: #f8f9fa;
             border: 2px solid #e9ecef;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border-radius: 8px;
             text-align: left;
             font-size: 15px;
             cursor: pointer;
+            font-weight: 500;
             transition: all 0.2s ease;
         }
 
@@ -174,17 +137,110 @@
         }
 
         .rationale-text {
-            margin-top: 12px;
-            padding: 10px 15px;
+            margin-top: 15px;
+            padding: 12px 18px;
             background-color: #f1f3f9;
             border-left: 4px solid var(--primary-color, #18529D);
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 14.5px;
             color: #444;
             display: none;
+            line-height: 1.4;
         }
 
-        /* --- SECCIÓN DE RESULTADOS --- */
+        .clue-banner {
+            position: sticky;
+            top: 80px;
+            z-index: 10;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            margin: 0 auto 20px;
+            max-width: 100%;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(24, 82, 157, 0.08), rgba(24, 82, 157, 0.02));
+            border: 1px solid rgba(24, 82, 157, 0.15);
+            box-shadow: 0 8px 24px rgba(24, 82, 157, 0.08);
+            backdrop-filter: blur(6px);
+        }
+
+        .clue-banner__content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+            overflow-x: auto;
+        }
+
+        .clue-banner__label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(24, 82, 157, 0.1);
+            color: var(--primary-color, #18529D);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .clue-banner__verb-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex-wrap: nowrap;
+        }
+
+        .clue-banner__verb-row strong {
+            color: var(--primary-color, #18529D);
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .clue-banner__status {
+            color: #555;
+            font-size: 0.92rem;
+            white-space: nowrap;
+        }
+
+        .clue-banner__details {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: nowrap;
+            font-size: 0.93rem;
+            color: #444;
+            white-space: nowrap;
+        }
+
+        .clue-banner.is-expanded .clue-banner__details {
+            display: flex;
+        }
+
+        .btn-banner-toggle {
+            border: 0;
+            border-radius: 999px;
+            padding: 8px 12px;
+            background: var(--primary-color, #18529D);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .question-block.is-answered {
+            border-color: rgba(40, 173, 86, 0.18);
+        }
+
+        /* --- BANNER DE RESULTADOS FINALES --- */
         .score-banner {
             display: none;
             background: linear-gradient(135deg, #28AD56 0%, #1b7339 100%);
@@ -211,6 +267,34 @@
         .btn-reset:hover {
             background-color: #f4f6f9;
         }
+
+        @media (max-width: 768px) {
+            .clue-banner {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .clue-banner__content {
+                align-items: flex-start;
+                flex-direction: column;
+                overflow-x: visible;
+            }
+
+            .clue-banner__verb-row,
+            .clue-banner__details {
+                flex-wrap: wrap;
+                white-space: normal;
+            }
+
+            .clue-banner__verb-row strong,
+            .clue-banner__status {
+                white-space: normal;
+            }
+
+            .btn-banner-toggle {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -222,157 +306,194 @@
 
         <div class="practice-header">
             <h1>Módulo de Práctica: Verbos en Contexto</h1>
-            <p>Refuerza tu memoria con las tarjetas interactivas y resuelve los ejercicios prácticos con
-                retroalimentación inmediata.</p>
+            <p>Resuelve los ejercicios interactivos. El clue superior se actualizará automáticamente con la pregunta
+                activa.</p>
         </div>
 
-        <section class="flashcard-section">
-            <h2>Tarjetas de Memorización (Flashcards)</h2>
-            <p style="color:#666; margin-bottom: 20px;">Haz clic sobre la tarjeta para voltearla y ver sus conjugaciones
-                pasadas.</p>
-
-            <div class="flashcard-container" id="btn-toggle-card">
-                <div class="flashcard" id="cardElement">
-                    <div class="card-face card-front">
-                        <span
-                            style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color:#888;">Infinitivo</span>
-                        <h3 id="frontText">-</h3>
-                    </div>
-                    <div class="card-face card-back">
-                        <p><strong>Pasado Simple:</strong> <span id="backPast">-</span></p>
-                        <p><strong>Participio:</strong> <span id="backParticiple">-</span></p>
-                        <p style="font-style: italic; font-size: 0.9rem; margin-top: 10px; color:#e0e6ed;">Traducción:
-                            <span id="backMeaning">-</span>
-                        </p>
-                    </div>
+        <div class="clue-banner" id="clueBanner">
+            <div class="clue-banner__content">
+                <div class="clue-banner__label">Clue</div>
+                <div class="clue-banner__verb-row">
+                    <strong id="frontText">Selecciona...</strong>
+                    <span class="clue-banner__status" id="sidebarHelpText">Responde una pregunta para activar la ayuda</span>
+                </div>
+                <div class="clue-banner__details" id="clueDetails">
+                    <span><strong>Past:</strong> <span id="backPast">-</span></span>
+                    <span><strong>Participle:</strong> <span id="backParticiple">-</span></span>
+                    <span id="backMeaning">-</span>
                 </div>
             </div>
+            <button type="button" class="btn-banner-toggle" id="btn-toggle-card" aria-pressed="false">Ver detalles</button>
+        </div>
 
-            <div class="flashcard-controls">
-                <button class="btn-nav-card" id="btn-prev-card">◀ Anterior</button>
-                <button class="btn-nav-card" id="btn-next-card">Siguiente ▶</button>
-            </div>
-        </section>
+        <div class="workspace-container">
 
-        <section class="quiz-section">
-            <h2 class="quiz-title">Ejercicios de Opción Múltiple</h2>
-            <div id="quizContainer"></div>
+            <section class="quiz-section">
+                <div class="quiz-title">
+                    <h2>Ejercicios de Opción Múltiple</h2>
+                </div>
 
-            <div id="scoreBanner" class="score-banner">
-                <h3>🎉 ¡Módulo Completado!</h3>
-                <p id="scoreText">Tu puntuación es de 0 / 0</p>
-                <small style="display:block; margin-top:5px; opacity:0.9;">Progreso sincronizado automáticamente con tu
-                    expediente académico.</small>
-                <button class="btn-reset" id="btn-reset-quiz">Volver a intentar</button>
-            </div>
-        </section>
+                <div id="quizContainer"></div>
+
+                <div id="scoreBanner" class="score-banner">
+                    <h3>🎉 ¡Módulo Completado!</h3>
+                    <p id="scoreText">Tu puntuación es de 0 / 0</p>
+                    <small style="display:block; margin-top:5px; opacity:0.9;">Progreso sincronizado con tu expediente
+                        académico.</small>
+                    <button class="btn-reset" id="btn-reset-quiz">Volver a intentar</button>
+                </div>
+            </section>
+
+        </div>
 
     </main>
 
-    <footer></footer>
+    <audio id="globalAudioPlayer"></audio>
 
     <script type="module">
-        import { auth } from "../js/firebase-config.js";
+        import { auth } from "../js/services/firebase-config.js";
         import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
-        // Importación dinámica del pool centralizado
-        import { verbPool } from "../js/vocabulary.js";
+        // Importación de la estructura centralizada de datos
+        import { verbPool } from "../js/verbs.js";
 
         const db = getFirestore();
         let currentUser = null;
-
         const bancoActivoID = "verbs_context";
 
-        let currentCardIndex = 0;
         let correctAnswersCount = 0;
         let answeredQuestionsCount = 0;
         let listaPreguntasDinámicas = [];
 
-        // ESCUCHA DE AUTENTICACIÓN COORDINADA
+        const clueBanner = document.getElementById('clueBanner');
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-
-                // Inicializamos la interfaz de práctica SÓLO cuando el usuario está listo
-                // Esto da margen de milisegundos para que auth-guard pinte el header sin colisiones
                 setTimeout(() => {
-                    updateCard();
                     generarQuizDesdePool();
                     renderQuiz();
+                    if (listaPreguntasDinámicas.length > 0) {
+                        setActiveQuestion(0, false);
+                    }
                 }, 50);
             }
         });
 
-        // --- COMPONENTE FLASHCARDS ---
-        function updateCard() {
-            const card = document.getElementById('cardElement');
-            if (!card) return; // Salvaguarda estructural
-            card.classList.remove('flipped');
+        document.getElementById('btn-toggle-card').addEventListener('click', () => {
+            const button = document.getElementById('btn-toggle-card');
+            clueBanner.classList.toggle('is-expanded');
+            const expanded = clueBanner.classList.contains('is-expanded');
+            button.textContent = expanded ? 'Ocultar detalles' : 'Ver detalles';
+            button.setAttribute('aria-pressed', String(expanded));
+        });
 
-            setTimeout(() => {
-                const data = verbPool[currentCardIndex];
-                const traduccion = data.clue ? data.clue.split('/')[0].trim() : "Sin traducción";
+        function sincronizarFlashcardConPregunta(indexPregunta) {
+            if (!listaPreguntasDinámicas[indexPregunta]) return;
 
-                document.getElementById('frontText').textContent = data.infinitive;
-                document.getElementById('backPast').textContent = data.past;
-                document.getElementById('backParticiple').textContent = data.participle;
-                document.getElementById('backMeaning').textContent = traduccion;
-            }, 200);
+            const infoPregunta = listaPreguntasDinámicas[indexPregunta];
+            const infoVerboOriginal = verbPool.find(v => v.infinitive === infoPregunta.infinitive);
+
+            if (!infoVerboOriginal) return;
+
+            const traduccion = infoVerboOriginal.clue ? infoVerboOriginal.clue.split('/')[0].trim() : "Sin traducción";
+
+            document.getElementById('frontText').textContent = infoVerboOriginal.infinitive;
+            document.getElementById('backPast').textContent = infoVerboOriginal.past;
+            document.getElementById('backParticiple').textContent = infoVerboOriginal.participle;
+            document.getElementById('backMeaning').textContent = traduccion;
+            document.getElementById('sidebarHelpText').textContent = `Pregunta #${indexPregunta + 1} activa`;
+            clueBanner.classList.remove('is-expanded');
+            document.getElementById('btn-toggle-card').textContent = 'Ver detalles';
+            document.getElementById('btn-toggle-card').setAttribute('aria-pressed', 'false');
         }
 
-        document.getElementById('btn-toggle-card').addEventListener('click', () => {
-            document.getElementById('cardElement').classList.toggle('flipped');
-        });
+        function setActiveQuestion(index, shouldScroll = true) {
+            const bloquesPreguntas = document.querySelectorAll('.question-block');
+            if (!bloquesPreguntas.length) return;
 
-        document.getElementById('btn-next-card').addEventListener('click', () => {
-            currentCardIndex = (currentCardIndex + 1) % verbPool.length;
-            updateCard();
-        });
+            const normalizedIndex = Math.max(0, Math.min(index, bloquesPreguntas.length - 1));
 
-        document.getElementById('btn-prev-card').addEventListener('click', () => {
-            currentCardIndex = (currentCardIndex - 1 + verbPool.length) % verbPool.length;
-            updateCard();
-        });
+            bloquesPreguntas.forEach((bloque, bloqueIndex) => {
+                bloque.classList.toggle('active-focus', bloqueIndex === normalizedIndex);
+            });
+
+            sincronizarFlashcardConPregunta(normalizedIndex);
+
+            if (shouldScroll) {
+                bloquesPreguntas[normalizedIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+
+        // --- LOGA DE DISTRACTORES MORFOLÓGICOS (ED / T ERRÓNEOS) ---
+        function generarDistractoresEstructurales(verboObj) {
+            const inf = verboObj.infinitive.toLowerCase();
+            const pastCorrecto = verboObj.past.toLowerCase();
+            const distractores = new Set();
+
+            let regularFalso = inf.endsWith('e') ? inf + 'd' : inf + 'ed';
+            if (regularFalso !== pastCorrecto) distractores.add(regularFalso);
+
+            let tFalsa = inf.endsWith('e') ? inf.slice(0, -1) + 't' : inf + 't';
+            if (tFalsa !== pastCorrecto) distractores.add(tFalsa);
+
+            if (inf.length > 2) {
+                const ultimaLetra = inf.slice(-1);
+                if (['g', 'p', 'n', 'm', 'd'].includes(ultimaLetra)) {
+                    let duplaFalsa = inf + ultimaLetra + 'ed'; // <-- Aquí se declara con 'a'
+                    if (duplaFalsa !== pastCorrecto) distractores.add(duplaFalsa); // <-- ¡Aquí tenía la 'e'! Corregido a 'duplaFalsa'
+                }
+            }
+
+            const poolFiltrado = verbPool.filter(v => v.past.toLowerCase() !== pastCorrecto);
+            while (distractores.size < 3) {
+                const randomVerb = poolFiltrado[Math.floor(Math.random() * poolFiltrado.length)];
+                distractores.add(randomVerb.past.toLowerCase());
+            }
+
+            return Array.from(distractores).slice(0, 3);
+        }
+
 
         // --- GENERADOR AUTOMÁTICO DE CUESTIONARIOS ---
         function generarQuizDesdePool() {
-            
-            // 1. Barajar el pool completo de verbos de forma aleatoria
-            const verbosBarajados = [...verbPool].sort(() => 0.5 - Math.random());
-            
-            // 2. Tomar únicamente los primeros 10 verbos para el Mock Quiz
-            const seleccionVerbos = verbosBarajados.slice(0, 10);
+            const seleccionVerbos = [...verbPool].sort(() => 0.5 - Math.random()).slice(0, 10);
 
-            // 3. Mapear la selección para construir el cuestionario interactivo
             listaPreguntasDinámicas = seleccionVerbos.map((verbo, index) => {
                 const respuestaCorrecta = verbo.past;
-                
-                // Filtrar distractores del pool general (excluyendo la respuesta correcta)
-                const otrosVerbos = verbPool.filter(v => v.past !== respuestaCorrecta);
-                const distractores = otrosVerbos
-                    .sort(() => 0.5 - Math.random())
-                    .slice(0, 3)
-                    .map(v => v.past);
+                const distractoresEstructurales = generarDistractoresEstructurales(verbo);
 
-                // Combinar y barajar las 4 opciones de respuesta
-                const opcionesOpciones = [respuestaCorrecta, ...distractores].sort(() => 0.5 - Math.random());
-                const idxCorrecto = opcionesOpciones.indexOf(respuestaCorrecta);
-                
-                // Extraer la traducción limpia desde la pista
+                const opcionesUnificadas = [respuestaCorrecta, ...distractoresEstructurales]
+                    .map(o => o.trim())
+                    .filter((value, idx, self) => self.indexOf(value) === idx)
+                    .sort(() => 0.5 - Math.random());
+
+                while (opcionesUnificadas.length < 4) {
+                    opcionesUnificadas.push(verbPool[Math.floor(Math.random() * verbPool.length)].past);
+                }
+
+                const idxCorrecto = opcionesUnificadas.findIndex(opt => opt.toLowerCase() === respuestaCorrecta.toLowerCase());
                 const significado = verbo.clue ? verbo.clue.split('/')[0].trim() : verbo.infinitive;
-                const oracionContextual = verbo.sentence || `Complete the sentence: "They ________ the exercise perfectly."`;
+
+                const oracionContextual = verbo.sentence ? verbo.sentence.replace(verbo.past, "________") : `Yesterday, they ________ to the teacher's instructions carefully.`;
 
                 return {
-                    number: index + 1, // Numeración del 1 al 10
-                    question: `${oracionContextual} <br><small style="color: #777;">[Infinitive: <strong>${verbo.infinitive}</strong> - (${significado})]</small>`,
-                    options: opcionesOpciones,
+                    number: index + 1,
+                    infinitive: verbo.infinitive,
+                    question: oracionContextual,
+                    significado: significado,
+                    options: opcionesUnificadas,
                     correctIndex: idxCorrecto,
-                    rationale: `The correct form for this past context is '${verbo.past}', which is the irregular simple past of '${verbo.infinitive}' (${significado}).`
+                    rationale: `La forma correcta en pasado para este contexto es '${verbo.past}'. Es una conjugación del verbo '${verbo.infinitive}' (${significado}).`,
+                    answered: false
                 };
             });
         }
-        // --- RENDERIZADO DEL CUESTIONARIO ---
+
+
+        // --- RENDERIZADO DEL CUESTIONARIO Y LISTENERS DE FOCO ---
         function renderQuiz() {
             const container = document.getElementById('quizContainer');
             if (!container) return;
@@ -389,8 +510,19 @@
                 });
 
                 container.innerHTML += `
-                    <div class="question-block">
-                        <div class="question-text">${q.number}. ${q.question}</div>
+                    <div class="question-block" data-index="${qIndex}" tabindex="0">
+                        <div class="question-header-row">
+                            <div class="question-text">
+                                ${q.number}. ${q.question}
+                                <br>
+                                <small style="color: #777; font-weight: 400;">
+                                    [Base Form: <strong>${q.infinitive}</strong> - (${q.significado})]
+                                </small>
+                            </div>
+                            <button class="btn-sentence-audio" data-verb="${q.infinitive}" aria-label="Escuchar pista de audio estructural" tabindex="-1">
+                                🔊
+                            </button>
+                        </div>
                         <div class="options-grid">
                             ${optionsHTML}
                         </div>
@@ -401,21 +533,57 @@
                 `;
             });
 
+            const bloquesPreguntas = container.querySelectorAll('.question-block');
+
+            bloquesPreguntas.forEach((bloque) => {
+                const activarBloque = () => {
+                    const idx = parseInt(bloque.getAttribute('data-index'));
+                    setActiveQuestion(idx, false);
+                };
+
+                bloque.addEventListener('focusin', activarBloque);
+                bloque.addEventListener('click', activarBloque);
+            });
+
+            if (bloquesPreguntas.length > 0) {
+                setActiveQuestion(0, false);
+            }
+
             container.querySelectorAll('.option-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
                     const qIdx = parseInt(this.getAttribute('data-q'));
                     const oIdx = parseInt(this.getAttribute('data-o'));
                     checkAnswer(this, qIdx, oIdx);
                 });
             });
+
+            container.querySelectorAll('.btn-sentence-audio').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const verbAudio = e.currentTarget.getAttribute('data-verb');
+                    playContextAudio(verbAudio);
+                });
+            });
+        }
+
+        function playContextAudio(verbName) {
+            const player = document.getElementById('globalAudioPlayer');
+            player.src = `../assets/audio/${verbName}.m4a`;
+            player.play().catch(error => {
+                console.error("Audio no disponible temporalmente para el verbo:", verbName);
+            });
         }
 
         function checkAnswer(selectedButton, questionIndex, optionIndex) {
             const questionData = listaPreguntasDinámicas[questionIndex];
-            const parentBlock = selectedButton.parentElement;
-            const allButtons = parentBlock.querySelectorAll('.option-btn');
+            const parentGrid = selectedButton.parentElement;
+            const allButtons = parentGrid.querySelectorAll('.option-btn');
+
+            if (questionData.answered) return;
 
             allButtons.forEach(btn => btn.disabled = true);
+            questionData.answered = true;
             answeredQuestionsCount++;
 
             if (optionIndex === questionData.correctIndex) {
@@ -426,11 +594,19 @@
                 allButtons[questionData.correctIndex].classList.add('correct');
             }
 
+            const bloquePregunta = document.querySelector(`.question-block[data-index="${questionIndex}"]`);
+            if (bloquePregunta) {
+                bloquePregunta.classList.add('is-answered');
+            }
+
             document.getElementById(`rationale-${questionIndex}`).style.display = "block";
 
             if (answeredQuestionsCount === listaPreguntasDinámicas.length) {
                 showFinalResults();
+                return;
             }
+
+            setActiveQuestion(questionIndex + 1, true);
         }
 
         async function showFinalResults() {
@@ -442,15 +618,12 @@
                 try {
                     const userRef = doc(db, "users", currentUser.uid);
                     const updatePayload = {};
-
                     updatePayload[`practice_modules.${bancoActivoID}`] = {
                         score: correctAnswersCount,
                         total: totalQuestions,
                         updatedAt: new Date().toISOString()
                     };
-
                     await updateDoc(userRef, updatePayload);
-                    console.log("Progreso de práctica sincronizado exitosamente.");
                 } catch (error) {
                     console.error("Error al reportar analíticas a Firestore:", error);
                 }
@@ -463,9 +636,12 @@
             document.getElementById('scoreBanner').style.display = "none";
             generarQuizDesdePool();
             renderQuiz();
+            if (listaPreguntasDinámicas.length > 0) {
+                setActiveQuestion(0, false);
+            }
         });
     </script>
-    <script type="module" src="../js/auth-guard.js"></script>
+    <script type="module" src="../js/services/auth-guard.js"></script>
 </body>
 
 </html>

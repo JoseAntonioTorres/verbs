@@ -1,0 +1,798 @@
+/* =========================================================
+   INVADERS.CSS
+   ULTRA ARCADE LAYOUT
+========================================================= */
+
+:root {
+
+    --inv-bg: #050816;
+
+    --inv-cyan: #00e5ff;
+    --inv-cyan-dark: #0099aa;
+
+    --inv-pink: #ff2f92;
+    --inv-purple: #9b5cff;
+
+    --inv-green: #00ff99;
+    --inv-yellow: #ffee00;
+    --inv-red: #ff3355;
+
+    --inv-panel: #12182a;
+    --inv-panel-2: #1b2238;
+
+    --inv-border: #26304f;
+
+    --inv-text: #f4f7ff;
+    --inv-text-soft: #9fb3d1;
+
+    --inv-shadow:
+        0 0 20px rgba(0, 229, 255, 0.15);
+
+    --inv-radius: 18px;
+
+    --inv-transition: 0.18s ease;
+}
+
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
+
+.invaders-wrapper {
+
+    width: 100%;
+    max-width: 1600px;
+
+    margin: 0 auto;
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.invaders-layout {
+
+    display: grid;
+
+    grid-template-columns:
+        300px minmax(0, 1fr);
+
+    gap: 20px;
+
+    align-items: start;
+
+    width: 100%;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.invaders-sidebar {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
+    position: sticky;
+    top: 20px;
+}
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.inv-panel {
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--inv-panel-2),
+            var(--inv-panel)
+        );
+
+    border: 1px solid var(--inv-border);
+
+    border-radius: 22px;
+
+    padding: 18px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        var(--inv-shadow);
+}
+
+/* =========================================================
+   HERO PANEL
+========================================================= */
+
+.inv-panel.large {
+
+    padding: 26px 20px;
+}
+
+.inv-sidebar-title {
+
+    font-size: 0.75rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.5px;
+
+    color: #7aa2ff;
+
+    margin-bottom: 18px;
+}
+
+.inv-sidebar-mainword {
+
+    font-size: 4rem;
+
+    line-height: 1;
+
+    font-weight: 900;
+
+    color: white;
+
+    margin-bottom: 12px;
+}
+
+.inv-sidebar-translation {
+
+    color: #d7e3ff;
+
+    font-style: italic;
+
+    opacity: 0.9;
+}
+
+/* =========================================================
+   HUD GRID
+========================================================= */
+
+.inv-stats-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+}
+
+.inv-stat-card {
+
+    padding: 14px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.04),
+            rgba(255,255,255,0.015)
+        );
+
+    border:
+        1px solid rgba(255,255,255,0.05);
+
+    min-height: 82px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.inv-stat-card:hover {
+
+    transform: translateY(-2px);
+
+    border-color:
+        rgba(0,229,255,0.25);
+
+    box-shadow:
+        0 0 20px rgba(0,229,255,0.12);
+}
+
+.inv-stat-label {
+
+    color: var(--inv-text-soft);
+
+    font-size: 0.72rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+}
+
+.inv-stat-value {
+
+    font-size: 2rem;
+
+    font-weight: bold;
+
+    color: white;
+}
+
+/* =========================================================
+   SHIELD
+========================================================= */
+
+.inv-shield-wrapper {
+
+    margin-top: 18px;
+}
+
+.inv-shield-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 8px;
+
+    color: var(--inv-text-soft);
+
+    font-size: 0.8rem;
+}
+
+.inv-shield-bar {
+
+    width: 100%;
+    height: 18px;
+
+    overflow: hidden;
+
+    background: #0a1020;
+
+    border-radius: 999px;
+
+    border:
+        1px solid #24304f;
+}
+
+.inv-shield-fill {
+
+    height: 100%;
+    width: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #00b7ff,
+            #00ffee
+        );
+
+    transition: width 0.25s ease;
+
+    box-shadow:
+        0 0 20px rgba(0,255,255,0.4);
+}
+
+/* =========================================================
+   HELP PANEL
+========================================================= */
+
+.inv-help-list {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+.inv-help-item {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    color: var(--inv-text-soft);
+
+    line-height: 1.5;
+
+    font-size: 0.95rem;
+}
+
+.inv-help-icon {
+
+    color: var(--inv-cyan);
+
+    font-size: 1rem;
+
+    margin-top: 2px;
+}
+
+/* =========================================================
+   MAIN GAME AREA
+========================================================= */
+
+.invaders-main {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
+    min-width: 0;
+}
+
+/* =========================================================
+   CANVAS SHELL
+========================================================= */
+
+.invaders-canvas-shell {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 28px;
+
+    padding: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0f1729,
+            #090d18
+        );
+
+    border:
+        1px solid rgba(0,229,255,0.12);
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(255,255,255,0.02);
+
+    min-height: 680px;
+}
+
+/* =========================================================
+   CRT EFFECT
+========================================================= */
+
+.invaders-canvas-shell::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 10;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.05) 0px,
+            rgba(255,255,255,0.05) 1px,
+            transparent 2px,
+            transparent 4px
+        );
+
+    opacity: 0.18;
+}
+
+.invaders-canvas-shell::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 9;
+
+    background:
+        radial-gradient(
+            circle at center,
+            transparent 40%,
+            rgba(0,0,0,0.4) 100%
+        );
+}
+
+/* =========================================================
+   INNER FRAME
+========================================================= */
+
+.arcade-frame {
+
+    position: absolute;
+
+    inset: 10px;
+
+    border-radius: 20px;
+
+    pointer-events: none;
+
+    border:
+        1px solid rgba(0,255,255,0.08);
+
+    box-shadow:
+        inset 0 0 40px rgba(0,255,255,0.05);
+}
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+#invadersCanvas {
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 660px;
+
+    background: #020611;
+
+    border-radius: 22px;
+
+    border:
+        2px solid rgba(0,229,255,0.12);
+
+    image-rendering: pixelated;
+}
+
+/* =========================================================
+   MOBILE CONTROLS
+========================================================= */
+
+.inv-mobile-controls {
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 16px;
+
+    margin-top: 10px;
+}
+
+.inv-mobile-btn {
+
+    width: 82px;
+    height: 82px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    font-size: 2rem;
+    font-weight: bold;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            180deg,
+            #1d2a4f,
+            #10182f
+        );
+
+    border:
+        2px solid rgba(0,229,255,0.25);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+
+    transition:
+        transform 0.08s ease;
+}
+
+.inv-mobile-btn:active {
+
+    transform: scale(0.94);
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.inv-modal {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background:
+        rgba(0,0,0,0.78);
+
+    z-index: 100;
+}
+
+.inv-modal.hidden {
+
+    display: none;
+}
+
+.inv-modal-card {
+
+    width:
+        min(92%, 420px);
+
+    padding: 32px;
+
+    border-radius: 24px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #18203a,
+            #0e1324
+        );
+
+    border:
+        1px solid rgba(0,229,255,0.22);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.55),
+        0 0 40px rgba(0,229,255,0.18);
+}
+
+.inv-modal-card h2 {
+
+    margin-top: 0;
+
+    font-size: 2rem;
+
+    color: var(--inv-red);
+}
+
+.inv-modal-score {
+
+    margin-top: 12px;
+
+    color: var(--inv-text-soft);
+
+    line-height: 1.6;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.inv-btn-row {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 14px;
+
+    margin-top: 26px;
+
+    flex-wrap: wrap;
+}
+
+.inv-btn {
+
+    border: none;
+
+    padding: 14px 22px;
+
+    border-radius: 14px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-weight: bold;
+
+    font-size: 0.95rem;
+
+    letter-spacing: 0.5px;
+
+    transition:
+        transform 0.12s ease,
+        opacity 0.12s ease;
+}
+
+.inv-btn:hover {
+
+    transform: translateY(-2px);
+}
+
+.inv-btn-primary {
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--inv-cyan),
+            #00b5d1
+        );
+
+    color: #03131a;
+}
+
+.inv-btn-danger {
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--inv-red),
+            #cc1e45
+        );
+
+    color: white;
+}
+
+/* =========================================================
+   SCROLL CARDS
+========================================================= */
+
+.arcade-games-scroll {
+
+    display: flex;
+
+    gap: 20px;
+
+    overflow-x: auto;
+
+    padding: 10px 4px 20px;
+
+    scroll-snap-type: x mandatory;
+
+    cursor: grab;
+}
+
+.arcade-games-scroll:active {
+
+    cursor: grabbing;
+}
+
+.arcade-games-scroll::-webkit-scrollbar {
+
+    height: 10px;
+}
+
+.arcade-games-scroll::-webkit-scrollbar-thumb {
+
+    background: #2b3761;
+
+    border-radius: 999px;
+}
+
+.menu-card {
+
+    min-width: 280px;
+
+    scroll-snap-align: center;
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes invPulse {
+
+    0% {
+
+        box-shadow:
+            0 0 0 rgba(255,238,0,0);
+    }
+
+    50% {
+
+        box-shadow:
+            0 0 18px rgba(255,238,0,0.35);
+    }
+
+    100% {
+
+        box-shadow:
+            0 0 0 rgba(255,238,0,0);
+    }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .invaders-layout {
+
+        grid-template-columns: 1fr;
+    }
+
+    .invaders-sidebar {
+
+        position: static;
+
+        order: 2;
+    }
+
+    .invaders-main {
+
+        order: 1;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .inv-panel {
+
+        padding: 16px;
+    }
+
+    .inv-sidebar-mainword {
+
+        font-size: 3rem;
+    }
+
+    .inv-stat-value {
+
+        font-size: 1.4rem;
+    }
+
+    .inv-mobile-controls {
+
+        display: flex;
+    }
+
+    .inv-mobile-btn {
+
+        width: 72px;
+        height: 72px;
+    }
+
+    #invadersCanvas {
+
+        min-height: 520px;
+    }
+
+    .invaders-canvas-shell {
+
+        min-height: 540px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .inv-stats-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .inv-mobile-btn {
+
+        width: 64px;
+        height: 64px;
+
+        font-size: 1.6rem;
+    }
+
+    .inv-btn {
+
+        width: 100%;
+    }
+
+    .inv-btn-row {
+
+        flex-direction: column;
+    }
+}

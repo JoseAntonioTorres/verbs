@@ -1,0 +1,569 @@
+/* =========================================================
+   RETRO ARCADE LAUNCHER
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+
+    --arcade-bg:
+        radial-gradient(
+            circle at top,
+            #16213d 0%,
+            #060816 60%
+        );
+
+    --arcade-cyan: #00e5ff;
+    --arcade-blue: #00b7ff;
+
+    --arcade-purple: #9b5cff;
+    --arcade-pink: #ff2f92;
+
+    --arcade-panel:
+        rgba(20,30,55,0.95);
+
+    --arcade-panel-dark:
+        rgba(8,12,24,0.98);
+
+    --arcade-border:
+        rgba(0,229,255,0.18);
+
+    --arcade-text: #ffffff;
+
+    --arcade-soft: #9fb3d1;
+
+    --arcade-shadow:
+        0 30px 60px rgba(0,0,0,0.45);
+
+    --arcade-radius: 28px;
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+
+    font-family:
+        'Press Start 2P',
+        monospace;
+
+    background:
+        var(--arcade-bg);
+
+    color:
+        var(--arcade-text);
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+    position: relative;
+}
+
+/* =========================================================
+   CRT SCANLINES
+========================================================= */
+
+body::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 999;
+
+    opacity: 0.12;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+
+            rgba(255,255,255,0.04) 0px,
+            rgba(255,255,255,0.04) 1px,
+
+            transparent 2px,
+            transparent 4px
+        );
+}
+
+/* =========================================================
+   VIGNETTE
+========================================================= */
+
+body::after {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 998;
+
+    background:
+        radial-gradient(
+            circle at center,
+            transparent 40%,
+            rgba(0,0,0,0.55) 100%
+        );
+}
+
+/* =========================================================
+   STARS
+========================================================= */
+
+.stars {
+
+    position: fixed;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    z-index: 0;
+}
+
+.star {
+
+    position: absolute;
+
+    width: 2px;
+    height: 2px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    animation:
+        twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+
+    from {
+
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    to {
+
+        opacity: 1;
+        transform: scale(1.5);
+    }
+}
+
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
+
+.arcade-launcher {
+
+    position: relative;
+
+    z-index: 1;
+
+    width: min(1500px, 92%);
+
+    margin: auto;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.launcher-header {
+
+    text-align: center;
+
+    padding:
+        70px 20px 50px;
+}
+
+.arcade-logo {
+
+    font-size:
+        clamp(2rem, 5vw, 5rem);
+
+    line-height: 1.4;
+
+    color:
+        var(--arcade-cyan);
+
+    text-shadow:
+        0 0 10px var(--arcade-cyan),
+        0 0 30px var(--arcade-cyan),
+        0 0 60px rgba(0,229,255,0.5);
+
+    animation:
+        pulseGlow 2s infinite alternate;
+}
+
+@keyframes pulseGlow {
+
+    from {
+
+        text-shadow:
+            0 0 10px var(--arcade-cyan),
+            0 0 30px var(--arcade-cyan);
+    }
+
+    to {
+
+        text-shadow:
+            0 0 20px var(--arcade-cyan),
+            0 0 60px var(--arcade-cyan),
+            0 0 100px rgba(0,229,255,0.7);
+    }
+}
+
+.arcade-subtitle {
+
+    margin-top: 24px;
+
+    color:
+        var(--arcade-soft);
+
+    font-size: 0.75rem;
+
+    letter-spacing: 2px;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.arcade-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(320px, 1fr));
+
+    gap: 30px;
+
+    padding-bottom: 80px;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.arcade-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius:
+        var(--arcade-radius);
+
+    min-height: 420px;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--arcade-panel),
+            var(--arcade-panel-dark)
+        );
+
+    border:
+        1px solid var(--arcade-border);
+
+    box-shadow:
+        var(--arcade-shadow),
+        inset 0 0 0 1px rgba(255,255,255,0.03);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.arcade-card:hover {
+
+    transform:
+        translateY(-8px)
+        scale(1.01);
+
+    border-color:
+        rgba(0,229,255,0.55);
+
+    box-shadow:
+        0 40px 80px rgba(0,0,0,0.55),
+        0 0 40px rgba(0,229,255,0.18);
+}
+
+/* =========================================================
+   BANNER
+========================================================= */
+
+.arcade-banner {
+
+    position: relative;
+
+    height: 220px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: 6rem;
+
+    overflow: hidden;
+}
+
+.arcade-banner::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(0,0,0,0.45)
+        );
+}
+
+.invaders-banner {
+
+    background:
+        radial-gradient(
+            circle at center,
+            #132038 0%,
+            #070b14 80%
+        );
+}
+
+.anagrams-banner {
+
+    background:
+        radial-gradient(
+            circle at center,
+            #2a163d 0%,
+            #090611 80%
+        );
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.arcade-content {
+
+    padding: 28px;
+}
+
+.arcade-game-title {
+
+    font-size: 1.3rem;
+
+    line-height: 1.5;
+
+    margin-bottom: 18px;
+}
+
+.arcade-description {
+
+    color:
+        var(--arcade-soft);
+
+    line-height: 2;
+
+    font-size: 0.7rem;
+
+    margin-bottom: 28px;
+}
+
+/* =========================================================
+   TAGS
+========================================================= */
+
+.arcade-tags {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-bottom: 30px;
+}
+
+.arcade-tag {
+
+    padding:
+        8px 12px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(255,255,255,0.06);
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    color:
+        #c6d7ff;
+
+    font-size: 0.55rem;
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.play-btn {
+
+    width: 100%;
+
+    border: none;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: 0.75rem;
+
+    color: #04131a;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--arcade-cyan),
+            var(--arcade-blue)
+        );
+
+    box-shadow:
+        0 0 20px rgba(0,229,255,0.35);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.play-btn:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 0 30px rgba(0,229,255,0.45);
+}
+
+.play-btn:active {
+
+    transform:
+        scale(0.98);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.arcade-footer {
+
+    text-align: center;
+
+    padding:
+        40px 20px 60px;
+
+    color:
+        #6e7ea8;
+
+    font-size: 0.6rem;
+
+    line-height: 2;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .arcade-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .arcade-card {
+
+        min-height: auto;
+    }
+
+    .arcade-banner {
+
+        height: 180px;
+
+        font-size: 4rem;
+    }
+
+    .arcade-content {
+
+        padding: 22px;
+    }
+
+    .arcade-game-title {
+
+        font-size: 1rem;
+    }
+
+    .arcade-description {
+
+        font-size: 0.6rem;
+    }
+
+    .play-btn {
+
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .launcher-header {
+
+        padding-top: 50px;
+    }
+
+    .arcade-subtitle {
+
+        font-size: 0.6rem;
+    }
+
+    .arcade-banner {
+
+        height: 150px;
+
+        font-size: 3rem;
+    }
+}
