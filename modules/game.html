@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>
+        Arcade - Invaders
+    </title>
+
+    <!-- GLOBAL -->
+    <link
+        rel="stylesheet"
+        href="../css/styles.css"
+    />
+
+    <!-- INVADERS -->
+    <link
+        rel="stylesheet"
+        href="../css/invaders.css"
+    />
+
+</head>
+
+<body>
+    <header></header>    
+
+    <main class="invaders-wrapper">
+
+        <section class="invaders-layout">
+
+            <!-- =========================================
+                 SIDEBAR
+            ========================================== -->
+
+            <aside class="invaders-sidebar">
+
+                <!-- HERO PANEL -->
+
+                <div class="inv-panel large">
+
+                    <div class="inv-sidebar-title">
+                        INFINITIVE
+                    </div>
+
+                    <div
+                        class="inv-sidebar-mainword"
+                        id="hudInfinitive"
+                    >
+                        GO
+                    </div>
+
+                    <div
+                        class="inv-sidebar-translation"
+                        id="hudTranslation"
+                    >
+                        ir
+                    </div>
+
+                </div>
+
+                <!-- HUD -->
+
+                <div class="inv-panel">
+
+                    <div class="inv-stats-grid">
+
+                        <div class="inv-stat-card">
+
+                            <div class="inv-stat-label">
+                                SCORE
+                            </div>
+
+                            <div
+                                class="inv-stat-value"
+                                id="hudScore"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+                        <div class="inv-stat-card">
+
+                            <div class="inv-stat-label">
+                                COMBO
+                            </div>
+
+                            <div
+                                class="inv-stat-value"
+                                id="hudCombo"
+                            >
+                                x1
+                            </div>
+
+                        </div>
+
+                        <div class="inv-stat-card">
+
+                            <div class="inv-stat-label">
+                                LIVES
+                            </div>
+
+                            <div
+                                class="inv-stat-value"
+                                id="hudLives"
+                            >
+                                ❤️❤️❤️
+                            </div>
+
+                        </div>
+
+                        <div class="inv-stat-card">
+
+                            <div class="inv-stat-label">
+                                NEXT LETTER
+                            </div>
+
+                            <div
+                                class="inv-stat-value"
+                                id="hudNext"
+                            >
+                                -
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- SHIELD -->
+
+                    <div class="inv-shield-wrapper">
+
+                        <div class="inv-shield-top">
+
+                            <span>
+                                SHIELD
+                            </span>
+
+                            <span id="hudShieldText">
+                                15 / 15
+                            </span>
+
+                        </div>
+
+                        <div class="inv-shield-bar">
+
+                            <div
+                                class="inv-shield-fill"
+                                id="hudShieldFill"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP -->
+
+                <div class="inv-panel">
+
+                    <div class="inv-help-list">
+
+                        <div class="inv-help-item">
+                            <span class="inv-help-icon">🎯</span>
+                            <span>Shoot letters in order.</span>
+                        </div>
+
+                        <div class="inv-help-item">
+                            <span class="inv-help-icon">🟣</span>
+                            <span>Purple enemies are vowels.</span>
+                        </div>
+
+                        <div class="inv-help-item">
+                            <span class="inv-help-icon">🔵</span>
+                            <span>Blue enemies are consonants.</span>
+                        </div>
+
+                        <div class="inv-help-item">
+                            <span class="inv-help-icon">⚡</span>
+                            <span>Build combos for huge scores.</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- EXIT -->
+
+                <button
+                    class="inv-btn inv-btn-danger"
+                    id="btnBackToMenu"
+                >
+                    ⬅ EXIT
+                </button>
+
+            </aside>
+
+            <!-- =========================================
+                 GAME AREA
+            ========================================== -->
+
+            <section class="invaders-main">
+
+                <div class="invaders-canvas-shell">
+
+                    <div class="arcade-frame"></div>
+
+                    <!-- MODAL -->
+
+                    <div
+                        class="inv-modal hidden"
+                        id="invadersGameOverModal"
+                    >
+
+                        <div class="inv-modal-card">
+
+                            <h2>
+                                🚨 MISSION FAILED
+                            </h2>
+
+                            <div
+                                class="inv-modal-score"
+                                id="finalScoreText"
+                            >
+                                FINAL SCORE: 0
+                            </div>
+
+                            <div class="inv-btn-row">
+
+                                <button
+                                    id="btnRetryInvaders"
+                                    class="inv-btn inv-btn-primary"
+                                >
+                                    🔄 RETRY
+                                </button>
+
+                                <button
+                                    id="btnCloseInvaders"
+                                    class="inv-btn inv-btn-danger"
+                                >
+                                    ❌ EXIT
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- GAME -->
+
+                    <canvas
+                        id="invadersCanvas"
+                        width="1000"
+                        height="620"
+                    ></canvas>
+
+                </div>
+
+                <!-- MOBILE -->
+
+                <div class="inv-mobile-controls">
+
+                    <button
+                        id="btnLeft"
+                        class="inv-mobile-btn"
+                    >
+                        ◀
+                    </button>
+
+                    <button
+                        id="btnShoot"
+                        class="inv-mobile-btn"
+                    >
+                        🔥
+                    </button>
+
+                    <button
+                        id="btnRight"
+                        class="inv-mobile-btn"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER DINÁMICO -->
+    <div id="footerContainer"></div>
+
+    <script type="module">
+
+        import { auth }
+            from "../js/services/firebase-config.js";
+
+        import {
+            getFirestore,
+            collection
+        }
+            from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+        import {
+            onAuthStateChanged
+        }
+            from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+
+        import {
+            startInvadersGame
+        }
+            from "../js/games/invaders.js";
+
+        // IMPORTA TU AUTH GUARD
+        import "../js/services/auth-guard.js";
+
+        const db = getFirestore();
+
+        const scoresCollection =
+            collection(db, "scoreboard");
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+
+            currentUser = user || null;
+
+            window.currentInvadersGame =
+                startInvadersGame(
+                    currentUser,
+                    scoresCollection
+                );
+        });
+
+        document
+            .getElementById("btnBackToMenu")
+            .addEventListener("click", () => {
+
+                if (
+                    window.currentInvadersGame &&
+                    typeof window.currentInvadersGame.stop === "function"
+                ) {
+                    window.currentInvadersGame.stop();
+                }
+
+                window.location.href =
+                    "./game.html";
+            });
+
+    </script>
+
+</body>
+
+</html>
